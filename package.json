@@ -2,6 +2,7 @@
   "name": "package-health",
   "version": "0.0.0",
   "scripts": {
+    "prepare": "panda codegen",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
