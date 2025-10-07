@@ -1,0 +1,18 @@
+/* Layout container styles */
+:host {
+    display: block;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Optional: responsive stacking for mobile */
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    app-sidebar {
+        width: 100%;
+        height: auto;
+    }
+}

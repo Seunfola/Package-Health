@@ -6,20 +6,19 @@ import type { DistributiveOmit } from '../types/system-types';
 import type { Tokens } from '../tokens/index';
 
 export interface WrapProperties {
-  gap?: SystemProperties['gap'];
-  rowGap?: SystemProperties['gap'];
-  columnGap?: SystemProperties['gap'];
-  align?: SystemProperties['alignItems'];
-  justify?: SystemProperties['justifyContent'];
+   gap?: SystemProperties["gap"]
+	rowGap?: SystemProperties["gap"]
+	columnGap?: SystemProperties["gap"]
+	align?: SystemProperties["alignItems"]
+	justify?: SystemProperties["justifyContent"]
 }
 
-interface WrapStyles
-  extends WrapProperties,
-    DistributiveOmit<SystemStyleObject, keyof WrapProperties> {}
+interface WrapStyles extends WrapProperties, DistributiveOmit<SystemStyleObject, keyof WrapProperties > {}
 
 interface WrapPatternFn {
-  (styles?: WrapStyles): string;
-  raw: (styles?: WrapStyles) => SystemStyleObject;
+  (styles?: WrapStyles): string
+  raw: (styles?: WrapStyles) => SystemStyleObject
 }
+
 
 export declare const wrap: WrapPatternFn;

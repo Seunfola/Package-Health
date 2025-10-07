@@ -6,19 +6,18 @@ import type { DistributiveOmit } from '../types/system-types';
 import type { Tokens } from '../tokens/index';
 
 export interface StackProperties {
-  align?: SystemProperties['alignItems'];
-  justify?: SystemProperties['justifyContent'];
-  direction?: SystemProperties['flexDirection'];
-  gap?: SystemProperties['gap'];
+   align?: SystemProperties["alignItems"]
+	justify?: SystemProperties["justifyContent"]
+	direction?: SystemProperties["flexDirection"]
+	gap?: SystemProperties["gap"]
 }
 
-interface StackStyles
-  extends StackProperties,
-    DistributiveOmit<SystemStyleObject, keyof StackProperties> {}
+interface StackStyles extends StackProperties, DistributiveOmit<SystemStyleObject, keyof StackProperties > {}
 
 interface StackPatternFn {
-  (styles?: StackStyles): string;
-  raw: (styles?: StackStyles) => SystemStyleObject;
+  (styles?: StackStyles): string
+  raw: (styles?: StackStyles) => SystemStyleObject
 }
+
 
 export declare const stack: StackPatternFn;

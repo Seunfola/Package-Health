@@ -1,116 +1,24 @@
-<aside
-  display="flex"
-  flexDirection="column"
-  backgroundColor="#1C1C1C"
-  height="100vh"
-  minWidth="250px"
-  padding="6"
-  color="white"
->
-  <ul display="flex" flexDirection="column" listStyle="none" padding="0" margin="0" gap="2">
-    <li
-      display="flex"
-      alignItems="center"
-      padding="4"
-      gap="2"
-      cursor="pointer"
-      fontWeight="700"
-      color="primary.700"
-      backgroundColor="primary.200"
-      borderRadius="md"
-    >
-      <img src="assets/icons/home.svg" alt="Homepage" width="24" height="24" />
-      <span>Homepage</span>
-    </li>
-
-    <li
-      display="flex"
-      alignItems="center"
-      padding="4"
-      gap="2"
-      cursor="pointer"
-      fontWeight="500"
-      color="neutral.400"
-      borderRadius="md"
-      style="transition: background 0.2s"
-      onmouseover="this.style.backgroundColor='#232323'"
-      onmouseout="this.style.backgroundColor=''"
-    >
-      <img src="assets/icons/chart.svg" alt="Repo-Health" width="24" height="24" />
-      <span>Repository Health</span>
-    </li>
-
-    <li
-      display="flex"
-      alignItems="center"
-      padding="4"
-      gap="2"
-      cursor="pointer"
-      fontWeight="500"
-      color="neutral.400"
-      borderRadius="md"
-      style="transition: background 0.2s"
-      onmouseover="this.style.backgroundColor='#232323'"
-      onmouseout="this.style.backgroundColor=''"
-    >
-      <img src="assets/icons/info.svg" alt="Repo-Details" width="24" height="24" />
-
-      <span>Repository Details</span>
-    </li>
-
-    <li
-      display="flex"
-      alignItems="center"
-      padding="4"
-      gap="2"
-      cursor="pointer"
-      fontWeight="500"
-      color="neutral.400"
-      borderRadius="md"
-      style="transition: background 0.2s"
-      onmouseover="this.style.backgroundColor='#232323'"
-      onmouseout="this.style.backgroundColor=''"
-    >
-      <img src="assets/icons/user.svg" alt="User-profile" width="24" height="24" />
-
-      <span>User Profile</span>
-    </li>
-
-    <li
-      display="flex"
-      alignItems="center"
-      padding="4"
-      gap="2"
-      cursor="pointer"
-      fontWeight="500"
-      color="neutral.400"
-      borderRadius="md"
-      style="transition: background 0.2s"
-      onmouseover="this.style.backgroundColor='#232323'"
-      onmouseout="this.style.backgroundColor=''"
-    >
-      <img src="assets/icons/settings.svg" alt="settings" width="24" height="24" />
-      <span>Dashboard Settings</span>
-    </li>
-
-    <div width="full" height="1px" backgroundColor="neutral.700" my="4"></div>
-
-    <li
-      display="flex"
-      alignItems="center"
-      padding="4"
-      gap="2"
-      cursor="pointer"
-      fontWeight="500"
-      color="neutral.400"
-      borderRadius="md"
-      style="transition: background 0.2s"
-      onmouseover="this.style.backgroundColor='#232323'"
-      onmouseout="this.style.backgroundColor=''"
-    >
-      <img src="assets/icons/notification.svg" alt="notifications" width="24" height="24" />
-
-      <span>Notifications</span>
-    </li>
+<aside [class]="sidebar()">
+  <ul [class]="list()">
+    @for (item of menuItems; track $index) {
+      <li
+        [class]="listItem({ active: activeIndex === $index })"
+        (click)="setActive($index)"
+        role="button"
+        tabindex="0"
+        [attr.aria-pressed]="activeIndex === $index"
+        (keydown.enter)="setActive($index)"
+      >
+        <img
+          [src]="'assets/icons/' + item.icon + '.svg'"
+          [attr.alt]="item.label"
+          [attr.title]="item.label"
+          width="24"
+          height="24"
+        />
+        <span class="text-neutral-200 font-medium">{{ item.label }}</span>
+      </li>
+      <div class="w-full h-px bg-neutral-700 my-3"></div>
+    }
   </ul>
 </aside>

@@ -5,15 +5,16 @@ import type { SystemProperties } from '../types/style-props';
 import type { DistributiveOmit } from '../types/system-types';
 import type { Tokens } from '../tokens/index';
 
-export interface ContainerProperties {}
+export interface ContainerProperties {
+   
+}
 
-interface ContainerStyles
-  extends ContainerProperties,
-    DistributiveOmit<SystemStyleObject, keyof ContainerProperties> {}
+interface ContainerStyles extends ContainerProperties, DistributiveOmit<SystemStyleObject, keyof ContainerProperties > {}
 
 interface ContainerPatternFn {
-  (styles?: ContainerStyles): string;
-  raw: (styles?: ContainerStyles) => SystemStyleObject;
+  (styles?: ContainerStyles): string
+  raw: (styles?: ContainerStyles) => SystemStyleObject
 }
+
 
 export declare const container: ContainerPatternFn;
