@@ -6,17 +6,16 @@ import type { DistributiveOmit } from '../types/system-types';
 import type { Tokens } from '../tokens/index';
 
 export interface HstackProperties {
-  justify?: SystemProperties['justifyContent'];
-  gap?: SystemProperties['gap'];
+   justify?: SystemProperties["justifyContent"]
+	gap?: SystemProperties["gap"]
 }
 
-interface HstackStyles
-  extends HstackProperties,
-    DistributiveOmit<SystemStyleObject, keyof HstackProperties> {}
+interface HstackStyles extends HstackProperties, DistributiveOmit<SystemStyleObject, keyof HstackProperties > {}
 
 interface HstackPatternFn {
-  (styles?: HstackStyles): string;
-  raw: (styles?: HstackStyles) => SystemStyleObject;
+  (styles?: HstackStyles): string
+  raw: (styles?: HstackStyles) => SystemStyleObject
 }
+
 
 export declare const hstack: HstackPatternFn;

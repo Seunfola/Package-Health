@@ -1,15 +1,12 @@
-<div
-  class="panda-layout-container"
-  display="flex"
-  flex-direction="{{ panda - flex - direction }}"
-  height="100vh"
->
-  <app-sidebar display="flex" flex-direction="column"></app-sidebar>
+<div [ngClass]="layoutClass">
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
 
-  <div class="content-wrapper" display="flex" flex-direction="column" flex-grow="1">
+  <!-- Main content -->
+  <div [ngClass]="contentWrapperClass">
     <app-navbar></app-navbar>
 
-    <main class="main-content" p="4" overflow-y="auto" flex-grow="1">
+    <main [ngClass]="mainContentClass">
       <router-outlet></router-outlet>
     </main>
 

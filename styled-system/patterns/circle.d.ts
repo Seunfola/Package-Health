@@ -6,16 +6,15 @@ import type { DistributiveOmit } from '../types/system-types';
 import type { Tokens } from '../tokens/index';
 
 export interface CircleProperties {
-  size?: SystemProperties['width'];
+   size?: SystemProperties["width"]
 }
 
-interface CircleStyles
-  extends CircleProperties,
-    DistributiveOmit<SystemStyleObject, keyof CircleProperties> {}
+interface CircleStyles extends CircleProperties, DistributiveOmit<SystemStyleObject, keyof CircleProperties > {}
 
 interface CirclePatternFn {
-  (styles?: CircleStyles): string;
-  raw: (styles?: CircleStyles) => SystemStyleObject;
+  (styles?: CircleStyles): string
+  raw: (styles?: CircleStyles) => SystemStyleObject
 }
+
 
 export declare const circle: CirclePatternFn;

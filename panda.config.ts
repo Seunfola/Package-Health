@@ -1,15 +1,36 @@
 import { defineConfig } from '@pandacss/dev';
 
 export default defineConfig({
-  // Whether to use css reset
   preflight: true,
-
-  // Where to look for your css declarations
-  include: ['./src/**/*.{js,jsx,ts,tsx}'],
-
-  // Files to exclude
-  exclude: [],
-
-  // The output directory for your css system
+  jsxFramework: 'angular',
   outdir: 'styled-system',
+
+  // 👇 REQUIRED: tell Panda which files to scan
+  include: [
+    './src/**/*.{ts,html}', // Angular components & templates
+  ],
+
+  // 👇 Optional but good practice
+  exclude: ['./node_modules/**/*', './dist/**/*'],
+
+  theme: {
+    extend: {
+      tokens: {
+        colors: {
+          primary: {
+            200: { value: '#e0e0ff' },
+            700: { value: '#4e46dc' },
+          },
+          neutral: {
+            400: { value: '#a1a1aa' },
+            700: { value: '#3f3f46' },
+          },
+          sidebar: {
+            bg: { value: '#1C1C1C' },
+            hover: { value: '#232323' },
+          },
+        },
+      },
+    },
+  },
 });
