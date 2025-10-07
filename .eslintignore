@@ -4,3 +4,8 @@ dist/
 out-tsc/
 .angular/
 src/**/*.spec.ts
+# .eslintignore
+panda.config.ts
+
+# .angularignore
+../panda-config/
