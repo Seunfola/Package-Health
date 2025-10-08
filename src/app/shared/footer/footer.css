@@ -4,7 +4,20 @@
     margin-top: auto;
     color: #9ca3af;
     font-family: 'Inter', sans-serif;
-    overflow-y: auto;
+.footer-root {
+        background-color: #111827;
+        border-top: 1px solid #374151;
+        margin-top: auto;
+
+        .footer-container {
+            max-width: 1280px;
+            margin: auto;
+            padding: 1rem 2rem;
+        }
+
+        font-family: 'Inter',
+        sans-serif;
+    }
 }
 
 .footer-container {
@@ -104,10 +117,15 @@
 
     .footer-root {
         min-height: 265px;
-    }
-
-    .footer-container {
+.footer-container {
         padding: 2.5rem 1.5rem;
+}
+
+.footer-grid {
+    /* existing grid styles */
+}
+
+padding: 2.5rem 1.5rem;
     }
 
 .brand-tagline {
@@ -131,9 +149,9 @@
     }
 
     .brand-tagline {
+        width: 70%;
         max-width: 100%;
-    }
-
+    
     .social-icons {
         justify-content: flex-start;
     }
@@ -158,4 +176,5 @@
 .copyright-text {
     text-align: center;
     font-size: 0.875rem;
+}
 }
