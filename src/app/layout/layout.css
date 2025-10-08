@@ -14,11 +14,9 @@
 app-sidebar {
     flex-shrink: 0;
     width: 250px;
-    /* adjust your sidebar width */
     background-color: #000;
     color: #fff;
     z-index: 2;
-    /* ensures sidebar is on top of main but below navbar if needed */
 }
 
 .contentWrapperClass {
@@ -30,15 +28,12 @@ app-sidebar {
     overflow-y: auto;
 }
 
-/* Navbar should stay at top of content */
 app-navbar {
     position: sticky;
     top: 0;
     z-index: 10;
-    /* stays above content but below modals */
 }
 
-/* The main content should start below navbar */
 main {
     flex: 1;
     padding: 1.5rem;
