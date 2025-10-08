@@ -7,12 +7,11 @@ const prettierPlugin = require('eslint-plugin-prettier');
 const rxjsPlugin = require('eslint-plugin-rxjs');
 
 module.exports = tseslint.config(
-  // TypeScript & Angular files
   {
     files: ['**/*.ts'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.app.json'], // ✅ point here
+        project: ['./tsconfig.app.json'],
         tsconfigRootDir: __dirname,
         sourceType: 'module',
       },
@@ -30,7 +29,6 @@ module.exports = tseslint.config(
     },
     processor: angular.processInlineTemplates,
     rules: {
-      // ✅ Prettier
       'prettier/prettier': [
         'error',
         {
@@ -42,7 +40,6 @@ module.exports = tseslint.config(
         },
       ],
 
-      // ✅ Angular Style Rules
       '@angular-eslint/directive-selector': [
         'error',
         { type: 'attribute', prefix: 'app', style: 'camelCase' },
@@ -52,7 +49,6 @@ module.exports = tseslint.config(
         { type: 'element', prefix: 'app', style: 'kebab-case' },
       ],
 
-      // ✅ RxJS Best Practices
       'rxjs/no-ignored-subscription': 'error',
       'rxjs/no-async-subscribe': 'error',
       'rxjs/no-nested-subscribe': 'warn',
@@ -69,7 +65,6 @@ module.exports = tseslint.config(
     },
   },
 
-  // HTML templates
   {
     files: ['**/*.html'],
     extends: [
