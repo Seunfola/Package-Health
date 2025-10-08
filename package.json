@@ -2,7 +2,7 @@
   "name": "package-health",
   "version": "0.0.0",
   "scripts": {
-  "panda:codegen": "panda codegen --config ../panda-config/panda.config.ts",
+"panda:codegen": "panda codegen",
   "prepare": "pnpm run panda:codegen",
   "ng": "ng",
   "start": "ng serve",

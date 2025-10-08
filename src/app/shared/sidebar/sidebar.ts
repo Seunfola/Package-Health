@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cva } from '../../../../styled-system/css';
 
@@ -7,19 +7,56 @@ import { cva } from '../../../../styled-system/css';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css',
 })
 export class Sidebar {
+  @Input() isOpen = false;
+  activeIndex = 0;
+
   sidebar = cva({
     base: {
       display: 'flex',
       flexDirection: 'column',
       bg: 'sidebar.bg',
-      height: '100vh',
-      minWidth: '250px',
-      padding: '24px',
       color: 'white',
+      height: 'calc(100vh - 64px)',
+      width: { base: '60%', md: '250px' },
+      position: { base: 'fixed', md: 'relative' },
+      top: { base: '64px', md: '0' },
+      left: { base: '-100%', md: '0' },
+      zIndex: 30,
+      padding: '24px',
+      transition: 'left 0.3s ease-in-out',
+      overflowY: 'auto',
     },
+    variants: {
+      open: {
+        true: { left: '0' },
+      },
+    },
+    defaultVariants: {
+      open: false,
+    },
+  });
+
+  overlay = cva({
+    base: {
+      display: { base: 'none', md: 'none' },
+      position: 'fixed',
+      top: '64px',
+      left: 0,
+      width: '100%',
+      height: '100%',
+      bg: 'rgba(0,0,0,0.4)',
+      zIndex: 20,
+      transition: 'opacity 0.3s ease',
+    },
+    variants: {
+      show: {
+        true: { display: 'block', opacity: 1 },
+        false: { opacity: 0, display: 'none' },
+      },
+    },
+    defaultVariants: { show: false },
   });
 
   list = cva({
@@ -54,17 +91,11 @@ export class Sidebar {
           color: 'primary.700',
           borderLeft: '4px solid var(--colors-primary-700)',
         },
-        false: {
-          color: 'neutral.400',
-        },
+        false: { color: 'neutral.400' },
       },
     },
-    defaultVariants: {
-      active: false,
-    },
+    defaultVariants: { active: false },
   });
-
-  activeIndex = 0;
 
   menuItems = [
     { icon: 'home', label: 'Homepage' },

@@ -1,15 +1,12 @@
 <div [ngClass]="layoutClass">
-  <!-- Sidebar -->
-  <app-sidebar></app-sidebar>
+  <app-navbar (toggleSidebar)="toggleSidebar()"></app-navbar>
 
-  <!-- Main content -->
-  <div [ngClass]="contentWrapperClass">
-    <app-navbar></app-navbar>
+  <div [ngClass]="mainWrapperClass">
+    <app-sidebar [isOpen]="sidebarOpen"></app-sidebar>
 
-    <main [ngClass]="mainContentClass">
+    <main [ngClass]="contentAreaClass">
       <router-outlet></router-outlet>
+      <app-footer></app-footer>
     </main>
-
-    <app-footer></app-footer>
   </div>
 </div>
