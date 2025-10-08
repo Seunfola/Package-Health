@@ -13,7 +13,6 @@ import { css } from '../../../styled-system/css';
   templateUrl: './layout.html',
 })
 export class Layout {
-  // Add these two lines to fix the error
   public sidebarOpen: boolean = false;
 
   public toggleSidebar(): void {
