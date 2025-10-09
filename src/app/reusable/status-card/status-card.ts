@@ -12,4 +12,7 @@ export class StatusCard {
   @Input() title: string = '';
   @Input() value: string = '';
   @Input() icon: string = '';
+  @Input() iconContainerBg: string = '';
+  @Input() iconFillColor: string = '';
+  @Input() cardBorderRadius: string = '';
 }
