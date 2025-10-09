@@ -46,10 +46,9 @@
     line-height: 20px;
 }
 
-.footer-nav-column:hover {
+.footer-nav-column a:hover {
     color: #3b9191;
 }
-
 @media (max-width: 768px) {
     .footer-root {
         flex-direction: column;
