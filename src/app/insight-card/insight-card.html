@@ -1,0 +1,16 @@
+<div class="insight-card">
+    <div class="header">
+        <div class="title-row">
+            <h3 class="title">{{ insight.title }}</h3>
+            <div class="icon-container">
+                <img [src]="insight.icon" [alt]="insight.title" class="icon" />
+            </div>
+        </div>
+        <div class="value">{{ insight.value }}</div>
+        <p class="description">{{ insight.description }}</p>
+
+    </div>
+    <button class="view-details">
+        View Details
+    </button>
+</div>

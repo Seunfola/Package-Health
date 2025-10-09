@@ -133,8 +133,7 @@
     .navbar__actions {
         display: flex;
         gap: 10px;
-        /* Reduced gap for mobile */
-        /* Pushes this group (Search + Avatar) to the far right, next to the menu-toggle */
+ 
         margin-left: auto;
     }
 
