@@ -1716,7 +1716,7 @@ const tokens = {
     "variable": "var(--colors-neutral-950)"
   },
   "colors.sidebar.bg": {
-    "value": "#1c1c1c",
+    "value": "#00000000",
     "variable": "var(--colors-sidebar-bg)"
   },
   "colors.sidebar.hover": {

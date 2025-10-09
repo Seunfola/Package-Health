@@ -8,5 +8,5 @@ import { Component, Input } from '@angular/core';
   styleUrl: './package-health-card.css',
 })
 export class PackageHealthCard {
-  @Input() feature!: { title: string; description: string; icon: string };
+  @Input({ required: true }) feature!: { title: string; description: string; icon: string };
 }
