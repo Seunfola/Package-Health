@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Updates } from './updates';
-import { PackageHealthCard } from '../../package-health-card/package-health-card';
+import { PackageHealthCard } from '../../reusable/package-health-card/package-health-card';
 
 
 @NgModule({

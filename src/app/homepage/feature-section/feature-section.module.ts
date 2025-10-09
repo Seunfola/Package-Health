@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { InsightCard } from '../../insight-card/insight-card';
 import { FeatureSection } from './feature-section';
+import { InsightCard } from '../../reusable/insight-card/insight-card';
 
 @NgModule({
   declarations: [],
