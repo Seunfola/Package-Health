@@ -1,3 +1,11 @@
+.insights-container {
+    padding: 24px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-x: hidden;
+}
+
 h2 {
     text-align: center;
     padding: 20px;
@@ -12,10 +20,7 @@ h2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
 }
-
 
 @media (max-width: 768px) {
     .insights-grid {

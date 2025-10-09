@@ -1,1 +1,15 @@
-<p>repo-health works!</p>
+<div class="repo-health-container">
+    <div class="header-section">
+        <h1>Repository Health Dashboard</h1>
+        <p>Overview of health metrics for PackageHealth/package-analyzer.</p>
+    </div>
+
+    <div class="metrics-grid">
+        <app-status-card *ngFor="let card of statusCards" [title]="card.title" [value]="card.value"
+            [icon]="card.icon"></app-status-card>
+    </div>
+
+    <div class="performance-trends">
+        <h2>Performance Trends</h2>
+    </div>
+</div>

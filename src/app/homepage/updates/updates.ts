@@ -1,6 +1,6 @@
+import { PackageHealthCard } from '@/app/reusable/package-health-card/package-health-card';
 import { CommonModule } from '@angular/common';
 import { Component, } from '@angular/core';
-import { PackageHealthCard } from '../../reusable/package-health-card/package-health-card';
 
 @Component({
   selector: 'app-updates',
