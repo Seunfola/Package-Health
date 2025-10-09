@@ -19,7 +19,7 @@ export class Sidebar {
       bg: 'sidebar.bg',
       color: 'white',
       height: 'calc(100vh - 64px)',
-      width: { base: '60%', md: '250px' },
+      width: { base: '65%', md: '360px' },
       position: { base: 'fixed', md: 'relative' },
       top: { base: '64px', md: '0' },
       left: { base: '-100%', md: '0' },
@@ -79,19 +79,35 @@ export class Sidebar {
       cursor: 'pointer',
       borderRadius: 'md',
       fontWeight: 500,
-      transition: 'background 0.2s, color 0.2s, border-left 0.2s',
       borderLeft: '4px solid transparent',
-      _hover: { bg: 'sidebar.hover' },
+      transition: 'background 0.2s, color 0.2s, border-left 0.2s',
+      color: '#BDC1CA',
+
+      _hover: {
+        bg: '#003F3F',
+        color: '#00B3B3',
+        borderLeft: '4px solid #00B3B3',
+      },
+
+      _focusVisible: {
+        outline: '2px solid #007A7A',
+        outlineOffset: '2px',
+      },
+
+      _active: {
+        bg: '#005050',
+        color: '#FFFFFF',
+        borderLeft: '4px solid #007A7A',
+      },
     },
     variants: {
       active: {
         true: {
           fontWeight: 700,
-          bg: 'primary.200',
-          color: 'primary.700',
-          borderLeft: '4px solid var(--colors-primary-700)',
+          bg: '#004444',
+          color: '#fff',
+          borderLeft: '4px solid #007A7A',
         },
-        false: { color: 'neutral.400' },
       },
     },
     defaultVariants: { active: false },
