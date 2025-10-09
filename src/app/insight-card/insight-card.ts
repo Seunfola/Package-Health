@@ -14,7 +14,9 @@ export class InsightCard {
     value: string | number;
   };
 
+  @Output() viewDetails = new EventEmitter<string>();
+
   onViewDetails() {
-    console.log('View details clicked:', this.insight.title);
+    this.viewDetails.emit(this.insight.title);
   }
 }
