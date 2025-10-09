@@ -8,4 +8,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class Navbar {
   @Output() toggleSidebar = new EventEmitter<void>();
+  showSearch = false;
+
+  toggleSearch() {
+    this.showSearch = !this.showSearch;
+  }
 }

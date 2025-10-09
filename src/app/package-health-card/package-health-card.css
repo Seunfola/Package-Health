@@ -1,0 +1,40 @@
+.card {
+    width: 300px;
+    height: 328px;
+    background: #1e2128;
+    border-radius: 10px;
+    box-shadow: 0px 0px 1px #171a1f12, 0px 0px 2px #171a1f1F;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.icon {
+    width: 48px;
+    height: 48px;
+    background-color: #001F1FFF;
+    color:#007a7aff;
+    border-radius: 50%;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+h3 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #f3f4f6ff;
+    line-height: 28px;
+    width: 200px;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 16px;
+    line-height: 24px;
+    color: #bdc1caff;
+    font-weight: 400;
+    margin: 0;
+    width: 220px;
+}

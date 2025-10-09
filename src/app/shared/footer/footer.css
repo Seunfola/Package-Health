@@ -117,12 +117,9 @@
 
     .footer-root {
         min-height: 265px;
-.footer-container {
-        padding: 2.5rem 1.5rem;
-}
 
-.footer-grid {
-    /* existing grid styles */
+    .footer-container {
+        padding: 2.5rem 1.5rem;
 }
 
 padding: 2.5rem 1.5rem;
