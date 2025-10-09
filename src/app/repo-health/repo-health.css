@@ -1,0 +1,56 @@
+/* Base styles for desktop and larger screens */
+.repo-health-container {
+    padding: 24px;
+    background-color: #0d0d0d;
+    color: #fff;
+}
+
+.header-section {
+    margin-bottom: 24px;
+}
+
+.header-section h1 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.header-section p {
+    font-size: 16px;
+    color: #bdc1ca;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.performance-trends h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+    .repo-health-container {
+        padding: 16px;
+    }
+
+    .header-section h1 {
+        font-size: 24px;
+    }
+
+    .header-section p {
+        font-size: 14px;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .performance-trends h2 {
+        font-size: 20px;
+    }
+}

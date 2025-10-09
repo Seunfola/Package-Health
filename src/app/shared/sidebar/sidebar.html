@@ -1,15 +1,19 @@
-<div [class]="overlay({ show: isOpen })" (click)="isOpen = false"></div>
+<div class="overlay" [class.show]="isOpen" (click)="isOpen = false"></div>
 
-<aside [class]="sidebar({ open: isOpen })">
-  <ul [class]="list()">
+<aside class="sidebar" [class.open]="isOpen">
+  <ul class="list">
     @for (item of menuItems; track $index) {
-    <li [class]="listItem({ active: activeIndex === $index })" (click)="setActive($index)" role="button" tabindex="0"
-      [attr.aria-pressed]="activeIndex === $index" (keydown.enter)="setActive($index)">
-      <img [src]="'assets/icons/' + item.icon + '.svg'" [attr.alt]="item.label" [attr.title]="item.label" width="24"
-        height="24" />
-      <span class="text-neutral-200 font-medium">{{ item.label }}</span>
+    <li class="list-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{ exact: true }" role="button"
+      tabindex="0" (click)="setActive($index)">
+      <a [routerLink]="item.path">
+        <img [src]="'assets/icons/' + item.icon + '.svg'" [attr.alt]="item.label" [attr.title]="item.label" width="24"
+          height="24" />
+        <span>{{ item.label }}</span>
+      </a>
     </li>
-    <div class="w-full h-px bg-neutral-700 my-3"></div>
+    @if (item.separator) {
+    <div class="separator"></div>
+    }
     }
   </ul>
 </aside>
