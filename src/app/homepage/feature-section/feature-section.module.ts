@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FeatureSection } from './feature-section';
-import { InsightCard } from '../../reusable/insight-card/insight-card';
+import { InsightCard } from '@/app/reusable/insight-card/insight-card';
 
 @NgModule({
   declarations: [],

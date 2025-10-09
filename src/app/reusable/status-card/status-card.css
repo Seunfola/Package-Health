@@ -1,0 +1,36 @@
+.status-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #212121;
+    padding: 16px;
+    border-radius: 8px;
+    color: white;
+    min-height: 120px;
+    min-width: 150px;
+    transition: all 0.2s ease-in-out;
+}
+
+.status-card .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-card p {
+    font-size: 14px;
+    color: #bdc1ca;
+    font-weight: 500;
+    margin: 0;
+}
+
+.status-card h2 {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.status-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

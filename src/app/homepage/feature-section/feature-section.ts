@@ -1,6 +1,6 @@
+import { InsightCard } from '@/app/reusable/insight-card/insight-card';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { InsightCard } from '../../reusable/insight-card/insight-card';
 
 @Component({
   selector: 'app-feature-section',
