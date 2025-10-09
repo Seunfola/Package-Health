@@ -1,7 +1,7 @@
-/* Container to hold and center the entire component */
 .insights-container {
     padding: 24px;
     width: 90%;
+    max-width: 1200px;
     margin: 0 auto;
     overflow-x: hidden;
 }
