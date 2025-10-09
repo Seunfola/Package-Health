@@ -63,11 +63,11 @@
 
 .view-details {
     background-color: #007A7AFF;
-    border: none;
     opacity: 1;
     border-radius: 6px;
     border-width: 1px;
     border-color: #323743FF;
+    border-style: solid;
     padding: 8px 12px;
     font-size: 14px;
     font-weight: 500;
@@ -76,17 +76,12 @@
     justify-content: center;
     align-items: center;
     line-height: 22px;
-    border-style: solid;
     gap: 16px;
 }
+
 .view-details:hover {
     color: #FFFFFFFF;
-    background: #007A7AFF;
-}
-
-.view-details:hover:active {
-    color: #FFFFFFFF;
-    background: #007A7AFF;
+    background: #006666FF;
 }
 
 .view-details:disabled {

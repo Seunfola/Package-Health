@@ -11,8 +11,8 @@ export class Footer {
   currentYear: number = new Date().getFullYear();
 
   footerLinks = [
-    { title: 'Company', links: ['About Us', 'Careers', 'Blog'] },
-    { title: 'Product', links: ['Features', 'Pricing', 'API'] },
-    { title: 'Resources', links: ['Documentation', 'Support', 'Legal'] },
+    { title: 'Company' },
+    { title: 'Product'},
+    { title: 'Resources' },
   ];
 }
