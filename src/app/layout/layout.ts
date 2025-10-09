@@ -13,7 +13,7 @@ import { css } from '../../../styled-system/css';
   templateUrl: './layout.html',
 })
 export class Layout {
-  public sidebarOpen: boolean = false;
+  public sidebarOpen: boolean = true;
 
   public toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
