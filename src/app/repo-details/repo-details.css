@@ -8,7 +8,6 @@
     font-size: 30px;
     font-weight: 700;
     color: #f3f4f6;
-    text-align: left;
     margin-bottom: 24px;
 }
 
@@ -16,25 +15,77 @@
     color: #3b9191;
 }
 
-.repo-details-container {
+/* ✅ Repo Details (block-level) */
+app-repo-details-dash {
+    display: block;
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+/* ✅ Chart wrapper (flex container) */
+.chart-wrapper-container {
     display: flex;
     flex-wrap: wrap;
     gap: 24px;
-    align-items: flex-start;
+    justify-content: space-between;
+    align-items: stretch;
+    width: 100%;
 }
 
+/* Each chart element inside flex */
+.chart-wrapper-container app-chart-card,
+.chart-wrapper-container app-other-chart {
+    flex: 1 1 48%;
+    min-width: 320px;
+    box-sizing: border-box;
+}
+
+/* ✅ Tablet breakpoint */
+@media (max-width: 992px) {
+    .container {
+        padding: 20px;
+    }
+
+    .page-title {
+        font-size: 26px;
+    }
+
+    .chart-wrapper-container {
+        gap: 20px;
+    }
+}
+
+/* ✅ Mobile breakpoint */
 @media (max-width: 768px) {
     .container {
         padding: 16px;
     }
 
     .page-title {
-        font-size: 24px;
+        font-size: 22px;
         text-align: center;
     }
 
-    .repo-details-container {
+    /* Stack charts on mobile */
+    .chart-wrapper-container {
         flex-direction: column;
+        align-items: center;
         gap: 16px;
+    }
+
+    .chart-wrapper-container app-chart-card,
+    .chart-wrapper-container app-other-chart {
+        width: 100%;
+        max-width: 500px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+    }
+
+    .page-title {
+        font-size: 20px;
     }
 }

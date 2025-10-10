@@ -18,21 +18,31 @@
     text-align: left;
 }
 
+/* === Metrics Layout === */
 .metrics-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 24px;
     width: 100%;
+    box-sizing: border-box;
 }
 
+/* Desktop: 4 per row */
 .metric-item {
     flex: 1 1 calc(25% - 24px);
-    min-width: 220px;
+    min-width: 0;
+    /* prevent overflow causing wrapping */
     display: flex;
     flex-direction: column;
-    gap: 6px;
     align-items: flex-start;
+    gap: 8px;
+    transition: transform 0.2s ease, background 0.3s ease;
+    box-sizing: border-box;
+}
+
+.metric-item:hover {
+    transform: translateY(-3px);
 }
 
 .icon-value-wrapper {
@@ -47,6 +57,7 @@
     fill: currentColor;
 }
 
+/* === Icon Colors === */
 .star-icon {
     filter: invert(69%) sepia(91%) saturate(2251%) hue-rotate(352deg) brightness(101%) contrast(92%);
 }
@@ -75,42 +86,65 @@
     margin-left: 34px;
 }
 
+/* === Tablet (≤992px): 2 per row === */
 @media (max-width: 992px) {
     .metric-item {
-        flex: 1 1 calc(50% - 24px);
+        flex: 1 1 calc(50% - 16px);
         align-items: center;
     }
 
     .metric-label {
         margin-left: 0;
     }
+
+    .repo-name {
+        text-align: center;
+        font-size: 22px;
+    }
 }
 
+/* === Mobile (≤600px): 2x2 Grid === */
 @media (max-width: 600px) {
     .repo-overview-card {
         padding: 20px;
+        overflow: hidden;
+        /* ensure no overflow */
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, auto);
+        gap: 16px;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    .metric-item {
+        flex: none;
+        width: 100%;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .metric-value {
+        font-size: 20px;
+        word-break: break-word;
+    }
+
+    .metric-label {
+        font-size: 13px;
+        margin-left: 0;
     }
 
     .repo-name {
         font-size: 20px;
         text-align: center;
-    }
-
-    .metrics-grid {
-        justify-content: center;
-        gap: 16px;
-    }
-
-    .metric-item {
-        flex: 1 1 100%;
-        align-items: center;
-    }
-
-    .metric-value {
-        font-size: 20px;
-    }
-
-    .metric-label {
-        font-size: 13px;
+        margin-bottom: 20px;
     }
 }
