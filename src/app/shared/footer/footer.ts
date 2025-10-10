@@ -12,7 +12,7 @@ export class Footer {
 
   footerLinks = [
     { title: 'Company' },
-    { title: 'Product'},
-    { title: 'Resources' },
+    // { title: 'Product'},
+    // { title: 'Resources' },
   ];
 }
