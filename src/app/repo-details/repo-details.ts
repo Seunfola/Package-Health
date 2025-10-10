@@ -3,6 +3,7 @@ import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
 import { CommonModule } from '@angular/common';
 import { ChartCard } from './git-graph/chart-card/chart-card';
 import { ContributionGraph } from './git-graph/git-graph';
+import { ChartConfiguration } from 'chart.js';
 
 
 @Component({
@@ -72,4 +73,54 @@ export class RepoDetails implements OnInit {
     }
     return data;
   }
+
+  public commitData: ChartConfiguration['data'] = {
+    datasets: [
+      {
+        data: [130, 95, 80, 195, 210, 130, 150, 260, 195, 220, 160, 195],
+        label: 'Commits',
+        borderColor: '#00B3B3',
+        backgroundColor: 'rgba(0,179,179,0.2)',
+        pointBackgroundColor: '#00B3B3',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#00B3B3',
+        fill: 'origin',
+        tension: 0.4,
+      },
+    ],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  };
+
+  public commitOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: '#343a40',
+        },
+        ticks: {
+          stepSize: 65,
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          boxWidth: 12,
+          padding: 20,
+          color: '#fff',
+        },
+      },
+    },
+  };
 }
