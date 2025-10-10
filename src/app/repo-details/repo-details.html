@@ -13,7 +13,10 @@
             <app-git-graph [data]="contributionData"></app-git-graph>
         </app-chart-card>
 
-        <!-- New element will go here -->
-        <!-- <app-other-chart></app-other-chart> -->
+        <app-chart-card [title]="'Commit Activity'" [subtitle]="'Monthly commit frequency over the last year.'">
+            <app-line-chart [lineChartData]="commitData" [lineChartOptions]="commitOptions"
+                [lineChartType]="lineChartType">
+            </app-line-chart>
+        </app-chart-card>
     </div>
 </div>
