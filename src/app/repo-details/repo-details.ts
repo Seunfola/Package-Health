@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { ChartCard } from './git-graph/chart-card/chart-card';
 import { ContributionGraph } from './git-graph/git-graph';
 import { ChartConfiguration } from 'chart.js';
+import { LineChart } from './line-chart/line-chart';
 
 
 @Component({
   selector: 'app-repo-details',
   standalone: true,
-  imports: [RepoDetailsDash, CommonModule, ChartCard, ContributionGraph],
+  imports: [RepoDetailsDash, CommonModule, ChartCard, ContributionGraph, LineChart],
   templateUrl: './repo-details.html',
   styleUrl: './repo-details.css',
 })
