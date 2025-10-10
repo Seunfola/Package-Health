@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
 import { CommonModule } from '@angular/common';
-import { ChartCard } from './git-graph/chart-card/chart-card';
+
+import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import { ContributionGraph } from './git-graph/git-graph';
-import { ChartConfiguration } from 'chart.js';
+import { ChartCard } from './git-graph/chart-card/chart-card';
 import { LineChart } from './line-chart/line-chart';
 
 
@@ -56,6 +57,51 @@ export class RepoDetails implements OnInit {
     ],
   };
 
+  public commitData: ChartConfiguration<'line'>['data'] = {
+    datasets: [
+      {
+        data: [120, 140, 75, 200, 130, 250, 190, 220, 150, 200],
+        label: 'Commits',
+        borderColor: '#16A34A',
+        // backgroundColor: 'rgba(22, 163, 74, 0.2)',
+        // pointBackgroundColor: '#16A34A',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#16A34A',
+        fill: 'origin',
+        tension: 0.4,
+      },
+    ],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',],
+  };
+
+  public commitOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    elements: {
+      line: { borderWidth: 2 },
+      point: { radius: 4, hoverRadius: 6 },
+    },
+    scales: {
+      x: {
+        ticks: { color: '#374151' },
+      },
+      y: {
+        beginAtZero: true,
+        grid: { color: '#E5E7EB' },
+      },
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { boxWidth: 10, padding: 20, color: '#fff' },
+      },
+    },
+  };
+
+  public lineChartType: ChartType = 'line';
+
   ngOnInit() {
     this.contributionData = this.generateYearlyData();
   }
@@ -74,54 +120,4 @@ export class RepoDetails implements OnInit {
     }
     return data;
   }
-
-  public commitData: ChartConfiguration['data'] = {
-    datasets: [
-      {
-        data: [130, 95, 80, 195, 210, 130, 150, 260, 195, 220, 160, 195],
-        label: 'Commits',
-        borderColor: '#00B3B3',
-        backgroundColor: 'rgba(0,179,179,0.2)',
-        pointBackgroundColor: '#00B3B3',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: '#00B3B3',
-        fill: 'origin',
-        tension: 0.4,
-      },
-    ],
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  };
-
-  public commitOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        beginAtZero: true,
-        grid: {
-          color: '#343a40',
-        },
-        ticks: {
-          stepSize: 65,
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        display: true,
-        position: 'bottom',
-        labels: {
-          boxWidth: 12,
-          padding: 20,
-          color: '#fff',
-        },
-      },
-    },
-  };
 }
