@@ -1,0 +1,24 @@
+.chart-card {
+    background-color: #212121;
+    border-radius: 8px;
+    color: white;
+    padding: 24px;
+    height: 350px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card-header h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 4px 0;
+}
+
+.card-header p {
+    font-size: 14px;
+    color: #bdc1ca;
+    margin: 0;
+}
+
+.card-content {
+    margin-top: 24px;
+}
