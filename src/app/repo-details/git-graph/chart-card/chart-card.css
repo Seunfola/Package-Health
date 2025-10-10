@@ -1,0 +1,106 @@
+.chart-card {
+    background-color: #212121;
+    border-radius: 10px;
+    color: #ffffff;
+    padding: 28px;
+    height: auto;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    overflow: hidden;
+    /* keeps card shape clean */
+}
+
+/* Hover animation */
+.chart-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+.card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #f3f4f6;
+}
+
+.card-header p {
+    font-size: 14px;
+    color: #bdc1ca;
+    margin: 0;
+}
+
+/* ✅ Scrollable chart section */
+.card-content {
+    flex-grow: 1;
+    margin-top: 24px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    /* spacing for scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #3b9191 #2c2c2c;
+}
+
+/* Optional: scrollbar styling for Chrome/Safari */
+.card-content::-webkit-scrollbar {
+    height: 6px;
+}
+
+.card-content::-webkit-scrollbar-thumb {
+    background: #3b9191;
+    border-radius: 4px;
+}
+
+.card-content::-webkit-scrollbar-track {
+    background: #2c2c2c;
+}
+
+/* Tablet (≤992px) */
+@media (max-width: 992px) {
+    .chart-card {
+        padding: 20px;
+    }
+
+    .card-header h3 {
+        font-size: 18px;
+    }
+
+    .card-header p {
+        font-size: 13px;
+    }
+
+    .card-content {
+        margin-top: 20px;
+    }
+}
+
+/* Mobile (≤600px) */
+@media (max-width: 600px) {
+    .chart-card {
+        width: 100%;
+        padding: 16px;
+        border-radius: 8px;
+    }
+
+    .card-header {
+        text-align: center;
+    }
+
+    .card-header h3 {
+        font-size: 16px;
+    }
+
+    .card-header p {
+        font-size: 12px;
+    }
+
+    .card-content {
+        margin-top: 12px;
+        overflow-x: auto;
+    }
+}
