@@ -5,7 +5,6 @@
     background-color: #212121;
     padding: 16px;
     border-radius: 8px;
-    /* Correct border-radius for the main card */
     color: white;
     min-height: 120px;
     min-width: 150px;
@@ -34,7 +33,6 @@
 .icon-container {
     padding: 8px;
     border-radius: 6px;
-    /* Correct border-radius for the icon container */
     display: flex;
     justify-content: center;
     align-items: center;
