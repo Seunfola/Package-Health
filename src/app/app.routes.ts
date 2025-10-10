@@ -3,6 +3,7 @@ import { Layout } from './layout/layout';
 import { Homepage } from './homepage/homepage';
 import { AboutUs } from './about-us/about-us';
 import { RepoHealth } from './repo-health/repo-health';
+import { RepoDetails } from './repo-details/repo-details';
 
 
 export const routes: Routes = [
@@ -14,7 +15,7 @@ export const routes: Routes = [
       { path: 'home', component: Homepage },
       { path: 'about', component: AboutUs },
       { path: 'repo-health', component: RepoHealth },
-      // { path: 'repository-details', component: RepoDetailsComponent },
+      { path: 'repository-details', component: RepoDetails },
     ],
   },
 ];

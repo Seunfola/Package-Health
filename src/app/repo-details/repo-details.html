@@ -1,0 +1,15 @@
+<div class="container">
+    <h2 class="page-title">Repository Details:
+        <span>{{ repoTitle }}</span>
+    </h2>
+
+    <div class="repo-details-container">
+        <app-repo-details-dash [repoName]="repoTitle" [stars]="12450" [forks]="3200" [lastCommit]="'2 days ago'"
+            [openChecks]="157">
+        </app-repo-details-dash>
+
+        <app-chart-card [title]="'Contribution Graph'" [subtitle]="'Daily contributions over the past year.'">
+            <app-git-graph [data]="contributionData"></app-git-graph>
+        </app-chart-card>
+    </div>
+</div>
