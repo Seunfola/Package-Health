@@ -25,6 +25,7 @@ app-navbar {
     align-items: stretch;
     background-color: #f5f5f5;
     overflow: hidden;
+    width: 100%;
 }
 
 app-sidebar {
@@ -46,7 +47,6 @@ app-sidebar[isOpen="false"] {
     display: flex;
     flex-direction: column;
     background-color: #fff;
-    padding: 1.5rem;
     overflow: auto;
 }
 
