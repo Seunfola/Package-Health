@@ -18,7 +18,6 @@
     text-align: left;
 }
 
-/* === Metrics Layout === */
 .metrics-grid {
     display: flex;
     flex-wrap: wrap;
@@ -28,11 +27,9 @@
     box-sizing: border-box;
 }
 
-/* Desktop: 4 per row */
 .metric-item {
     flex: 1 1 calc(25% - 24px);
     min-width: 0;
-    /* prevent overflow causing wrapping */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
