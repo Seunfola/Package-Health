@@ -64,7 +64,7 @@ export class RepoDetails implements OnInit {
         label: 'Commits',
         borderColor: '#16A34A',
         // backgroundColor: 'rgba(22, 163, 74, 0.2)',
-        // pointBackgroundColor: '#16A34A',
+        pointBackgroundColor: '#16A34A',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: '#16A34A',
@@ -72,7 +72,7 @@ export class RepoDetails implements OnInit {
         tension: 0.4,
       },
     ],
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
   };
 
   public commitOptions: ChartOptions<'line'> = {

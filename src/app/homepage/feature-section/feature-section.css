@@ -1,36 +1,26 @@
-.insights-container {
-    padding: 24px;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    overflow-x: hidden;
-}
-
 h2 {
-    text-align: center;
-    padding: 20px;
-    margin-bottom: 20px;
-    font-size: clamp(22px, 4vw, 36px);
-    line-height: 1.2;
-    font-weight: 700;
-    color: #f3f4f6;
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 20px;
+  font-size: clamp(22px, 4vw, 36px);
+  line-height: 1.2;
+  font-weight: 700;
+  color: #f3f4f6;
 }
 
 .insights-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
-    .insights-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-}
-
-@media (min-width: 769px) {
-    .insights-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .insights-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }

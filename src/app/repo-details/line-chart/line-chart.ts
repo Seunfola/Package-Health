@@ -1,7 +1,7 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, Inject, Input, PLATFORM_ID, OnInit } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, OnInit, Input } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
+import { Chart, registerables, ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 
 @Component({
   selector: 'app-line-chart',
@@ -14,12 +14,15 @@ export class LineChart implements OnInit {
   @Input() lineChartData: ChartConfiguration['data'] = { datasets: [], labels: [] };
   @Input() lineChartOptions: ChartOptions = {};
   @Input() lineChartType: ChartType = 'line';
-
   isBrowser = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit(): void {
     this.isBrowser = isPlatformBrowser(this.platformId);
+
+    if (this.isBrowser) {
+      Chart.register(...registerables);
+    }
   }
 }
