@@ -1,0 +1,32 @@
+# Node modules
+node_modules
+npm-debug.log
+yarn-error.log
+
+
+# Environment files
+.env
+.env.*
+
+# Build output (we rebuild inside Docker)
+dist
+coverage
+
+# IDE/editor files
+.vscode
+.idea
+.DS_Store
+
+# OS and temporary files
+*.swp
+*.swo
+*.tmp
+*.log
+
+# Git files
+.git
+.gitignore
+
+# Docker itself
+Dockerfile
+docker-compose.yml

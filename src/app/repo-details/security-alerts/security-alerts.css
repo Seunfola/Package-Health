@@ -1,0 +1,24 @@
+.security-alerts-container {
+  background-color: #212121;
+  border-radius: 8px;
+  padding: 24px;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.alert-header h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+}
+
+.alert-header p {
+  font-size: 14px;
+  color: #bdc1ca;
+  margin: 0 0 16px 0;
+}
+
+.alert-list {
+  border-top: 1px solid #343a40;
+}
+
