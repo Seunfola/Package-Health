@@ -1,27 +1,25 @@
 <div class="hero-container">
-  <div class="hero-text">
-    <h1>Unlock Your GitHub Repository's True Potential</h1>
-    <p>
-      PackageHealth provides deep insights into code health, dependencies, and
-      performance, helping developers build better software faster.
-    </p>
-  </div>
+  <video autoplay muted loop class="hero-bg">
+    <source src="assets/images/anim.mp4" type="video/mp4" autoplay/>
+    Your browser does not support the video tag.
+  </video>
 
-  <div class="hero-actions">
-    <div class="input-wrapper">
-      <img
-        src="assets/icons/search.svg"
-        alt="Search"
-        class="search-icon"
-        width="20"
-        height="20"
-      />
-      <input
-        type="text"
-        placeholder="Enter GitHub repository (e.g., owner/repo)"
-      />
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1>Unlock Your GitHub Repository's True Potential</h1>
+      <p>
+        PackageHealth provides deep insights into code health, dependencies, and
+        performance, helping developers build better software faster.
+      </p>
     </div>
-    <button>Analyze Repository</button>
+
+    <div class="hero-actions">
+      <div class="input-wrapper">
+        <img src="assets/icons/search.svg" alt="Search" class="search-icon" width="20" height="20" />
+        <input type="text" placeholder="Enter GitHub repository (e.g., owner/repo)" [(ngModel)]="repository" />
+      </div>
+      <button (click)="analyzeRepository()">Analyze</button>
+    </div>
+
   </div>
 </div>
-
