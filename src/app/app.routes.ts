@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
 import { Homepage } from './homepage/homepage';
-import { AboutUs } from './about-us/about-us';
 import { RepoHealth } from './repo-health/repo-health';
 import { RepoDetails } from './repo-details/repo-details';
 import { DashboardSettings } from './dashboard-settings/dashboard-settings';
+import { Notification } from './notification/notification';
 
 
 export const routes: Routes = [
@@ -14,10 +14,10 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: Homepage },
-      { path: 'about', component: AboutUs },
       { path: 'repo-health', component: RepoHealth },
       { path: 'repository-details', component: RepoDetails },
       { path: 'dashboard-settings', component: DashboardSettings },
+      { path: 'notifications', component: Notification },
     ],
   },
 ];

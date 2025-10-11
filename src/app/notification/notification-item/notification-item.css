@@ -1,0 +1,133 @@
+.notification-item {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 0 16px;
+  margin-bottom: 12px;
+  color: #e0e0e0;
+  overflow: hidden;
+}
+
+.banner-container {
+  width: 100%;
+  max-width: 400px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  margin: 20px auto;
+
+}
+
+.type-banner {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.security-vulnerability .banner-container {
+  background-color: #f44336;
+}
+.dependency-update .banner-container {
+  background-color: #ff9800;
+}
+.new-issue .banner-container {
+  background-color: #2196f3;
+}
+.pull-request .banner-container {
+  background-color: #4caf50;
+}
+.system-alert .banner-container {
+  background-color: #8c7ae6;
+}
+
+.main-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 0;
+}
+
+.left-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.icon-container {
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+}
+
+.security-vulnerability .icon-container {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.text-content {
+  flex-grow: 1;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.repository {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.repo-name {
+  color: #e0e0e0;
+}
+
+.right-section .action-icon {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #fff;
+  margin: 0;
+}
+
+.footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.view-details, .dismiss {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.dismiss {
+  color: #f44336;
+}

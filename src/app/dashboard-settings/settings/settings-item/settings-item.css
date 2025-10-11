@@ -1,4 +1,3 @@
-/* Styling for each individual settings row */
 .settings-item {
   display: flex;
   justify-content: space-between;
@@ -9,10 +8,8 @@
 
 .settings-item:first-of-type {
   border-top: none;
-  /* Removes the top border from the first item in each section */
 }
 
-/* Text styles for title and subtitle */
 .settings-text {
   flex-grow: 1;
   margin-right: 16px;
@@ -30,9 +27,6 @@
   color: #aaa;
 }
 
-/* --- Toggle Switch Styles --- */
-
-/* The switch - the box around the slider */
 .switch {
   position: relative;
   display: inline-block;
@@ -40,14 +34,12 @@
   height: 24px;
 }
 
-/* Hide the default checkbox input */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* The slider - the track of the switch */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -60,7 +52,6 @@
   border-radius: 24px;
 }
 
-/* The thumb or handle of the switch */
 .slider:before {
   position: absolute;
   content: "";
@@ -73,12 +64,10 @@
   border-radius: 50%;
 }
 
-/* Change the slider background color when the input is checked */
 input:checked+.slider {
   background-color: #008cba;
 }
 
-/* Move the thumb to the right when the input is checked */
 input:checked+.slider:before {
   transform: translateX(24px);
 }
