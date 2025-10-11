@@ -1,0 +1,27 @@
+<div class="notification-item" [ngClass]="typeClass">
+  <div class="banner-container">
+    <div class="type-banner">{{ type }}</div>
+  </div>
+  <div class="main-content">
+    <div class="left-section">
+      <div class="icon-container" [ngClass]="typeClass">
+        <app-icon [iconType]="iconType" [title]="title"></app-icon>
+      </div>
+      <div class="text-content">
+        <h4 class="title">{{ title }}</h4>
+        <p class="repository">Repository: <span class="repo-name">{{ repository }}</span></p>
+      </div>
+    </div>
+    <div class="right-section">
+      <img src="assets/icons/package.svg" alt="package icon" class="action-icon" />
+    </div>
+  </div>
+  <hr class="divider" />
+  <div class="footer-actions">
+    <p class="time">{{ formattedTime }}</p>
+    <div class="buttons">
+      <button class="view-details">View Details</button>
+      <button class="dismiss">Dismiss</button>
+    </div>
+  </div>
+</div>
