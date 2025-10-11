@@ -5,6 +5,7 @@ import { RepoHealth } from './repo-health/repo-health';
 import { RepoDetails } from './repo-details/repo-details';
 import { DashboardSettings } from './dashboard-settings/dashboard-settings';
 import { Notification } from './notification/notification';
+import { UserProfile } from './user-profile/user-profile';
 
 
 export const routes: Routes = [
@@ -18,6 +19,7 @@ export const routes: Routes = [
       { path: 'repository-details', component: RepoDetails },
       { path: 'dashboard-settings', component: DashboardSettings },
       { path: 'notifications', component: Notification },
+      { path: 'user-profile', component: UserProfile },
     ],
   },
 ];
