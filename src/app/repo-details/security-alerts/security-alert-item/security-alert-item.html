@@ -1,0 +1,14 @@
+<div class="alert-item" [class.open]="status === 'Open'" [class.resolved]="status === 'Resolved'">
+
+  <div class="alert-severity" [class.high]="severity === 'High'" [class.medium]="severity === 'Medium'"
+    [class.low]="severity === 'Low'">
+    {{ severity }}
+  </div>
+
+  <div class="alert-check">{{ check }}</div>
+  <div class="alert-file">{{ file }}</div>
+
+  <div class="alert-status" [class.resolved]="status === 'Resolved'" [class.open]="status === 'Open'">
+    {{ status }}
+  </div>
+</div>
