@@ -28,6 +28,7 @@ app-repo-details-dash {
     justify-content: space-between;
     align-items: stretch;
     width: 100%;
+    margin-bottom: 32px;
 }
 
 .chart-wrapper-container app-chart-card,
@@ -35,6 +36,21 @@ app-repo-details-dash {
     flex: 1 1 48%;
     min-width: 320px;
     box-sizing: border-box;
+}
+.additional-components-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 100%;
+}
+
+.additional-components-wrapper app-code-quality-metrics,
+.additional-components-wrapper app-security-alerts {
+  flex: 1 1 48%;
+  min-width: 320px;
+  box-sizing: border-box;
 }
 
 @media (max-width: 992px) {
@@ -47,6 +63,9 @@ app-repo-details-dash {
     }
 
     .chart-wrapper-container {
+        gap: 20px;
+    }
+    .additional-components-wrapper {
         gap: 20px;
     }
 }
@@ -71,6 +90,17 @@ app-repo-details-dash {
     .chart-wrapper-container app-other-chart {
         width: 100%;
         max-width: 500px;
+    }
+    .additional-components-wrapper {
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+    }
+
+    .additional-components-wrapper app-code-quality-metrics,
+    .additional-components-wrapper app-security-alerts {
+    width: 100%;
+    max-width: 500px;
     }
 }
 

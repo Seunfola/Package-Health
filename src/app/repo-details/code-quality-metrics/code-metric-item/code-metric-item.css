@@ -1,0 +1,38 @@
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.metric-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #343a40;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.metric-title {
+  font-size: 14px;
+  color: #cbd5e0;
+}
+
+.maintainability-icon {
+  filter: invert(44%) sepia(80%) saturate(1682%) hue-rotate(85deg) brightness(101%) contrast(92%);
+  /* Green filter */
+}
+
+.test-coverage-icon {
+  filter: invert(79%) sepia(8%) saturate(3015%) hue-rotate(5deg) brightness(98%) contrast(91%);
+  /* Yellow filter */
+}

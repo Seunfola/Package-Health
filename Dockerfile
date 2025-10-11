@@ -1,20 +1,28 @@
 # Stage 1: Build the Angular app
 FROM node:20-alpine AS build
 
+# Install pnpm globally
+RUN npm install -g pnpm
+
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy dependency files first (for caching)
+COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies (using frozen lockfile for reproducible builds)
+RUN pnpm install --no-frozen-lockfile 
 
-# Copy the rest of the app
+
+# Copy the rest of the app source code
 COPY . .
 
+# (optional) Run panda codegen if panda.config.ts exists
+# RUN pnpm run panda:codegen
+
 # Build the Angular app for production
-RUN npm run build -- --configuration production
+RUN pnpm run build -- --configuration production
+
 # Stage 2: Serve the app with Nginx
 FROM nginx:1.25-alpine
 

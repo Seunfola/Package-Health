@@ -6,12 +6,22 @@ import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import { ContributionGraph } from './git-graph/git-graph';
 import { ChartCard } from './git-graph/chart-card/chart-card';
 import { LineChart } from './line-chart/line-chart';
+import { CodeQualityMetrics } from './code-quality-metrics/code-quality-metrics';
+import { SecurityAlerts } from './security-alerts/security-alerts';
 
 
 @Component({
   selector: 'app-repo-details',
   standalone: true,
-  imports: [RepoDetailsDash, CommonModule, ChartCard, ContributionGraph, LineChart],
+  imports: [
+    RepoDetailsDash,
+    CommonModule,
+    ChartCard,
+    ContributionGraph,
+    LineChart,
+    CodeQualityMetrics,
+    SecurityAlerts,
+  ],
   templateUrl: './repo-details.html',
   styleUrl: './repo-details.css',
 })
