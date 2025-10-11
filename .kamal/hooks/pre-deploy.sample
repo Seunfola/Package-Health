@@ -1,0 +1,124 @@
+#!/usr/bin/env ruby
+
+# A pre-deploy hook that waits for GitHub checks to complete before production deployment.
+
+if ENV["KAMAL_COMMAND"] == "rollback" || ENV["KAMAL_DESTINATION"] != "production"
+  exit 0
+end
+
+require "bundler/inline"
+
+gemfile(true, quiet: true) do
+  source "https://rubygems.org"
+  gem "octokit"
+  gem "faraday-retry"
+end
+
+MAX_ATTEMPTS = 72
+ATTEMPTS_GAP = 10
+
+def exit_with_error(message)
+  $stderr.puts message
+  exit 1
+end
+
+class GithubStatusChecks
+  attr_reader :repo_path, :git_sha, :github_client, :combined_status
+
+  def initialize
+    unless ENV["GITHUB_TOKEN"]
+      exit_with_error "GITHUB_TOKEN environment variable is required"
+    end
+
+    @repo_path = github_repo_from_remote_url
+    @git_sha = `git rev-parse HEAD 2>/dev/null`.strip
+    if @git_sha.empty?
+      exit_with_error "Not in a git repository or git command failed"
+    end
+
+    @github_client = Octokit::Client.new(access_token: ENV["GITHUB_TOKEN"])
+    refresh!
+  end
+
+  def refresh!
+    @combined_status = github_client.combined_status(repo_path, git_sha)
+  end
+
+  def state
+    combined_status[:state]
+  end
+
+  def first_status_url
+    first_status = combined_status[:statuses].first
+    first_status&.dig(:target_url) || combined_status[:url]
+  end
+
+  def complete_count
+    combined_status[:statuses].count { |s| s[:state] != "pending" }
+  end
+
+  def total_count
+    combined_status[:statuses].count
+  end
+
+  def current_status
+    if total_count > 0
+      "Completed #{complete_count}/#{total_count} checks, see #{first_status_url} ..."
+    else
+      "Build not started..."
+    end
+  end
+
+  private
+
+  def github_repo_from_remote_url
+    url = `git config --get remote.origin.url`.strip.delete_suffix(".git")
+
+    repo_path =
+      if url.start_with?("https://github.com/")
+        url.delete_prefix("https://github.com/")
+      elsif url.start_with?("git@github.com:")
+        url.delete_prefix("git@github.com:")
+      else
+        nil
+      end
+
+    unless repo_path && repo_path.match?(%r{\A[\w.-]+/[\w.-]+\z})
+      exit_with_error "Could not extract valid GitHub repository from remote URL: #{url}"
+    end
+
+    repo_path
+  end
+end
+
+$stdout.sync = true
+
+begin
+  puts "Checking build status..."
+
+  attempts = 0
+  checks = GithubStatusChecks.new
+
+  loop do
+    case checks.state
+    when "success"
+      puts "Checks passed, see #{checks.first_status_url}"
+      exit 0
+    when "failure"
+      exit_with_error "Checks failed, see #{checks.first_status_url}"
+    when "pending"
+      attempts += 1
+      if attempts >= MAX_ATTEMPTS
+        exit_with_error "Checks are still pending, gave up after #{(MAX_ATTEMPTS - 1) * ATTEMPTS_GAP} seconds"
+      end
+      puts checks.current_status
+      sleep(ATTEMPTS_GAP)
+    else
+      exit_with_error "Unexpected status: #{checks.state.inspect}"
+    end
+
+    checks.refresh!
+  end
+rescue Octokit::NotFound
+  exit_with_error "Build status could not be found"
+end
