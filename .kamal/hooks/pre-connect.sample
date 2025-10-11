@@ -13,11 +13,18 @@
 # KAMAL_DESTINATION (if set)
 # KAMAL_RUNTIME
 
-hosts = ENV["KAMAL_HOSTS"].split(",")
+hosts = ENV.fetch("KAMAL_HOSTS", "").split(",")
 results = nil
 max = 3
 
+#!/usr/bin/env ruby
+require 'benchmark'
+
+# A sample pre-connect check
+
 elapsed = Benchmark.realtime do
+  # ... existing pre-connect logic ...
+end
   results = hosts.map do |host|
     Thread.new do
       tries = 1
