@@ -1,0 +1,12 @@
+<div class="code-metrics-container">
+  <div class="metrics-header">
+    <h3>Code Quality Metrics</h3>
+    <p>Key indicators for code health.</p>
+  </div>
+  <div class="metrics-grid">
+    <app-code-metric-item [percentage]="maintainability.percentage" [title]="maintainability.title"
+      [iconPath]="maintainability.iconPath"></app-code-metric-item>
+    <app-code-metric-item [percentage]="testCoverage.percentage" [title]="testCoverage.title"
+      [iconPath]="testCoverage.iconPath"></app-code-metric-item>
+  </div>
+</div>

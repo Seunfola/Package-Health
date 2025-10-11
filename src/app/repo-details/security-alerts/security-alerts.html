@@ -1,0 +1,12 @@
+<div class="security-alerts-container">
+  <div class="alert-header">
+    <h3>Security Alerts</h3>
+    <p>Identified vulnerabilities and their status.</p>
+  </div>
+  <div class="alert-list">
+    @for (alert of securityAlerts; track alert.check) {
+    <app-security-alert-item [severity]="alert.severity" [check]="alert.check" [file]="alert.file"
+      [status]="alert.status"></app-security-alert-item>
+    }
+  </div>
+</div>

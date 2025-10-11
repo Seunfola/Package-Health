@@ -1,0 +1,9 @@
+<div class="metric-item">
+  <div class="metric-icon-wrapper">
+    <img [src]="iconPath" alt="Metric Icon" width="24" height="24"
+      [class.maintainability-icon]="title === 'Maintainability'"
+      [class.test-coverage-icon]="title === 'Test Coverage'">
+  </div>
+  <div class="metric-value">{{ percentage }}%</div>
+  <div class="metric-title">{{ title }}</div>
+</div>
