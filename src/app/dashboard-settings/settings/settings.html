@@ -1,0 +1,60 @@
+<div class="settings-container">
+  <app-settings-card title="Dashboard Metrics"
+    subtitle="Select which repository health metrics are visible on your dashboard.">
+    <app-settings-item [title]="'Code Quality Score'"
+      [subtitle]="'Display an overall score reflecting code maintainability and best practices.'"
+      [(enabled)]="codeQualityScore"></app-settings-item>
+
+    <app-settings-item [title]="'Test Coverage'" [subtitle]="'Show the percentage of code covered by automated tests.'"
+      [(enabled)]="testCoverage"></app-settings-item>
+
+    <app-settings-item [title]="'Dependency Vulnerabilities'"
+      [subtitle]="'Highlight known security vulnerabilities in your project\'s dependencies.'"
+      [(enabled)]="dependencyVulnerabilities"></app-settings-item>
+
+    <app-settings-item [title]="'Security Alerts'"
+      [subtitle]="'Display alerts for potential security risks and misconfigurations.'"
+      [(enabled)]="securityAlerts"></app-settings-item>
+  </app-settings-card>
+
+  <app-settings-card title="Notification Preferences" subtitle="Configure how and when you receive alerts and updates.">
+    <app-settings-item [title]="'Email Notifications'"
+      [subtitle]="'Receive important updates and alerts directly to your email inbox.'"
+      [(enabled)]="emailNotifications"></app-settings-item>
+
+    <app-settings-item [title]="'In-App Notifications'"
+      [subtitle]="'Receive notifications within the application interface.'"
+      [(enabled)]="inAppNotifications"></app-settings-item>
+
+    <app-settings-input title="Security Alert Threshold"
+      subtitle="Notify me when the security vulnerability score exceeds this percentage.">
+      <div class="input-container">
+        <span class="prefix">%</span>
+        <input type="text" [(ngModel)]="securityThreshold" class="settings-input-field"
+          aria-label="Security Alert Threshold" />
+      </div>
+    </app-settings-input>
+
+    <app-settings-input title="Dependency Update Frequency"
+      subtitle="Choose how often you want to be notified about dependency updates.">
+      <div class="select-container">
+        <select [(ngModel)]="dependencyUpdateFrequency" class="settings-select"
+          aria-label="Dependency update frequency">
+          @for (freq of frequencies; track freq) {
+          <option [ngValue]="freq">
+            {{ freq }}
+          </option>
+          } @empty {
+          <option disabled>No frequencies available</option>
+          }
+        </select>
+        <span class="dropdown-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
+      </div>
+    </app-settings-input>
+  </app-settings-card>
+</div>

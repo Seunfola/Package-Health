@@ -1,0 +1,15 @@
+<div class="settings-item">
+  <div class="settings-text">
+    <div class="settings-title">{{ title }}</div>
+    <div class="settings-subtitle">{{ subtitle }}</div>
+  </div>
+  <div class="settings-input">
+    <label class="switch" [for]="'toggle-' + title" *ngIf="enabled !== undefined">
+      <input type="checkbox" [id]="'toggle-' + title" [checked]="enabled"
+        (change)="onValueChange($event.target.checked)" [attr.aria-label]="title || 'Toggle setting'"
+        [attr.title]="title || 'Toggle setting'" />
+      <span class="slider"></span>
+    </label>
+    <ng-content></ng-content>
+  </div>
+</div>
