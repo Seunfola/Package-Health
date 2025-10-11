@@ -4,6 +4,7 @@ import { Homepage } from './homepage/homepage';
 import { AboutUs } from './about-us/about-us';
 import { RepoHealth } from './repo-health/repo-health';
 import { RepoDetails } from './repo-details/repo-details';
+import { DashboardSettings } from './dashboard-settings/dashboard-settings';
 
 
 export const routes: Routes = [
@@ -16,6 +17,7 @@ export const routes: Routes = [
       { path: 'about', component: AboutUs },
       { path: 'repo-health', component: RepoHealth },
       { path: 'repository-details', component: RepoDetails },
+      { path: 'dashboard-settings', component: DashboardSettings },
     ],
   },
 ];
