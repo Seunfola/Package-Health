@@ -2,7 +2,7 @@
   "name": "package-health",
   "version": "0.0.0",
   "scripts": {
-    "panda:codegen": "panda codegen",
+     "panda:codegen": "[ -f panda.config.ts ] && panda codegen || echo 'No PandaCSS config, skipping'",
     "prepare": "pnpm run panda:codegen",
     "ng": "ng",
     "start": "ng serve",
