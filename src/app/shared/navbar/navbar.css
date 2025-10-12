@@ -82,6 +82,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* ✨ Here is the change! It inverts the colors to turn the icon white. */
+  filter: invert(1);
 }
 
 .menu-toggle {
@@ -99,6 +101,18 @@
 
 .menu-toggle:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
 }
 
 @media (max-width: 768px) {

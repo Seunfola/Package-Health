@@ -1,11 +1,11 @@
 <header class="navbar">
   <div class="navbar__logo">
-    <img src="assets/icons/logo.svg" alt="logo" />
+    <img ngSrc="assets/icons/logo.svg" alt="logo" width="40" height="40" />
   </div>
 
   <div class="navbar__center">
     <div class="search-input-container">
-      <img src="assets/icons/search.svg" alt="search icon" class="search-icon" />
+      <img ngSrc="assets/icons/search.svg" alt="search icon" class="search-icon" width="20" height="20" />
       <input type="text" class="search-input" placeholder="Search for repositories, packages, or users">
     </div>
   </div>
@@ -13,14 +13,20 @@
   <div class="navbar__actions">
     <div class="mobile-search">
       <div class="search-input-container">
-        <img src="assets/icons/search.svg" alt="search icon" class="search-icon" />
+        <img ngSrc="assets/icons/search.svg" alt="search icon" class="search-icon" width="20" height="20" />
         <input type="text" class="search-input" placeholder="Search..." />
       </div>
     </div>
 
+    @if (isLoggedIn) {
     <div class="avatar">
-      <img src="assets/images/B1.jpg" alt="User Avatar" />
+      <img [ngSrc]="userProfileImage" alt="User Avatar" width="40" height="40" />
     </div>
+    } @else {
+    <div class="avatar" (click)="openLoginModal()">
+      <img ngSrc="assets/icons/user.svg" alt="User Icon" width="40" height="40" />
+    </div>
+    }
   </div>
 
   <button class="menu-toggle" (click)="toggleSidebar.emit()" aria-label="Toggle Navigation Menu">
@@ -32,3 +38,9 @@
     </svg>
   </button>
 </header>
+
+@if (showLoginModal) {
+<div class="modal-overlay" (click)="closeLoginModal()">
+  <app-login-card (click)="$event.stopPropagation()" (close)="closeLoginModal()"></app-login-card>
+</div>
+}
