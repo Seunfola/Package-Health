@@ -1,10 +1,10 @@
-<div [ngClass]="layoutClass">
+<div class="layout">
   <app-navbar (toggleSidebar)="toggleSidebar()"></app-navbar>
 
-  <div [ngClass]="mainWrapperClass">
+  <div class="main-wrapper">
     <app-sidebar [isOpen]="sidebarOpen"></app-sidebar>
 
-    <main [ngClass]="contentAreaClass">
+    <main class="content-area">
       <router-outlet></router-outlet>
     </main>
   </div>
