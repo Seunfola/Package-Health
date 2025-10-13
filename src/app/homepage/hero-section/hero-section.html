@@ -1,25 +1,58 @@
 <div class="hero-container">
-  <video autoplay muted loop class="hero-bg">
-    <source src="assets/images/anim.mp4" type="video/mp4" autoplay/>
-    Your browser does not support the video tag.
-  </video>
+  <div class="hero-bg"></div>
 
   <div class="hero-content">
     <div class="hero-text">
       <h1>Unlock Your GitHub Repository's True Potential</h1>
       <p>
-        PackageHealth provides deep insights into code health, dependencies, and
-        performance, helping developers build better software faster.
+        PackageHealth provides deep insights into code health, dependencies, and performance,
+        helping developers build better software faster.
       </p>
     </div>
 
     <div class="hero-actions">
-      <div class="input-wrapper">
-        <img src="assets/icons/search.svg" alt="Search" class="search-icon" width="20" height="20" />
-        <input type="text" placeholder="Enter GitHub repository (e.g., owner/repo)" [(ngModel)]="repository" />
+      <div class="tab-buttons">
+        <button [ngClass]="{ active: activeTab === 'github' }" (click)="setActiveTab('github')">
+          <img src="assets/icons/git.svg" alt="GitHub" />
+          <span>GitHub URL</span>
+        </button>
+        <button [ngClass]="{ active: activeTab === 'json' }" (click)="setActiveTab('json')">
+          <img src="assets/icons/json.svg" alt="JSON" />
+          <span>Paste JSON</span>
+        </button>
+        <button [ngClass]="{ active: activeTab === 'upload' }" (click)="setActiveTab('upload')">
+          <img src="assets/icons/upload.svg" alt="Upload" />
+          <span>Upload JSON</span>
+        </button>
       </div>
-      <button (click)="analyzeRepository()">Analyze</button>
-    </div>
+      <div class="input-group">
+        @if (activeTab === 'github') {
+        <div class="input-wrapper">
+          <input type="text" placeholder="Enter GitHub repository (e.g., org/repo)" />
+        </div>
+        }
 
+        @if (activeTab === 'json') {
+        <div class="input-wrapper">
+          <textarea rows="4" placeholder="Paste your JSON content here..."></textarea>
+        </div>
+        }
+
+        @if (activeTab === 'upload') {
+        <div class="upload-json-section">
+          <div class="upload-input-wrapper">
+            <img src="assets/icons/upload.svg" alt="Upload Icon" class="upload-input-icon" />
+            <input type="file" id="json-file-upload" (change)="onFileSelected($event)" accept=".json" />
+            <label for="json-file-upload" class="upload-placeholder">
+              Choose a JSON file to analyze…
+            </label>
+          </div>
+          <p class="file-name" *ngIf="selectedFileName">{{ selectedFileName }}</p>
+        </div>
+        }
+      </div>
+
+      <button class="analyze-button">Analyze</button>
+    </div>
   </div>
 </div>
