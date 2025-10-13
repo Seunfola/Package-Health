@@ -10,6 +10,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
   styleUrl: './notification-item.css',
 })
 export class NotificationItem implements OnChanges {
+[x: string]: any;
   @Input() type: string = '';
   @Input() title: string = '';
   @Input() message: string = '';
