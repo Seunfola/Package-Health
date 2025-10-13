@@ -6,7 +6,7 @@
     "prepare": "pnpm run panda:codegen",
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "pnpm run panda:codegen && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:Package-Health": "node dist/Package-Health/server/server.mjs"

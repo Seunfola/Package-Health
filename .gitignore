@@ -48,8 +48,4 @@ styled-system
 styled-system-studio
 
 # .eslintignore
-panda.config.ts
-
-# .angularignore
-../panda-config/
-.angular
+# panda.config.ts
