@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoaderService } from '../loader';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-app-loader',
@@ -9,12 +10,19 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app-loader.html',
   styleUrl: './app-loader.css',
 })
-export class AppLoader implements OnInit {
+export class AppLoader implements OnInit, OnDestroy {
   progress = 0;
+  private subscription?: Subscription;
 
-  constructor(private Loader: LoaderService) {}
+  constructor(private loader: LoaderService) {}
 
   ngOnInit() {
-    this.Loader.progress$.subscribe((value) => (this.progress = value));
+    this.subscription = this.loader.progress$.subscribe((value) => {
+      this.progress = value;
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
   }
 }
