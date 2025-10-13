@@ -5,8 +5,11 @@
     </div>
 
     <div class="metrics-grid">
-        <app-status-card *ngFor="let card of statusCards" [title]="card.title" [value]="card.value"
-            [icon]="card.icon"></app-status-card>
+        @for (card of statusCards; track card.title) {
+        <app-status-card [title]="card.title" [value]="card.value" [icon]="card.icon" [iconContainerBg]="card.iconContainerBg"
+          [iconFillColor]="card.iconFillColor" [cardBorderRadius]="card.cardBorderRadius"></app-status-card>
+        }
+
     </div>
 
   <div class="performance-trends">

@@ -4,10 +4,17 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withFetch,
+} from '@angular/common/http';
 
 import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideHttpClient } from '@angular/common/http';
+import { ProgressInterceptor } from './loader/progress-interceptor';
+import { LoaderService } from './loader/loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +22,8 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    LoaderService,
+    { provide: HTTP_INTERCEPTORS, useClass: ProgressInterceptor, multi: true },
   ],
 };
