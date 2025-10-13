@@ -64,7 +64,7 @@ importers:
         specifier: ^20.3.0
         version: 20.3.3(@angular/compiler@20.3.3)(typescript@5.9.3)
       '@pandacss/dev':
-        specifier: ^1.4.2
+        specifier: ^1.4.1
         version: 1.4.2(typescript@5.9.3)
       '@pandacss/types':
         specifier: ^1.4.1
