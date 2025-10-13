@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Navbar } from '../shared/navbar/navbar';
 import { Sidebar } from '../shared/sidebar/sidebar';
 import { Footer } from '../shared/footer/footer';
-import { css } from '../../../styled-system/css';
+import { css } from '../../styled-system/css';
 
 @Component({
   selector: 'app-layout',
