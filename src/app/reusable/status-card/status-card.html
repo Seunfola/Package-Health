@@ -1,8 +1,8 @@
 <div class="status-card" [ngStyle]="{ 'border-radius': cardBorderRadius }">
     <div class="header">
         <p>{{ title }}</p>
-        <div class="icon-container" [ngStyle]="{ 'background-color': iconContainerBg }">
-            <img [src]="icon" alt="card-icon" width="24" height="24" [ngStyle]="{ 'filter': iconFillColor }" />
+        <div class="icon-container" [style.background-color]="iconContainerBg">
+          <img [src]="icon" alt="{{ title }} icon" width="24" height="24" [style.filter]="iconFillColor" />
         </div>
     </div>
     <h2>{{ value }}</h2>

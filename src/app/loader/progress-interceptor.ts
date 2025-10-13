@@ -44,13 +44,19 @@ export class ProgressInterceptor implements HttpInterceptor, OnDestroy {
               this.activeRequests--;
               if (this.activeRequests === 0) {
                 this.loader.setProgress(100);
+
                 // Clean up any previous delayed reset
                 this.resetSubscription?.unsubscribe();
+
                 // Use RxJS delay for automatic cleanup
                 this.resetSubscription = of(null)
                   .pipe(
                     delay(800),
-                    tap(() => this.loader.reset()),
+                    tap(() => {
+                      if (this.activeRequests === 0) {
+                        this.loader.reset();
+                      }
+                    }),
                   )
                   .subscribe();
               }
@@ -61,6 +67,7 @@ export class ProgressInterceptor implements HttpInterceptor, OnDestroy {
           // Decrement activeRequests even on failure
           this.activeRequests = Math.max(0, this.activeRequests - 1);
           if (this.activeRequests === 0) {
+            this.resetSubscription?.unsubscribe();
             this.loader.reset();
           }
         },
