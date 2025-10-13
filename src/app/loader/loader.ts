@@ -7,9 +7,13 @@ export class LoaderService {
   progress$ = this._progress.asObservable();
 
   setProgress(value: number) {
-    this._progress.next(value);
+    if (isNaN(value) || !isFinite(value)) {
+      console.warn('Invalid progress value:', value);
+      return;
+    }
+    const clampedValue = Math.max(0, Math.min(100, value));
+    this._progress.next(clampedValue);
   }
-
   reset() {
     this._progress.next(0);
   }
