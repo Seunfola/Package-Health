@@ -2,10 +2,11 @@
   "name": "package-health",
   "version": "0.0.0",
   "scripts": {
-    "prepare": "panda codegen",
+    "panda:codegen": "[ -f panda.config.ts ] && panda codegen || echo 'No PandaCSS config, skipping'",
+    "prepare": "pnpm run panda:codegen",
     "ng": "ng",
     "start": "ng serve",
-    "build": " ng build",
+    "build": "pnpm run panda:codegen && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:Package-Health": "node dist/Package-Health/server/server.mjs"
@@ -44,7 +45,7 @@
     "@angular/build": "^20.3.4",
     "@angular/cli": "^20.3.4",
     "@angular/compiler-cli": "^20.3.0",
-    "@pandacss/dev": "^1.4.2",
+    "@pandacss/dev": "^1.4.1",
     "@pandacss/types": "^1.4.1",
     "@types/d3": "^7.4.3",
     "@types/express": "^5.0.1",
