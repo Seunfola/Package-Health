@@ -1,4 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
 
 @layer reset, base, tokens, recipes, utilities;
-/* @import "./styled-system/styles.css"; */
+@import "./styled-system/styles.css";
