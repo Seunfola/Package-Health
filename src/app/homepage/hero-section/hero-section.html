@@ -12,15 +12,15 @@
 
     <div class="hero-actions">
       <div class="tab-buttons">
-        <button [ngClass]="{ active: activeTab === 'github' }" (click)="setActiveTab('github')">
+        <button class="{{ activeTab === 'github' ? 'active' : '' }}" (click)="setActiveTab('github')">
           <img src="assets/icons/git.svg" alt="GitHub" />
           <span>GitHub URL</span>
         </button>
-        <button [ngClass]="{ active: activeTab === 'json' }" (click)="setActiveTab('json')">
+        <button class="{{ activeTab === 'json' ? 'active' : '' }}" (click)="setActiveTab('json')">
           <img src="assets/icons/json.svg" alt="JSON" />
           <span>Paste JSON</span>
         </button>
-        <button [ngClass]="{ active: activeTab === 'upload' }" (click)="setActiveTab('upload')">
+        <button class="{{ activeTab === 'upload' ? 'active' : '' }}" (click)="setActiveTab('upload')">
           <img src="assets/icons/upload.svg" alt="Upload" />
           <span>Upload JSON</span>
         </button>
@@ -47,7 +47,9 @@
               Choose a JSON file to analyze…
             </label>
           </div>
-          <p class="file-name" *ngIf="selectedFileName">{{ selectedFileName }}</p>
+            @if (selectedFileName) {
+            <p class="file-name">{{ selectedFileName }}</p>
+            }
         </div>
         }
       </div>

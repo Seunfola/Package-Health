@@ -5,7 +5,7 @@ export default defineConfig({
   jsxFramework: 'angular',
   outdir: 'styled-system',
 
-  include: ['./src/**/*.{ts,html}'],
+  include: ['./src/**/*.{js,jsx,ts,tsx}'],
   exclude: ['./node_modules/**/*', './dist/**/*'],
 
   theme: {
