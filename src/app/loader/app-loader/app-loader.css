@@ -1,0 +1,79 @@
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.logo-wrapper {
+  margin-bottom: 30px;
+}
+
+.logo {
+  width: 100px;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* --- Progress bar --- */
+.progress-container {
+  width: 60%;
+  height: 10px;
+  background: #e5eaf0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 10px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.progress-fill {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+.liquid-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0078d7, #00a8ff);
+  background-size: 200% 100%;
+  animation: moveWave 2.5s linear infinite;
+  transition: width 0.3s ease-out;
+}
+
+@keyframes moveWave {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  100% {
+    background-position: -200% 0%;
+  }
+}
+
+.progress-text {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #0078d7;
+  font-family: 'Segoe UI', sans-serif;
+}
