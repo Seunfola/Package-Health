@@ -1,6 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@/environment/environment.prod';
 
 @Component({
   selector: 'app-hero-section',
@@ -11,9 +13,17 @@ import { FormsModule } from '@angular/forms';
 })
 export class HeroSection {
   repository: string = '';
+  githubToken: string = '';
   jsonContent: string = '';
   selectedFileName: string = 'No file chosen';
   activeTab: string = 'github';
+  isAnalyzing: boolean = false;
+  analysisResult: any = null;
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {}
 
   setActiveTab(tab: 'github' | 'json' | 'upload'): void {
     this.activeTab = tab;
@@ -23,7 +33,6 @@ export class HeroSection {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFileName = input.files[0].name;
-      // You can add logic here to read the file content if needed
       console.log('Selected file:', this.selectedFileName);
     } else {
       this.selectedFileName = 'No file chosen';
@@ -51,40 +60,112 @@ export class HeroSection {
       alert('Please enter a GitHub repository!');
       return;
     }
-    console.log('Repository to analyze:', repo);
+
+    if (!this.githubToken.trim()) {
+      alert(
+        'Please provide a GitHub Personal Access Token! You can generate one at https://github.com/settings/tokens (select "repo" scope for full access).',
+      );
+      return;
+    }
+
+    // Construct the full GitHub URL if it's not already a full URL
+    let githubUrl = repo;
+    if (!repo.startsWith('http')) {
+      githubUrl = `https://github.com/${repo}`;
+    }
+
+    this.isAnalyzing = true;
+
+    const requestBody = {
+      url: githubUrl,
+      token: this.githubToken.trim(),
+    };
+
+    const apiEndpoint = `${environment.apiBaseUrl}/repo-health/analyze-url`;
+
+    this.http.post(apiEndpoint, requestBody).subscribe({
+      next: (response: any) => {
+        this.analysisResult = response;
+        console.log('Repository analysis result:', response);
+        this.isAnalyzing = false;
+        alert(
+          `Analysis complete! Overall health score: ${response.overall_health?.score || 'N/A'}`,
+        );
+      },
+      error: (error) => {
+        console.error('Error analyzing repository:', error);
+        this.isAnalyzing = false;
+        if (error.status === 401 || error.status === 403) {
+          alert('Invalid GitHub token. Please check your token and try again.');
+        } else {
+          alert('Error analyzing repository. Please check the input and try again.');
+        }
+      },
+    });
   }
 
   analyzePastedJson() {
-    try {
-      if (!this.jsonContent.trim()) {
-        alert('Please paste some JSON content!');
-        return;
-      }
-      const data = JSON.parse(this.jsonContent);
-      console.log('Pasted JSON to analyze:', data);
-    } catch (e) {
-      alert('Invalid JSON content. Please check your syntax.');
+    if (!this.jsonContent.trim()) {
+      alert('Please paste some JSON content!');
+      return;
     }
+
+    this.isAnalyzing = true;
+
+    const requestBody = {
+      json: this.jsonContent.trim(), // Send as string per endpoint schema
+    };
+
+    const apiEndpoint = `${environment.apiBaseUrl}/repo-health/analyze-package/paste`;
+
+    this.http.post(apiEndpoint, requestBody).subscribe({
+      next: (response: any) => {
+        this.analysisResult = response;
+        console.log('Pasted JSON analysis result:', response);
+        this.isAnalyzing = false;
+        alert(
+          `Analysis complete! Overall health score: ${response.overall_health?.score || 'N/A'}`,
+        );
+      },
+      error: (error) => {
+        console.error('Error analyzing pasted JSON:', error);
+        this.isAnalyzing = false;
+        alert('Error analyzing pasted JSON. Please check the content and try again.');
+      },
+    });
   }
 
   analyzeUploadedFile() {
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    const uploadedFile = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+    const uploadedFile =
+      fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
 
     if (!uploadedFile) {
       alert('Please choose a JSON file to upload!');
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const data = JSON.parse(event.target?.result as string);
-        console.log('Uploaded JSON to analyze:', data);
-      } catch (e) {
-        alert('Invalid JSON file. Please ensure the file contains valid JSON.');
-      }
-    };
-    reader.readAsText(uploadedFile);
+    this.isAnalyzing = true;
+
+    const formData = new FormData();
+    formData.append('file', uploadedFile);
+
+    const apiEndpoint = `${environment.apiBaseUrl}/repo-health/analyze-package/upload`;
+
+    this.http.post(apiEndpoint, formData).subscribe({
+      next: (response: any) => {
+        this.analysisResult = response;
+        console.log('Uploaded file analysis result:', response);
+        this.isAnalyzing = false;
+        alert(
+          `Analysis complete! Overall health score: ${response.overall_health?.score || 'N/A'}`,
+        );
+      },
+      error: (error) => {
+        console.error('Error analyzing uploaded file:', error);
+        this.isAnalyzing = false;
+        alert('Error analyzing uploaded file. Please check the file and try again.');
+      },
+    });
   }
 }
