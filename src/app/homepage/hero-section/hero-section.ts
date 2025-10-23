@@ -1,171 +1,118 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '@/environment/environment.prod';
+import { AnalysisService } from '@/app/services/analysis.service';
 
 @Component({
   selector: 'app-hero-section',
   standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './hero-section.html',
-  styleUrl: './hero-section.css',
+  styleUrls: ['./hero-section.css'],
 })
 export class HeroSection {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   repository: string = '';
   githubToken: string = '';
   jsonContent: string = '';
   selectedFileName: string = 'No file chosen';
-  activeTab: string = 'github';
+  activeTab: 'github' | 'paste' | 'upload' = 'github';
   isAnalyzing: boolean = false;
-  analysisResult: any = null;
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router,
+    private analysisService: AnalysisService,
   ) {}
 
-  setActiveTab(tab: 'github' | 'json' | 'upload'): void {
+  setActiveTab(tab: 'github' | 'paste' | 'upload') {
     this.activeTab = tab;
   }
 
-  onFileSelected(event: Event): void {
+  onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFileName = input.files[0].name;
-      console.log('Selected file:', this.selectedFileName);
-    } else {
-      this.selectedFileName = 'No file chosen';
-    }
+    this.selectedFileName = input.files?.[0]?.name || 'No file chosen';
   }
 
   analyzeData() {
     switch (this.activeTab) {
       case 'github':
-        this.analyzeRepository();
-        break;
+        return this.analyzeRepository();
       case 'paste':
-        this.analyzePastedJson();
-        break;
+        return this.analyzePastedJson();
       case 'upload':
-        this.analyzeUploadedFile();
-        break;
+        return this.analyzeUploadedFile();
     }
   }
 
-  analyzeRepository() {
+  private analyzeRepository() {
     const repo = this.repository.trim();
+    if (!repo) return alert('Please enter a GitHub repository!');
+    if (!this.githubToken.trim()) return alert('Please provide a GitHub Personal Access Token!');
 
-    if (!repo) {
-      alert('Please enter a GitHub repository!');
-      return;
-    }
-
-    if (!this.githubToken.trim()) {
-      alert(
-        'Please provide a GitHub Personal Access Token! You can generate one at https://github.com/settings/tokens (select "repo" scope for full access).',
-      );
-      return;
-    }
-
-    // Construct the full GitHub URL if it's not already a full URL
-    let githubUrl = repo;
-    if (!repo.startsWith('http')) {
-      githubUrl = `https://github.com/${repo}`;
-    }
-
+    const githubUrl = repo.startsWith('http') ? repo : `https://github.com/${repo}`;
     this.isAnalyzing = true;
 
-    const requestBody = {
-      url: githubUrl,
-      token: this.githubToken.trim(),
-    };
-
-    const apiEndpoint = `${environment.apiBaseUrl}/repo-health/analyze-url`;
-
-    this.http.post(apiEndpoint, requestBody).subscribe({
-      next: (response: any) => {
-        this.analysisResult = response;
-        console.log('Repository analysis result:', response);
-        this.isAnalyzing = false;
-        alert(
-          `Analysis complete! Overall health score: ${response.overall_health?.score || 'N/A'}`,
-        );
-      },
-      error: (error) => {
-        console.error('Error analyzing repository:', error);
-        this.isAnalyzing = false;
-        if (error.status === 401 || error.status === 403) {
-          alert('Invalid GitHub token. Please check your token and try again.');
-        } else {
-          alert('Error analyzing repository. Please check the input and try again.');
-        }
-      },
-    });
+    this.http
+      .post(`${environment.apiBaseUrl}/repo-health/analyze-url`, {
+        url: githubUrl,
+        token: this.githubToken.trim(),
+      })
+      .subscribe({
+        next: (res: any) => this.handleAnalysisResult(res),
+        error: (err) => this.handleError(err),
+      });
   }
 
-  analyzePastedJson() {
-    if (!this.jsonContent.trim()) {
-      alert('Please paste some JSON content!');
-      return;
-    }
-
+  private analyzePastedJson() {
+    if (!this.jsonContent.trim()) return alert('Please paste some JSON content!');
     this.isAnalyzing = true;
 
-    const requestBody = {
-      json: this.jsonContent.trim(), // Send as string per endpoint schema
-    };
-
-    const apiEndpoint = `${environment.apiBaseUrl}/repo-health/analyze-package/paste`;
-
-    this.http.post(apiEndpoint, requestBody).subscribe({
-      next: (response: any) => {
-        this.analysisResult = response;
-        console.log('Pasted JSON analysis result:', response);
-        this.isAnalyzing = false;
-        alert(
-          `Analysis complete! Overall health score: ${response.overall_health?.score || 'N/A'}`,
-        );
-      },
-      error: (error) => {
-        console.error('Error analyzing pasted JSON:', error);
-        this.isAnalyzing = false;
-        alert('Error analyzing pasted JSON. Please check the content and try again.');
-      },
-    });
+    this.http
+      .post(`${environment.apiBaseUrl}/repo-health/analyze-package/paste`, {
+        json: this.jsonContent.trim(),
+      })
+      .subscribe({
+        next: (res: any) => this.handleAnalysisResult(res),
+        error: (err) => this.handleError(err),
+      });
   }
 
-  analyzeUploadedFile() {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    const uploadedFile =
-      fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
-
-    if (!uploadedFile) {
-      alert('Please choose a JSON file to upload!');
-      return;
-    }
-
-    this.isAnalyzing = true;
+  private analyzeUploadedFile() {
+    const file = this.fileInput?.nativeElement?.files?.[0];
+    if (!file) return alert('Please choose a JSON file to upload!');
 
     const formData = new FormData();
-    formData.append('file', uploadedFile);
+    formData.append('file', file);
 
-    const apiEndpoint = `${environment.apiBaseUrl}/repo-health/analyze-package/upload`;
+    this.isAnalyzing = true;
 
-    this.http.post(apiEndpoint, formData).subscribe({
-      next: (response: any) => {
-        this.analysisResult = response;
-        console.log('Uploaded file analysis result:', response);
-        this.isAnalyzing = false;
-        alert(
-          `Analysis complete! Overall health score: ${response.overall_health?.score || 'N/A'}`,
-        );
-      },
-      error: (error) => {
-        console.error('Error analyzing uploaded file:', error);
-        this.isAnalyzing = false;
-        alert('Error analyzing uploaded file. Please check the file and try again.');
-      },
-    });
+    this.http
+      .post(`${environment.apiBaseUrl}/repo-health/analyze-package/upload`, formData)
+      .subscribe({
+        next: (res: any) => this.handleAnalysisResult(res),
+        error: (err) => this.handleError(err),
+      });
+  }
+
+  private handleAnalysisResult(response: any) {
+    this.isAnalyzing = false;
+    console.log('Analysis result:', response);
+    this.analysisService.setAnalysis(response);
+    this.router.navigate(['/repo-details']);
+  }
+
+  private handleError(error: any) {
+    this.isAnalyzing = false;
+    console.error('Error analyzing:', error);
+    if (error.status === 401 || error.status === 403) {
+      alert('Invalid GitHub token. Please check your token.');
+    } else {
+      alert('Error analyzing repository. Please check input and try again.');
+    }
   }
 }
