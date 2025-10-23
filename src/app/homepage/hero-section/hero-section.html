@@ -16,7 +16,7 @@
           <img src="assets/icons/git.svg" alt="GitHub" />
           <span>GitHub URL</span>
         </button>
-        <button class="{{ activeTab === 'json' ? 'active' : '' }}" (click)="setActiveTab('json')">
+        <button class="{{ activeTab === 'paste' ? 'active' : '' }}" (click)="setActiveTab('paste')">
           <img src="assets/icons/json.svg" alt="JSON" />
           <span>Paste JSON</span>
         </button>
@@ -28,13 +28,14 @@
       <div class="input-group">
         @if (activeTab === 'github') {
         <div class="input-wrapper">
-          <input type="text" placeholder="Enter GitHub repository (e.g., org/repo)" />
+          <input type="text" [(ngModel)]="repository" placeholder="Enter GitHub repository (e.g., org/repo)" />
+          <input type="password" [(ngModel)]="githubToken" placeholder="GitHub Personal Access Token" />
         </div>
         }
 
-        @if (activeTab === 'json') {
+        @if (activeTab === 'paste') {
         <div class="input-wrapper">
-          <textarea rows="4" placeholder="Paste your JSON content here..."></textarea>
+          <textarea rows="4" [(ngModel)]="jsonContent" placeholder="Paste your JSON content here..."></textarea>
         </div>
         }
 
@@ -42,18 +43,20 @@
         <div class="upload-json-section">
           <div class="upload-input-wrapper">
             <img src="assets/icons/upload.svg" alt="Upload Icon" class="upload-input-icon" />
-            <input type="file" id="json-file-upload" (change)="onFileSelected($event)" accept=".json" />
-            <label for="json-file-upload" class="upload-placeholder">
+            <input type="file" id="fileInput" (change)="onFileSelected($event)" accept=".json" />
+            <label for="fileInput" class="upload-placeholder">
               Choose a JSON file to analyze…
             </label>
           </div>
-            @if (selectedFileName) {
-            <p class="file-name">{{ selectedFileName }}</p>
-            }
+          @if (selectedFileName !== 'No file chosen') {
+          <p class="file-name">{{ selectedFileName }}</p>
+          }
         </div>
         }
       </div>
-      <button class="analyze-button">Analyze</button>
+      <button type="button" class="analyze-button" (click)="analyzeData()" [disabled]="isAnalyzing">
+        {{ isAnalyzing ? 'Analyzing...' : 'Analyze' }}
+      </button>
     </div>
   </div>
 </div>

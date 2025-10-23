@@ -53,7 +53,29 @@
     fill: currentColor;
 }
 
-/* === Icon Colors === */
+.no-data-section {
+    text-align: center;
+    padding: 32px;
+      color: #cbd5e0;
+}
+
+.no-data-section p {
+    margin-bottom: 16px;
+}
+
+.no-data-section button {
+    background: #e2e8f0;
+      color: #212121;
+      border: none;
+    padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    font-size: 16px;
+}
+
+.no-data-section button:hover {
+    background: #cbd5e0;
+}
 .star-icon {
     filter: invert(69%) sepia(91%) saturate(2251%) hue-rotate(352deg) brightness(101%) contrast(92%);
 }
@@ -82,7 +104,6 @@
     margin-left: 34px;
 }
 
-/* === Tablet (≤992px): 2 per row === */
 @media (max-width: 992px) {
     .metric-item {
         flex: 1 1 calc(50% - 16px);
@@ -99,7 +120,6 @@
     }
 }
 
-/* === Mobile (≤600px): 2x2 Grid === */
 @media (max-width: 600px) {
     .repo-overview-card {
         padding: 20px;

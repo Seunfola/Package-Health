@@ -16,10 +16,12 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: Homepage },
       { path: 'repo-health', component: RepoHealth },
+      { path: 'repository-details/:owner/:name', component: RepoDetails },
       { path: 'repository-details', component: RepoDetails },
       { path: 'dashboard-settings', component: DashboardSettings },
       { path: 'notifications', component: Notification },
       { path: 'user-profile', component: UserProfile },
+      { path: '**', redirectTo: '' },
     ],
   },
 ];
