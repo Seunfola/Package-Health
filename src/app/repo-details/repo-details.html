@@ -4,16 +4,20 @@
     <span>{{ analysisData.repoName }}</span>
   </h2>
 
-  <app-repo-details-dash [repoName]="analysisData.repoName" [stars]="analysisData.stars" [forks]="analysisData.forks"
-    [lastCommit]="analysisData.lastCommit" [openChecks]="analysisData.openChecks"
-    [overallHealth]="analysisData.overallHealth"></app-repo-details-dash>
+  <app-repo-details-dash [repoName]="analysisData.repoName"
+    [stars]="analysisData.stars"
+    [forks]="analysisData.forks"
+    [lastCommit]="analysisData.lastCommit"
+    [openChecks]="analysisData.openChecks"
+    [overallHealth]="analysisData.overallHealth">
+  </app-repo-details-dash>
 
   <div class="chart-wrapper-container">
-    <app-chart-card [title]="'Contribution Graph'" [subtitle]="'Daily contributions over the past year.'">
+    <app-chart-card title="Contribution Graph" subtitle="Daily contributions over the past year.">
       <app-git-graph [data]="contributionData"></app-git-graph>
     </app-chart-card>
 
-    <app-chart-card [title]="'Commit Activity'" [subtitle]="'Monthly commit frequency over the last year.'">
+    <app-chart-card title="Commit Activity" subtitle="Monthly commit frequency over the last year.">
       <app-line-chart [lineChartData]="commitData" [lineChartOptions]="commitOptions" [lineChartType]="lineChartType">
       </app-line-chart>
     </app-chart-card>
@@ -24,10 +28,10 @@
     <app-code-quality-metrics></app-code-quality-metrics>
   </div>
 </div>
+
 <ng-template *ngIf="!analysisData">
   <div class="no-data-section">
     <p>No repository data available. Please analyze a repository first.</p>
     <button routerLink="/">Home</button>
   </div>
 </ng-template>
-[@endif]>

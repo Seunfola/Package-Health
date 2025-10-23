@@ -54,29 +54,28 @@
 }
 
 .no-data-section {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
+    text-align: center;
+    padding: 32px;
+      color: #cbd5e0;
 }
 
 .no-data-section p {
-  margin-bottom: 1rem;
+    margin-bottom: 16px;
 }
 
 .no-data-section button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
+    background: #e2e8f0;
+      color: #212121;
+      border: none;
+    padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    font-size: 16px;
 }
 
 .no-data-section button:hover {
-  background: #0056b3;
+    background: #cbd5e0;
 }
-
 .star-icon {
     filter: invert(69%) sepia(91%) saturate(2251%) hue-rotate(352deg) brightness(101%) contrast(92%);
 }

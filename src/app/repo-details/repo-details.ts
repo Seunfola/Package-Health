@@ -1,20 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
+import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
 import { ContributionGraph } from './git-graph/git-graph';
 import { ChartCard } from './git-graph/chart-card/chart-card';
 import { LineChart } from './line-chart/line-chart';
 import { CodeQualityMetrics } from './code-quality-metrics/code-quality-metrics';
 import { SecurityAlerts } from './security-alerts/security-alerts';
+import { AnalysisData, RepoService } from '../services/RepoService';
 
 @Component({
   selector: 'app-repo-details',
   standalone: true,
   imports: [
-    RepoDetailsDash,
     CommonModule,
+    RepoDetailsDash,
     ChartCard,
     ContributionGraph,
     LineChart,
@@ -22,11 +23,10 @@ import { SecurityAlerts } from './security-alerts/security-alerts';
     SecurityAlerts,
   ],
   templateUrl: './repo-details.html',
-  styleUrls: ['./repo-details.css'], // fixed typo
+  styleUrls: ['./repo-details.css'],
 })
 export class RepoDetails implements OnInit {
-  analysisData: any = null; // will store dynamic data
-
+  analysisData: AnalysisData | null = null;
   contributionData: { date: string; count: number }[] = [];
 
   public commitData: ChartConfiguration<'line'>['data'] = {
@@ -49,10 +49,7 @@ export class RepoDetails implements OnInit {
   public commitOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
-    elements: {
-      line: { borderWidth: 2 },
-      point: { radius: 4, hoverRadius: 6 },
-    },
+    elements: { line: { borderWidth: 2 }, point: { radius: 4, hoverRadius: 6 } },
     scales: {
       x: { ticks: { color: '#374151' } },
       y: { beginAtZero: true, grid: { color: '#E5E7EB' } },
@@ -68,24 +65,59 @@ export class RepoDetails implements OnInit {
 
   public lineChartType: ChartType = 'line';
 
-  constructor(private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private repoService: RepoService,
+  ) {}
 
   ngOnInit() {
-    // Grab the state passed from HeroSection
-    this.analysisData = history.state.analysisData;
+    const owner = this.route.snapshot.paramMap.get('owner');
+    const name = this.route.snapshot.paramMap.get('name');
 
-    if (!this.analysisData) {
-      // Redirect home if no data
-      this.router.navigate(['/']);
-      return;
+    if (owner && name) {
+      // Fetch live data
+      this.repoService.getAnalysisData(owner, name).subscribe({
+        next: (data) => {
+          this.analysisData = data;
+          this.initializeChartData();
+        },
+        error: (err) => {
+          console.error('Error fetching repo:', err);
+          this.loadDefaultData();
+        },
+      });
+    } else {
+      // load default
+      this.loadDefaultData();
     }
+  }
 
-    // Set contribution & commit data if available
+  loadDefaultData() {
+    this.analysisData = {
+      repoName: 'PackageHealth/Example-Repo',
+      stars: 2400,
+      forks: 320,
+      lastCommit: '2025-10-20',
+      openChecks: 3,
+      contributionData: this.generateYearlyData(),
+      commitData: [120, 140, 75, 200, 130, 250, 190, 220, 150, 200],
+      commitLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+      overallHealth: 87,
+    };
+
+    this.initializeChartData();
+  }
+
+  initializeChartData() {
+    if (!this.analysisData) return;
+
     this.contributionData = this.analysisData.contributionData || this.generateYearlyData();
+
     this.commitData = {
       datasets: [
         {
-          data: this.analysisData.commitData || [120, 140, 75, 200, 130, 250, 190, 220, 150, 200],
+          data: this.analysisData.commitData || [],
           label: 'Commits',
           borderColor: '#16A34A',
           pointBackgroundColor: '#16A34A',
@@ -96,18 +128,7 @@ export class RepoDetails implements OnInit {
           tension: 0.4,
         },
       ],
-      labels: this.analysisData.commitLabels || [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-      ],
+      labels: this.analysisData.commitLabels || [],
     };
   }
 

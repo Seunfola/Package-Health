@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -14,6 +14,8 @@ import { AnalysisService } from '@/app/services/analysis.service';
   styleUrls: ['./hero-section.css'],
 })
 export class HeroSection {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   repository: string = '';
   githubToken: string = '';
   jsonContent: string = '';
@@ -25,7 +27,6 @@ export class HeroSection {
     private http: HttpClient,
     private router: Router,
     private analysisService: AnalysisService,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
   setActiveTab(tab: 'github' | 'paste' | 'upload') {
@@ -53,7 +54,7 @@ export class HeroSection {
     if (!repo) return alert('Please enter a GitHub repository!');
     if (!this.githubToken.trim()) return alert('Please provide a GitHub Personal Access Token!');
 
-    let githubUrl = repo.startsWith('http') ? repo : `https://github.com/${repo}`;
+    const githubUrl = repo.startsWith('http') ? repo : `https://github.com/${repo}`;
     this.isAnalyzing = true;
 
     this.http
@@ -82,8 +83,7 @@ export class HeroSection {
   }
 
   private analyzeUploadedFile() {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    const file = fileInput?.files?.[0];
+    const file = this.fileInput?.nativeElement?.files?.[0];
     if (!file) return alert('Please choose a JSON file to upload!');
 
     const formData = new FormData();
