@@ -1,14 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
 import { CommonModule } from '@angular/common';
-
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import { ContributionGraph } from './git-graph/git-graph';
 import { ChartCard } from './git-graph/chart-card/chart-card';
 import { LineChart } from './line-chart/line-chart';
 import { CodeQualityMetrics } from './code-quality-metrics/code-quality-metrics';
 import { SecurityAlerts } from './security-alerts/security-alerts';
-
 
 @Component({
   selector: 'app-repo-details',
@@ -23,57 +22,19 @@ import { SecurityAlerts } from './security-alerts/security-alerts';
     SecurityAlerts,
   ],
   templateUrl: './repo-details.html',
-  styleUrl: './repo-details.css',
+  styleUrls: ['./repo-details.css'], // fixed typo
 })
 export class RepoDetails implements OnInit {
-  @Input() repoTitle: string = 'PackageHealth/React-dashboard';
+  analysisData: any = null; // will store dynamic data
 
   contributionData: { date: string; count: number }[] = [];
-
-  dependencyData = {
-    nodes: [
-      { id: 'package-a', group: 1, type: 'safe' },
-      { id: 'package-b', group: 1, type: 'vulnerable' },
-      { id: 'module-x', group: 2, type: 'safe' },
-      { id: 'module-y', group: 2, type: 'critical' },
-      { id: 'library-z', group: 3, type: 'safe' },
-      { id: 'utility-fn', group: 2, type: 'safe' },
-      { id: 'plugin-p', group: 3, type: 'vulnerable' },
-      { id: 'plugin-q', group: 3, type: 'safe' },
-      { id: 'component-c', group: 4, type: 'safe' },
-      { id: 'component-d', group: 4, type: 'critical' },
-      { id: 'api-service', group: 5, type: 'safe' },
-      { id: 'database-lib', group: 5, type: 'safe' },
-      { id: 'auth-middleware', group: 6, type: 'vulnerable' },
-      { id: 'styling-lib', group: 7, type: 'safe' },
-    ],
-    links: [
-      { source: 'package-a', target: 'module-x' },
-      { source: 'package-a', target: 'module-y' },
-      { source: 'package-b', target: 'module-x' },
-      { source: 'module-x', target: 'library-z' },
-      { source: 'package-a', target: 'utility-fn' },
-      { source: 'module-x', target: 'plugin-p' },
-      { source: 'module-x', target: 'plugin-q' },
-      { source: 'plugin-p', target: 'component-c' },
-      { source: 'plugin-q', target: 'component-c' },
-      { source: 'component-c', target: 'api-service' },
-      { source: 'component-d', target: 'api-service' },
-      { source: 'api-service', target: 'database-lib' },
-      { source: 'component-c', target: 'auth-middleware' },
-      { source: 'component-d', target: 'auth-middleware' },
-      { source: 'package-a', target: 'styling-lib' },
-      { source: 'component-c', target: 'styling-lib' },
-    ],
-  };
 
   public commitData: ChartConfiguration<'line'>['data'] = {
     datasets: [
       {
-        data: [120, 140, 75, 200, 130, 250, 190, 220, 150, 200],
+        data: [],
         label: 'Commits',
         borderColor: '#16A34A',
-        // backgroundColor: 'rgba(22, 163, 74, 0.2)',
         pointBackgroundColor: '#16A34A',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
@@ -82,7 +43,7 @@ export class RepoDetails implements OnInit {
         tension: 0.4,
       },
     ],
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+    labels: [],
   };
 
   public commitOptions: ChartOptions<'line'> = {
@@ -93,13 +54,8 @@ export class RepoDetails implements OnInit {
       point: { radius: 4, hoverRadius: 6 },
     },
     scales: {
-      x: {
-        ticks: { color: '#374151' },
-      },
-      y: {
-        beginAtZero: true,
-        grid: { color: '#E5E7EB' },
-      },
+      x: { ticks: { color: '#374151' } },
+      y: { beginAtZero: true, grid: { color: '#E5E7EB' } },
     },
     plugins: {
       legend: {
@@ -112,8 +68,47 @@ export class RepoDetails implements OnInit {
 
   public lineChartType: ChartType = 'line';
 
+  constructor(private router: Router) {}
+
   ngOnInit() {
-    this.contributionData = this.generateYearlyData();
+    // Grab the state passed from HeroSection
+    this.analysisData = history.state.analysisData;
+
+    if (!this.analysisData) {
+      // Redirect home if no data
+      this.router.navigate(['/']);
+      return;
+    }
+
+    // Set contribution & commit data if available
+    this.contributionData = this.analysisData.contributionData || this.generateYearlyData();
+    this.commitData = {
+      datasets: [
+        {
+          data: this.analysisData.commitData || [120, 140, 75, 200, 130, 250, 190, 220, 150, 200],
+          label: 'Commits',
+          borderColor: '#16A34A',
+          pointBackgroundColor: '#16A34A',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#16A34A',
+          fill: 'origin',
+          tension: 0.4,
+        },
+      ],
+      labels: this.analysisData.commitLabels || [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+      ],
+    };
   }
 
   generateYearlyData() {
@@ -122,11 +117,8 @@ export class RepoDetails implements OnInit {
     const oneYearAgo = new Date(today);
     oneYearAgo.setFullYear(today.getFullYear() - 1);
 
-    for (let d = oneYearAgo; d <= today; d.setDate(d.getDate() + 1)) {
-      data.push({
-        date: d.toISOString().split('T')[0],
-        count: Math.floor(Math.random() * 20),
-      });
+    for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
+      data.push({ date: d.toISOString().split('T')[0], count: Math.floor(Math.random() * 20) });
     }
     return data;
   }

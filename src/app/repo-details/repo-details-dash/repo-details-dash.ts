@@ -10,14 +10,15 @@ import { Component, Input } from '@angular/core';
   styleUrl: './repo-details-dash.css',
 })
 export class RepoDetailsDash {
-  @Input() repoName: string = 'PackageHealth/react-dashboard';
-  @Input() stars: number = 12450;
-  @Input() forks: number = 3200;
-  @Input() lastCommit: string = '2 days ago';
-  @Input() openChecks: number = 157;
+  @Input() repoName: string = '';
+  @Input() stars: number = 0;
+  @Input() forks: number = 0;
+  @Input() lastCommit: string = '';
+  @Input() openChecks: number = 0;
+  @Input() overallHealth: any = null;
 
-  @Input() starIconPath: string = 'assets/icons/star.svg';
-  @Input() forkIconPath: string = 'assets/icons/gitfork.svg';
-  @Input() commitIconPath: string = 'assets/icons/clock.svg';
-  @Input() checkIconPath: string = 'assets/icons/check.svg';
+  starIconPath: string = 'assets/icons/star.svg';
+  forkIconPath: string = 'assets/icons/gitfork.svg';
+  commitIconPath: string = 'assets/icons/clock.svg';
+  checkIconPath: string = 'assets/icons/check.svg';
 }

@@ -1,37 +1,53 @@
 <div class="repo-overview-card">
-    <h2 class="repo-name">{{ repoName }}</h2>
+  @if (repoName) {
+  <h2 class="repo-name">{{ repoName }}</h2>
 
-    <div class="metrics-grid">
-        <div class="metric-item">
-            <div class="icon-value-wrapper">
-                <img [src]="starIconPath" class="metric-icon star-icon" alt="Stars" width="24" height="24">
-                <span class="metric-value">{{ stars | numberFormat }}</span>
-            </div>
-            <span class="metric-label">Stars</span>
-        </div>
-
-        <div class="metric-item">
-            <div class="icon-value-wrapper">
-                <img [src]="forkIconPath" class="metric-icon fork-icon" alt="Forks" width="24" height="24">
-                <span class="metric-value">{{ forks | numberFormat }}</span>
-            </div>
-            <span class="metric-label">Forks</span>
-        </div>
-
-        <div class="metric-item">
-            <div class="icon-value-wrapper">
-                <img [src]="commitIconPath" class="metric-icon commit-icon" alt="Last Commit" width="24" height="24">
-                <span class="metric-value">{{ lastCommit }}</span>
-            </div>
-            <span class="metric-label">Last Commit</span>
-        </div>
-
-        <div class="metric-item">
-            <div class="icon-value-wrapper">
-                <img [src]="checkIconPath" class="metric-icon check-icon" alt="Open Checks" width="24" height="24">
-                <span class="metric-value">{{ openChecks | numberFormat }}</span>
-            </div>
-            <span class="metric-label">Open Checks</span>
-        </div>
+  <div class="metrics-grid">
+    <!-- Overall Health as a metric-item (no icon, uses existing classes) -->
+    <div class="metric-item">
+      <div class="icon-value-wrapper">
+        <!-- No img for health; value shows label + score -->
+        <span class="metric-value">{{ overallHealth?.label }} ({{ overallHealth?.score }}/100)</span>
+      </div>
+      <span class="metric-label">Overall Health</span>
     </div>
+
+    <div class="metric-item">
+      <div class="icon-value-wrapper">
+        <img [src]="starIconPath" class="metric-icon star-icon" alt="Stars" width="24" height="24">
+        <span class="metric-value">{{ stars | numberFormat }}</span>
+      </div>
+      <span class="metric-label">Stars</span>
+    </div>
+
+    <div class="metric-item">
+      <div class="icon-value-wrapper">
+        <img [src]="forkIconPath" class="metric-icon fork-icon" alt="Forks" width="24" height="24">
+        <span class="metric-value">{{ forks | numberFormat }}</span>
+      </div>
+      <span class="metric-label">Forks</span>
+    </div>
+
+    <div class="metric-item">
+      <div class="icon-value-wrapper">
+        <img [src]="commitIconPath" class="metric-icon commit-icon" alt="Last Commit" width="24" height="24">
+        <span class="metric-value">{{ lastCommit }}</span>
+      </div>
+      <span class="metric-label">Last Commit</span>
+    </div>
+
+    <div class="metric-item">
+      <div class="icon-value-wrapper">
+        <img [src]="checkIconPath" class="metric-icon check-icon" alt="Open Checks" width="24" height="24">
+        <span class="metric-value">{{ openChecks | numberFormat }}</span>
+      </div>
+      <span class="metric-label">Open Checks</span>
+    </div>
+  </div>
+  } @else {
+<div class="no-data-section">
+  <p>No repository data available. Please analyze a repository first.</p>
+  <button routerLink="/">Home</button>
+</div>
+  }
 </div>
