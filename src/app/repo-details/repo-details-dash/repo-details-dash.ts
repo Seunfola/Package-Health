@@ -15,7 +15,7 @@ export class RepoDetailsDash {
   @Input() forks: number = 0;
   @Input() lastCommit: string = '';
   @Input() openChecks: number = 0;
-  @Input() overallHealth: any = null;
+  @Input() overallHealth: number = 0;
 
   starIconPath: string = 'assets/icons/star.svg';
   forkIconPath: string = 'assets/icons/gitfork.svg';
