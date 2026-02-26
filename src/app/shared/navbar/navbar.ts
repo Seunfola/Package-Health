@@ -19,7 +19,7 @@ export class Navbar {
   // New state variable to control modal visibility
   showLoginModal: boolean = false;
 
-  constructor(private authService: AuthService) {
+  constructor(private readonly authService: AuthService) {
     this.isLoggedIn = this.authService.isAuthenticated();
     if (this.isLoggedIn) {
       this.userProfileImage = 'path/to/user/image.jpg';

@@ -4,11 +4,21 @@ import { SettingsItem } from './settings-item/settings-item';
 import { FormsModule } from '@angular/forms';
 import { SettingsCard } from './settings-card/settings-card';
 import { SettingsInput } from './settings-input/settings-input';
+import { AuthLogin } from '@/app/services/auth-login.component';
+import { PrivateRepoAnalysisComponent } from '@/app/services/private-repo-analysis.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, SettingsItem, FormsModule, SettingsCard, SettingsInput],
+  imports: [
+    CommonModule,
+    SettingsItem,
+    FormsModule,
+    SettingsCard,
+    SettingsInput,
+    AuthLogin,
+    PrivateRepoAnalysisComponent,
+  ],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
 })
