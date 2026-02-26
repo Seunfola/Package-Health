@@ -2,11 +2,48 @@
   <div class="alert-header">
     <h3>Security Alerts</h3>
     <p>Identified vulnerabilities and their status.</p>
+    <div class="alert-summary">
+      @if (displayAlerts.length > 0) {
+        <div class="summary-stat">
+          <span class="stat-label">Total:</span>
+          <span class="stat-value">{{ displayAlerts.length }}</span>
+        </div>
+        <div class="summary-stat critical">
+          <span class="stat-label">Critical:</span>
+          <span class="stat-value">{{ criticalCount }}</span>
+        </div>
+        <div class="summary-stat high">
+          <span class="stat-label">High:</span>
+          <span class="stat-value">{{ highCount }}</span>
+        </div>
+        <div class="summary-stat open">
+          <span class="stat-label">Open:</span>
+          <span class="stat-value">{{ openAlertsCount }}</span>
+        </div>
+      } @else {
+        <p class="no-alerts">No security alerts found</p>
+      }
+    </div>
   </div>
-  <div class="alert-list">
-    @for (alert of securityAlerts; track alert.check) {
-    <app-security-alert-item [severity]="alert.severity" [check]="alert.check" [file]="alert.file"
-      [status]="alert.status"></app-security-alert-item>
-    }
-  </div>
+
+  @if (displayAlerts.length > 0) {
+    <div class="alert-list-header">
+      <span class="col-severity">Severity</span>
+      <span class="col-title">Title</span>
+      <span class="col-package">Package</span>
+      <span class="col-description">Description</span>
+      <span class="col-status">Status</span>
+    </div>
+    <div class="alert-list">
+      @for (alert of displayAlerts; track alert.id) {
+        <app-security-alert-item
+          [vulnerability]="alert"
+        ></app-security-alert-item>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>No vulnerabilities detected</p>
+    </div>
+  }
 </div>
