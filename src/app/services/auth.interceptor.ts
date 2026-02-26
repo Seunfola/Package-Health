@@ -1,0 +1,110 @@
+import { Injectable } from '@angular/core';
+import {
+  HttpInterceptor,
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpErrorResponse,
+} from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { AuthService } from './auth.service';
+
+/**
+ * HTTP INTERCEPTOR: Securely inject GitHub token into requests
+ *
+ * SECURITY PRACTICES:
+ * - Token added ONLY to backend API endpoints, not external URLs
+ * - Token never logged or exposed in errors
+ * - 401 errors trigger logout
+ * - Prevents token leakage to third-party services
+ */
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  private readonly BACKEND_API_PATTERN = /^\/api\/|^http:\/\/localhost|^https:\/\/localhost/;
+
+  constructor(private readonly authService: AuthService) {}
+
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Only add token to backend API requests (not external URLs)
+    if (this.shouldAddToken(request)) {
+      const token = this.authService.getToken();
+
+      if (token) {
+        // Clone request and add Authorization header
+        request = request.clone({
+          setHeaders: {
+            Authorization: `token ${token}`,
+            'X-Requested-With': 'XMLHttpRequest', // CSRF protection
+          },
+        });
+      }
+    }
+
+    return next.handle(request).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Handle auth-related errors
+        if (error.status === 401 || error.status === 403) {
+          // Invalid/expired token - logout user
+          this.authService.logout();
+          console.warn('Session expired. Please login again.');
+        }
+
+        // Never expose token in error messages
+        const safeError = this.sanitizeError(error);
+        return throwError(() => safeError);
+      }),
+    );
+  }
+
+  /**
+   * SHOULD ADD TOKEN: Determine if token should be added to request
+   * - Only add to backend API endpoints
+   * - Skip external URLs, GitHub OAuth, etc.
+   */
+  private shouldAddToken(request: HttpRequest<unknown>): boolean {
+    const url = request.url.toLowerCase();
+
+    // Add token only to internal API endpoints
+    if (this.BACKEND_API_PATTERN.test(url)) {
+      return true;
+    }
+
+    // Don't add token to:
+    // - External GitHub API (uses token in request body if needed)
+    // - Google Analytics, CDNs, etc.
+    return false;
+  }
+
+  /**
+   * SANITIZE ERROR: Remove sensitive info from error messages
+   */
+  private sanitizeError(error: HttpErrorResponse): HttpErrorResponse {
+    // Create safe error response without exposing internal details
+    const safeError = {
+      ...error,
+      error: typeof error.error === 'object' ? { message: error.message } : error.error,
+    };
+
+    // Don't expose full error details in production
+    if (error.status === 401) {
+      return new HttpErrorResponse({
+        error: 'Authentication failed. Please check your token.',
+        status: error.status,
+        statusText: 'Unauthorized',
+        url: error.url || undefined,
+      });
+    }
+
+    if (error.status === 403) {
+      return new HttpErrorResponse({
+        error: 'Access denied. Check token permissions.',
+        status: error.status,
+        statusText: 'Forbidden',
+        url: error.url || undefined,
+      });
+    }
+
+    return safeError;
+  }
+}
