@@ -221,9 +221,9 @@ export class PrivateRepoAnalysisComponent implements OnInit {
     /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+\/?$/;
 
   constructor(
-    private fb: FormBuilder,
-    private http: HttpClient,
-    public authService: AuthService,
+    private readonly fb: FormBuilder,
+    private readonly http: HttpClient,
+    public readonly authService: AuthService,
   ) {
     this.analysisForm = this.fb.group({
       repoUrl: ['', [Validators.required, Validators.pattern(this.GITHUB_URL_PATTERN)]],

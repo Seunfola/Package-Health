@@ -17,9 +17,9 @@
   <div class="alert-check" [title]="checkLabel">{{ checkLabel }}</div>
   <div class="alert-file" [title]="fileLabel">{{ fileLabel }}</div>
 
-  @if (vulnerability?.description) {
-    <div class="alert-description" [title]="vulnerability.description">
-      {{ vulnerability.description | slice: 0: 80 }}{{ vulnerability.description.length > 80 ? '...' : '' }}
+  @if (hasDescription && descriptionTruncated) {
+    <div class="alert-description" [title]="vulnerability?.description || ''">
+      {{ descriptionTruncated }}
     </div>
   }
 

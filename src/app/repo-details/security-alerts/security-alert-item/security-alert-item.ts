@@ -63,4 +63,23 @@ export class SecurityAlertItem {
     }
     return this.status === 'Open' ? 'open' : 'resolved';
   }
+
+  /**
+   * Get truncated description (max 80 chars) with ellipsis
+   * Returns null if description doesn't exist, preventing template errors
+   */
+  get descriptionTruncated(): string | null {
+    if (!this.vulnerability?.description) {
+      return null;
+    }
+    const desc = this.vulnerability.description;
+    return desc.length > 80 ? `${desc.slice(0, 80)}...` : desc;
+  }
+
+  /**
+   * Check if description exists and is not empty
+   */
+  get hasDescription(): boolean {
+    return !!this.vulnerability?.description && this.vulnerability.description.trim().length > 0;
+  }
 }
