@@ -9,6 +9,7 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { environment } from '@/environment/environment';
 
 /**
  * HTTP INTERCEPTOR: Securely inject GitHub token into requests
@@ -21,7 +22,8 @@ import { AuthService } from './auth.service';
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private readonly BACKEND_API_PATTERN = /^\/api\/|^http:\/\/localhost|^https:\/\/localhost/;
+  private readonly BACKEND_API_PATTERN =
+    /^\/api\/|^http:\/\/localhost|^https:\/\/localhost|^https?:\/\/[^/]+\/api\//;
 
   constructor(private readonly authService: AuthService) {}
 
@@ -34,7 +36,7 @@ export class AuthInterceptor implements HttpInterceptor {
         // Clone request and add Authorization header
         request = request.clone({
           setHeaders: {
-            Authorization: `token ${token}`,
+            Authorization: `Bearer ${token}`,
             'X-Requested-With': 'XMLHttpRequest', // CSRF protection
           },
         });
@@ -64,9 +66,13 @@ export class AuthInterceptor implements HttpInterceptor {
    */
   private shouldAddToken(request: HttpRequest<unknown>): boolean {
     const url = request.url.toLowerCase();
+    const apiBase = environment.apiBaseUrl.toLowerCase();
 
     // Add token only to internal API endpoints
     if (this.BACKEND_API_PATTERN.test(url)) {
+      return true;
+    }
+    if (url.startsWith(apiBase)) {
       return true;
     }
 
