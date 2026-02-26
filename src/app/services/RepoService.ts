@@ -18,6 +18,23 @@ export interface DependencyData {
   links: DependencyLink[];
 }
 
+export interface VulnerabilityDetails {
+  id: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  title: string;
+  package: string;
+  vulnerable_version_range: string;
+  first_patched_version: string | null;
+  state: 'open' | 'fixed' | 'dismissed';
+  created_at: string;
+  description?: string;
+}
+
+export interface SecurityAlertSummary {
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  count: number;
+}
+
 export interface AnalysisData {
   repoName: string;
   stars: number;
@@ -29,12 +46,20 @@ export interface AnalysisData {
   commitLabels: string[];
   overallHealth: number;
   dependencyData?: DependencyData;
+  securityAlerts?: VulnerabilityDetails[];
+  securitySummary?: SecurityAlertSummary[];
+  totalVulnerabilities?: number;
+  healthMetrics?: {
+    security: number;
+    performance: number;
+    reliability: number;
+    maintainability: number;
+  };
 }
-
 
 @Injectable({ providedIn: 'root' })
 export class RepoService {
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getAnalysisData(owner: string, name: string): Observable<AnalysisData> {
     return this.http.get<AnalysisData>(

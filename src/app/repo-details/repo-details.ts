@@ -66,9 +66,9 @@ export class RepoDetails implements OnInit {
   public lineChartType: ChartType = 'line';
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private repoService: RepoService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly repoService: RepoService,
   ) {}
 
   ngOnInit() {
