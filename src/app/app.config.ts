@@ -4,7 +4,6 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
@@ -23,7 +22,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
     LoaderService,
     AuthService,
