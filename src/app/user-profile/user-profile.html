@@ -1,5 +1,8 @@
 <div class="profile-container">
   <h1 class="page-title">User Profile</h1>
+  @if (statusMessage) {
+    <p class="card-description">{{ statusMessage }}</p>
+  }
 
   <div class="profile-content">
 
@@ -9,6 +12,12 @@
         <img [src]="userAvatar" alt="User Avatar" class="user-avatar">
         <h3 class="user-name">{{ userName }}</h3>
         <p class="user-email">{{ userEmail }}</p>
+        @if (phoneNumber) {
+          <p class="user-email">{{ phoneNumber }}</p>
+        }
+        @if (location) {
+          <p class="user-email">{{ location }}</p>
+        }
       </div>
 
       <div class="profile-card social-accounts-connected">
@@ -48,9 +57,15 @@
             <img src="assets/icons/upload.svg" alt="upload" class="upload-icon" width="20" height="20" />
             Upload Resume (PDF)
           </label>
-          <input id="resume-upload" type="file" accept=".pdf" (change)="onFileSelected($event)">
+          <input id="resume-upload" type="file" accept=".pdf,.txt,.md,.json" (change)="onFileSelected($event)">
         </div>
         <p class="file-status">{{ resumeFileName ? resumeFileName : 'No resume file selected.' }}</p>
+        @if (profileSummary) {
+          <p class="card-description">{{ profileSummary }}</p>
+        }
+        @if (skills.length > 0) {
+          <p class="card-description">Skills: {{ skills.join(', ') }}</p>
+        }
       </div>
 
       <div class="profile-card social-media-link">
@@ -79,6 +94,10 @@
             <input type="text" [(ngModel)]="twitterHandle" placeholder="Your Twitter Handle">
           </div>
           <button class="link-btn" (click)="linkTwitter()">Link Twitter</button>
+        </div>
+        <div class="social-link-form">
+          <button class="link-btn" (click)="saveProfile()">Save Profile</button>
+          <button class="link-btn" (click)="exportProfileFile()">Download Profile JSON</button>
         </div>
 
       </div>

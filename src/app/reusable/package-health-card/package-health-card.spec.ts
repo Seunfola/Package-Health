@@ -8,12 +8,16 @@ describe('PackageHealthCard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PackageHealthCard]
-    })
-    .compileComponents();
+      imports: [PackageHealthCard],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PackageHealthCard);
     component = fixture.componentInstance;
+    component.feature = {
+      title: 'Security',
+      description: 'Dependency checks and alerts',
+      icon: 'assets/icons/shield.svg',
+    };
     fixture.detectChanges();
   });
 
