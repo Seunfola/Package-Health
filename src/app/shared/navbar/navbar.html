@@ -1,6 +1,6 @@
 <header class="navbar">
   <div class="navbar__logo">
-    <img ngSrc="assets/icons/logo.svg" alt="logo" width="40" height="40" />
+    <img ngSrc="assets/icons/logo.svg" alt="logo" width="40" height="31" priority />
   </div>
 
   <div class="navbar__center">
@@ -41,6 +41,6 @@
 
 @if (showLoginModal) {
 <div class="modal-overlay" (click)="closeLoginModal()" (keydown.escape)="closeLoginModal()" role="dialog" aria-modal="true" aria-label="Login modal">
-  <app-login-card (click)="$event.stopPropagation()" (close)="closeLoginModal()" role="document" aria-label="Login card"></app-login-card>
+  <app-auth-login (click)="$event.stopPropagation()" role="document" aria-label="Login card"></app-auth-login>
 </div>
 }
