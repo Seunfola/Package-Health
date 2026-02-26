@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '@/environment/environment';
 
 export interface DependencyNode {
   id: string;
@@ -63,7 +64,7 @@ export class RepoService {
 
   getAnalysisData(owner: string, name: string): Observable<AnalysisData> {
     return this.http.get<AnalysisData>(
-      `/api/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/analysis`,
+      `${environment.apiBaseUrl}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/analysis`,
     );
   }
 }

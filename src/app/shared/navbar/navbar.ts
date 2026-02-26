@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { AuthService } from '@/app/services/auth';
-import { LoginCard } from '../login-card/login-card';
+import { AuthService } from '@/app/services/auth.service';
+import { AuthLogin } from '@/app/services/auth-login.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, LoginCard],
+  imports: [CommonModule, NgOptimizedImage, AuthLogin],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css'],
 })

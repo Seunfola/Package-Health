@@ -1,14 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpInterceptorFn } from '@angular/common/http';
+import { ProgressInterceptor } from './progress-interceptor';
+import { LoaderService } from './loader';
 
-import { progressInterceptor } from './progress-interceptor';
-
-describe('progressInterceptor', () => {
-  const interceptor: HttpInterceptorFn = (req, next) => 
-    TestBed.runInInjectionContext(() => progressInterceptor(req, next));
+describe('ProgressInterceptor', () => {
+  let interceptor: ProgressInterceptor;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
+    interceptor = new ProgressInterceptor(TestBed.inject(LoaderService));
   });
 
   it('should be created', () => {

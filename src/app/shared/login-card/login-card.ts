@@ -12,8 +12,4 @@ export class LoginCard {
   loginWithGithub(): void {
     this.authService.loginWithGithub();
   }
-
-  loginWithGoogle(): void {
-    this.authService.loginWithGoogle();
-  }
 }
