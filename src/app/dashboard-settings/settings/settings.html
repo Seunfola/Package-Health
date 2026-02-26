@@ -38,8 +38,8 @@
     <app-settings-input title="Dependency Update Frequency"
       subtitle="Choose how often you want to be notified about dependency updates.">
       <div class="select-container">
-        <select [(ngModel)]="dependencyUpdateFrequency" class="settings-select"
-          aria-label="Dependency update frequency">
+        <label for="dependencyUpdateFrequencySelect" class="sr-only">Dependency update frequency</label>
+        <select id="dependencyUpdateFrequencySelect" [(ngModel)]="dependencyUpdateFrequency" class="settings-select">
           @for (freq of frequencies; track freq) {
           <option [ngValue]="freq">
             {{ freq }}
@@ -57,4 +57,11 @@
       </div>
     </app-settings-input>
   </app-settings-card>
+
+  <app-settings-card title="GitHub Authentication" 
+    subtitle="Manage your GitHub token for analyzing private repositories and accessing advanced features.">
+    <app-auth-login></app-auth-login>
+  </app-settings-card>
+
+  <app-private-repo-analysis></app-private-repo-analysis>
 </div>
