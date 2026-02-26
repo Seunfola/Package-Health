@@ -43,6 +43,11 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
+# dotenv files
+.env
+.env.local
+.env.*.local
+
 ## Panda
 styled-system
 styled-system-studio
