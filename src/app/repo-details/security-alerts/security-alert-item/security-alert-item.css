@@ -1,11 +1,21 @@
 .alert-item {
   display: grid;
-  grid-template-columns: 80px 1fr 1fr 80px;
+  grid-template-columns: 80px 1fr 1fr 1fr 80px;
   gap: 16px;
   padding: 12px 16px;
   align-items: center;
   border-bottom: 1px solid #343a40;
   transition: background-color 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.alert-item.critical {
+  border-left-color: #dc2626;
+  background-color: rgba(220, 38, 38, 0.05);
+}
+
+.alert-item.open {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .alert-severity {
@@ -14,6 +24,10 @@
   border-radius: 4px;
   text-align: center;
   color: white;
+}
+
+.alert-severity.critical {
+  background-color: #dc2626;
 }
 
 .alert-severity.high {
@@ -29,10 +43,14 @@
 }
 
 .alert-check,
-.alert-file {
+.alert-file,
+.alert-description {
   font-size: 14px;
   color: #e2e8f0;
   word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .alert-status {
@@ -56,11 +74,33 @@
   color: white;
 }
 
+@media (max-width: 768px) {
+  .alert-item {
+    grid-template-columns: 70px 1fr 80px;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .alert-file,
+  .alert-description {
+    display: none;
+  }
+
+  .alert-status {
+    justify-self: start;
+  }
+}
+
 @media (max-width: 600px) {
   .alert-item {
     grid-template-columns: 1fr;
     gap: 8px;
     padding: 12px;
+  }
+
+  .alert-file,
+  .alert-description {
+    display: block;
   }
 
   .alert-status {
