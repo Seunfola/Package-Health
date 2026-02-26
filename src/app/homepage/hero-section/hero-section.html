@@ -29,7 +29,10 @@
         @if (activeTab === 'github') {
         <div class="input-wrapper">
           <input type="text" [(ngModel)]="repository" placeholder="Enter GitHub repository (e.g., org/repo)" />
-          <input type="password" [(ngModel)]="githubToken" placeholder="GitHub Personal Access Token" />
+          <small>
+            Public repositories can be analyzed without login. Private repositories require a GitHub token from
+            Dashboard Settings.
+          </small>
         </div>
         }
 
@@ -54,6 +57,18 @@
         </div>
         }
       </div>
+
+      @if (analysisWarnings.length > 0) {
+      <div class="input-wrapper">
+        <p>Package security warnings:</p>
+        <ul>
+          @for (warning of analysisWarnings; track warning) {
+          <li>{{ warning }}</li>
+          }
+        </ul>
+      </div>
+      }
+
       <button type="button" class="analyze-button" (click)="analyzeData()" [disabled]="isAnalyzing">
         {{ isAnalyzing ? 'Analyzing...' : 'Analyze' }}
       </button>
