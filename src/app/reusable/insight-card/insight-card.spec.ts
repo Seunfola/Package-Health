@@ -8,12 +8,17 @@ describe('InsightCard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InsightCard]
-    })
-    .compileComponents();
+      imports: [InsightCard],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(InsightCard);
     component = fixture.componentInstance;
+    component.insight = {
+      title: 'Security',
+      description: 'Strong score',
+      value: '92',
+      icon: 'assets/icons/shield.svg',
+    } as any;
     fixture.detectChanges();
   });
 
