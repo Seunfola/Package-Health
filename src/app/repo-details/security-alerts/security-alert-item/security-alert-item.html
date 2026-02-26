@@ -1,14 +1,33 @@
-<div class="alert-item" [class.open]="status === 'Open'" [class.resolved]="status === 'Resolved'">
-
-  <div class="alert-severity" [class.high]="severity === 'High'" [class.medium]="severity === 'Medium'"
-    [class.low]="severity === 'Low'">
-    {{ severity }}
+<div
+  class="alert-item"
+  [class.open]="stateClass === 'open'"
+  [class.resolved]="stateClass === 'resolved'"
+  [class.critical]="vulnerability?.severity === 'critical'"
+>
+  <div
+    class="alert-severity"
+    [class.critical]="severityLabel === 'Critical' || vulnerability?.severity === 'critical'"
+    [class.high]="severityLabel === 'High' || vulnerability?.severity === 'high'"
+    [class.medium]="severityLabel === 'Medium' || vulnerability?.severity === 'medium'"
+    [class.low]="severityLabel === 'Low' || vulnerability?.severity === 'low'"
+  >
+    {{ severityLabel }}
   </div>
 
-  <div class="alert-check">{{ check }}</div>
-  <div class="alert-file">{{ file }}</div>
+  <div class="alert-check" [title]="checkLabel">{{ checkLabel }}</div>
+  <div class="alert-file" [title]="fileLabel">{{ fileLabel }}</div>
 
-  <div class="alert-status" [class.resolved]="status === 'Resolved'" [class.open]="status === 'Open'">
-    {{ status }}
+  @if (hasDescription && descriptionTruncated) {
+    <div class="alert-description" [title]="vulnerability?.description || ''">
+      {{ descriptionTruncated }}
+    </div>
+  }
+
+  <div
+    class="alert-status"
+    [class.resolved]="stateClass === 'resolved'"
+    [class.open]="stateClass === 'open'"
+  >
+    {{ statusLabel }}
   </div>
 </div>

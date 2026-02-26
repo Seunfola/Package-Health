@@ -1,0 +1,115 @@
+<div class="auth-login-container">
+  <ng-container *ngIf="(authState$ | async) as auth">
+    <!-- NOT AUTHENTICATED: Show login form -->
+    @if (!auth.isAuthenticated) {
+      <div class="auth-section">
+        <div class="auth-header">
+          <h3>GitHub Authentication</h3>
+          <p>Analyze private repositories with a GitHub personal access token</p>
+        </div>
+
+        @if (!showTokenInput) {
+          <button (click)="toggleTokenInput()" class="btn btn-primary">
+            <span class="icon">🔐</span>
+            Connect GitHub Account
+          </button>
+        } @else {
+          <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="token-form">
+            <div class="form-group">
+              <label for="token">GitHub Personal Access Token</label>
+              <input
+                type="password"
+                id="token"
+                formControlName="token"
+                placeholder="ghp_..."
+                class="token-input"
+                autocomplete="off"
+                [attr.aria-label]="'GitHub token input'"
+              />
+              
+              @if (getFormError()) {
+                <div class="form-error">{{ getFormError() }}</div>
+              }
+
+              <div class="token-instructions">
+                <p>
+                  <strong>How to create a token:</strong>
+                </p>
+                <ol>
+                  <li>Go to <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">GitHub Settings</a></li>
+                  <li>Click "Generate new token"</li>
+                  <li>Select scopes: <code>repo</code>, <code>read:security_events</code></li>
+                  <li>Copy and paste token below</li>
+                </ol>
+                <button
+                  type="button"
+                  (click)="openGitHubTokenSettings()"
+                  class="btn btn-secondary"
+                >
+                  Create Token on GitHub
+                </button>
+              </div>
+            </div>
+
+            @if (errorMessage) {
+              <div class="alert alert-error">{{ errorMessage }}</div>
+            }
+
+            <div class="form-actions">
+              <button
+                type="submit"
+                [disabled]="loginForm.invalid || isLoading"
+                class="btn btn-primary"
+              >
+                @if (isLoading) {
+                  <span>Authenticating...</span>
+                } @else {
+                  <span>Authenticate</span>
+                }
+              </button>
+              <button
+                type="button"
+                (click)="toggleTokenInput()"
+                class="btn btn-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+
+            <div class="security-notice">
+              <span class="icon">ℹ️</span>
+              <p>
+                <strong>Security:</strong> Your token is stored securely in your session and
+                automatically cleared when you close the browser.
+              </p>
+            </div>
+          </form>
+        }
+      </div>
+    }
+
+    <!-- AUTHENTICATED: Show user info and logout button -->
+    @if (auth.isAuthenticated) {
+      <div class="auth-section authenticated">
+        <div class="auth-status">
+          <div class="status-icon">✓</div>
+          <div class="status-info">
+            <h4>Connected</h4>
+            <p>{{ auth.username || 'GitHub User' }}</p>
+          </div>
+          <button (click)="onLogout()" class="btn btn-danger">Logout</button>
+        </div>
+
+        <div class="token-expiry">
+          <span class="label">Session expires in:</span>
+          <span class="value">{{ getTokenStatus().expiresIn }}</span>
+        </div>
+      </div>
+    }
+  </ng-container>
+
+  <!-- SUCCESS MESSAGE -->
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+</div>
