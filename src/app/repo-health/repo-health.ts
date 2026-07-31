@@ -1,74 +1,63 @@
-import { Component } from '@angular/core';
-import { StatusCard } from '../reusable/status-card/status-card';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CommitActivityChart } from '../reusable/charts/commit-activity-chart/commit-activity-chart';
-import { DependencyUpdateChart } from '../reusable/charts/dependency-update-chart/dependency-update-chart';
-import { IssueResolutionChart } from '../reusable/charts/issue-resolution-chart/issue-resolution-chart';
+import { StatusCard } from '../reusable/status-card/status-card';
+import { TrendChart } from '../reusable/charts/trend-chart/trend-chart';
+import { ScannerService, ScanResult } from '../services/scanner.service';
 
 @Component({
   selector: 'app-repo-health',
   standalone: true,
   imports: [
-    StatusCard,
     CommonModule,
-    CommitActivityChart,
-    DependencyUpdateChart,
-    IssueResolutionChart,
+    StatusCard,
+    TrendChart,
   ],
   templateUrl: './repo-health.html',
   styleUrl: './repo-health.css',
 })
-export class RepoHealth {
-  statusCards = [
-    {
-      title: 'Health Score',
-      value: '92/100',
-      icon: 'assets/icons/scale.svg',
-      iconContainerBg: '#F59E0B33',
-      iconFillColor:
-        'invert(87%) sepia(31%) saturate(285%) hue-rotate(346deg) brightness(101%) contrast(92%)',
-      cardBorderRadius: '10px',
-    },
-    {
-      title: 'Open Issues',
-      value: '14',
-      icon: 'assets/icons/bug.svg',
-      iconContainerBg: '#CB525233',
-      iconFillColor: 'invert(100%)',
-      cardBorderRadius: '6px',
-    },
-    {
-      title: 'Pull Requests',
-      value: '7',
-      icon: 'assets/icons/gitpull.svg',
-      iconContainerBg: '#007A7A33',
-      iconFillColor: 'invert(100%)',
-      cardBorderRadius: '6px',
-    },
-    {
-      title: 'Contributors',
-      value: '28',
-      icon: 'assets/icons/users.svg',
-      iconContainerBg: '#E08F4D33',
-      iconFillColor: 'invert(100%)',
-      cardBorderRadius: '6px',
-    },
-    {
-      title: 'Stars',
-      value: '1.2K',
-      icon: 'assets/icons/star.svg',
-      iconContainerBg: '#F59E0B33',
-      iconFillColor:
-        'invert(79%) sepia(8%) saturate(3015%) hue-rotate(5deg) brightness(98%) contrast(91%)',
-      cardBorderRadius: '6px',
-    },
-    {
-      title: 'Forks',
-      value: '156',
-      icon: 'assets/icons/gitfork.svg',
-      iconContainerBg: '#0EA5E933',
-      iconFillColor: 'invert(100%)',
-      cardBorderRadius: '6px',
-    },
-  ];
+export class RepoHealth implements OnInit {
+  trustScore = 100;
+  lastScanned = 'Fetching...';
+  hasCriticalVulnerabilities = false;
+  riskyDependencies: any[] = [];
+  statusCards: any[] = [];
+  scanHistory: any[] = [];
+  isLoading = true;
+
+  constructor(private scannerService: ScannerService) {}
+
+  ngOnInit() {
+    this.fetchData();
+  }
+
+  fetchData() {
+    this.isLoading = true;
+    // We scan 'express' as an MVP example
+    this.scannerService.scanPackage('npm', 'express', 'latest').subscribe({
+      next: (result: ScanResult) => {
+        this.trustScore = result.trustScore;
+        this.lastScanned = result.lastScanned;
+        this.hasCriticalVulnerabilities = result.hasCriticalVulnerabilities;
+        this.riskyDependencies = result.riskyDependencies;
+        this.statusCards = result.statusCards;
+        this.isLoading = false;
+
+        // Fetch historical data after successful scan
+        this.scannerService.getScanHistory('npm', 'express').subscribe(
+          history => this.scanHistory = history
+        );
+      },
+      error: (err) => {
+        console.error('Failed to fetch trust score', err);
+        // Fallback to error UI / mock data if backend isn't running yet
+        this.lastScanned = 'Error fetching data';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  get strokeDashoffset(): number {
+    const circumference = 2 * Math.PI * 45; // r=45
+    return circumference - (this.trustScore / 100) * circumference;
+  }
 }
