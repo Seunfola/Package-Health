@@ -1,12 +1,7 @@
 <h2>Why Choose DepVault?</h2>
 <div class="updates-grid">
   <div class="updates-col left">
-    <app-package-health-card
-      title="Unmatched Security Insights"
-      subtitle="Gain unparalleled visibility into your project’s health with real-time dependency analysis and vulnerability detection."
-      buttonText="Learn more"
-    ></app-package-health-card>
-
+    <app-package-health-card [feature]="features[0]"></app-package-health-card>
     <div class="updates-card small">
       <h3>Automated Health Monitoring</h3>
       <p>Seamlessly integrate continuous monitoring into your workflow, ensuring your repository remains secure without manual intervention.</p>
@@ -14,24 +9,12 @@
   </div>
 
   <div class="updates-col middle">
-    <app-package-health-card
-      title="Actionable Health Reports"
-      subtitle="Receive detailed reports highlighting potential risks and actionable steps to improve your repository's overall health score."
-    ></app-package-health-card>
-
-    <app-package-health-card
-      title="Proactive Risk Mitigation"
-      subtitle="Identify and address vulnerabilities before they escalate. Stay ahead of issues with proactive alerts and expert recommendations."
-    ></app-package-health-card>
+    <app-package-health-card [feature]="features[1]"></app-package-health-card>
+    <app-package-health-card [feature]="features[2]"></app-package-health-card>
   </div>
 
   <div class="updates-col right">
-    <app-package-health-card
-      title="Comprehensive Metric Tracking"
-      subtitle="Monitor key performance indicators like maintainability, reliability, and security over time to track your project's improvement."
-      buttonText="Get started"
-    ></app-package-health-card>
-
+    <app-package-health-card [feature]="features[3]"></app-package-health-card>
     <div class="updates-card small">
       <h3>Developer-Centric Tools</h3>
       <p>Equip your team with intuitive tools designed to streamline the debugging process and enforce best practices effortlessly.</p>
