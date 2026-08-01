@@ -208,7 +208,7 @@ export class HeroSection {
       const token = this.authService.getToken();
       const headers: Record<string, string> = {
         Accept: 'application/vnd.github+json',
-        'User-Agent': 'PackageHealth',
+        'User-Agent': 'DepVault',
       };
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
