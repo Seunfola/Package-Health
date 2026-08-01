@@ -142,7 +142,7 @@ export class AuthService {
       const response = await fetch('https://api.github.com/user', {
         headers: {
           Authorization: `token ${token}`,
-          'User-Agent': 'PackageHealth',
+          'User-Agent': 'DepVault',
           Accept: 'application/vnd.github.v3+json',
         },
         signal: controller.signal,
@@ -166,7 +166,7 @@ export class AuthService {
       const response = await fetch('https://api.github.com/user', {
         headers: {
           Authorization: `token ${token}`,
-          'User-Agent': 'PackageHealth',
+          'User-Agent': 'DepVault',
           Accept: 'application/vnd.github.v3+json',
         },
       });
