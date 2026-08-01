@@ -1,64 +1,74 @@
+import { Component, OnInit } from '@angular/core';
+import { NotificationItem as NotificationItemComponent } from './notification-item/notification-item';
+import { NotificationService, NotificationResponse } from '@/app/services/notification.service';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { NotificationItem } from './notification-item/notification-item';
 
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [CommonModule, NotificationItem, ],
+  imports: [CommonModule, NotificationItemComponent],
   templateUrl: './notification.html',
   styleUrl: './notification.css',
 })
-export class Notification {
-  notifications = [
-    {
-      type: 'Security Vulnerability',
-      title: "High severity vulnerability detected in 'lodash'",
-      repository: 'PackageHealth/FrontendApp',
-      time: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      iconType: 'alert',
-    },
-    {
-      type: 'Dependency Update',
-      title: "New version of 'react' available (V18.2.0)",
-      repository: 'PackageHealth/FrontendApp',
-      time: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      iconType: 'gitfork',
-    },
-    {
-      type: 'New Issue',
-      title: 'Issue #123: Dashboard chart not loading data created',
-      repository: 'PackageHealth/AnalyticsService',
-      time: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      iconType: 'bug',
-    },
-    {
-      type: 'Pull Request',
-      title: "PR #56: 'Feature/user-profile-enhancements' reviewed",
-      repository: 'PackageHealth/BackendApi',
-      time: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      iconType: 'gitpull',
-    },
-    {
-      type: 'System Alert',
-      title: "Repository 'PackageHealth/Docs' health score dropped below 70%",
-      repository: 'PackageHealth/Docs',
-      time: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
-      iconType: 'notification',
-    },
-    {
-      type: 'Security Vulnerability',
-      title: "Critical dependency 'minimist' needs urgent update",
-      repository: 'PackageHealth/SharedComponents',
-      time: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000),
-      iconType: 'alert',
-    },
-    {
-      type: 'Dependency Update',
-      title: "Minor update for 'tailwindcss' available",
-      repository: 'PackageHealth/MarketingSite',
-      time: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      iconType: 'gitfork',
-    },
-  ];
+export class Notification implements OnInit {
+  notifications: any[] = [];
+  isLoading = true;
+  error = '';
+
+  constructor(private readonly notificationService: NotificationService) {}
+
+  ngOnInit(): void {
+    this.fetchNotifications();
+  }
+
+  fetchNotifications(): void {
+    this.isLoading = true;
+    this.notificationService.getNotifications().subscribe({
+      next: (data) => {
+        this.notifications = data.map(n => ({
+          id: n.id,
+          type: n.type,
+          title: n.title,
+          repository: n.repository || 'System',
+          time: new Date(n.createdAt),
+          iconType: this.getIconType(n.type),
+          isRead: n.isRead
+        }));
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching notifications:', err);
+        this.error = 'Failed to load notifications.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  getIconType(type: string): string {
+    const t = type.toLowerCase();
+    if (t.includes('security') || t.includes('vulnerability')) return 'alert';
+    if (t.includes('dependency') || t.includes('update')) return 'gitfork';
+    if (t.includes('issue')) return 'bug';
+    if (t.includes('pull request') || t.includes('pr')) return 'gitpull';
+    return 'notification';
+  }
+
+  markAsRead(id: string): void {
+    this.notificationService.markAsRead(id).subscribe({
+      next: () => {
+        const notif = this.notifications.find(n => n.id === id);
+        if (notif) notif.isRead = true;
+      },
+      error: (err) => console.error('Error marking as read:', err)
+    });
+  }
+
+  markAllAsRead(): void {
+    this.notificationService.markAllAsRead().subscribe({
+      next: () => {
+        this.notifications.forEach(n => n.isRead = true);
+      },
+      error: (err) => console.error('Error marking all as read:', err)
+    });
+  }
 }

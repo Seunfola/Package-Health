@@ -64,4 +64,14 @@
   </app-settings-card>
 
   <app-private-repo-analysis></app-private-repo-analysis>
+
+  <div class="save-actions" style="display: flex; justify-content: flex-end; align-items: center; margin-top: 24px; gap: 16px;">
+    @if (message) {
+      <span class="status-message" style="color: #10b981; font-size: 14px;">{{ message }}</span>
+    }
+    <button class="save-button" (click)="savePreferences()" [disabled]="isLoading || isSaving"
+      style="background: #10b981; color: white; padding: 10px 20px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer; transition: background 0.2s;">
+      {{ isSaving ? 'Saving...' : 'Save Preferences' }}
+    </button>
+  </div>
 </div>

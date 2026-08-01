@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -20,6 +21,46 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient) {
     this.cleanupExpiredToken();
+  }
+
+  loginWithGithub(): void {
+    window.location.href = `${environment.authUrl}/github`;
+  }
+
+  loginWithGoogle(): void {
+    window.location.href = `${environment.authUrl}/google`;
+  }
+
+  async setJwtToken(token: string): Promise<boolean> {
+    try {
+      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.encryptToken(token));
+      
+      // Fetch user profile from backend using the newly stored JWT
+      const profile = await this.fetchUserProfile();
+      
+      const authState: AuthState = {
+        isAuthenticated: true,
+        username: profile?.username || 'OAuth User',
+        lastAuthTime: Date.now(),
+      };
+      
+      localStorage.setItem(this.AUTH_STATE_LOCAL_KEY, JSON.stringify(authState));
+      this.authStateSubject.next(authState);
+      return true;
+    } catch (e) {
+      console.error('Failed to set JWT token or fetch profile', e);
+      return false;
+    }
+  }
+
+  private async fetchUserProfile(): Promise<any> {
+    try {
+      // The AuthInterceptor will attach the Bearer token automatically
+      const response = await this.http.get(`${environment.authUrl}/me`).toPromise();
+      return response;
+    } catch {
+      return null;
+    }
   }
 
   /**

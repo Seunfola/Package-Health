@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SettingsItem } from './settings-item/settings-item';
 import { FormsModule } from '@angular/forms';
 import { SettingsCard } from './settings-card/settings-card';
 import { SettingsInput } from './settings-input/settings-input';
 import { AuthLogin } from '@/app/services/auth-login.component';
 import { PrivateRepoAnalysisComponent } from '@/app/services/private-repo-analysis.component';
+import { PreferencesService, UpdatePreferencesDto } from '@/app/services/preferences.service';
 
 @Component({
   selector: 'app-settings',
@@ -22,7 +23,7 @@ import { PrivateRepoAnalysisComponent } from '@/app/services/private-repo-analys
   templateUrl: './settings.html',
   styleUrl: './settings.css',
 })
-export class Settings {
+export class Settings implements OnInit {
   codeQualityScore = true;
   testCoverage = true;
   dependencyVulnerabilities = true;
@@ -30,8 +31,78 @@ export class Settings {
 
   emailNotifications = true;
   inAppNotifications = true;
-  securityThreshold = '80%';
+  securityThreshold = '80'; // Keeping as string to match input, but will parse to number
   dependencyUpdateFrequency = 'Daily';
 
   frequencies = ['Daily', 'Weekly', 'Monthly'];
+  
+  isLoading = true;
+  isSaving = false;
+  message = '';
+
+  constructor(private readonly preferencesService: PreferencesService) {}
+
+  ngOnInit(): void {
+    this.loadPreferences();
+  }
+
+  loadPreferences(): void {
+    this.isLoading = true;
+    this.preferencesService.getPreferences().subscribe({
+      next: (prefs) => {
+        const db = prefs.dashboardMetrics;
+        const np = prefs.notificationPreferences;
+        
+        this.codeQualityScore = db.codeQualityScore;
+        this.testCoverage = db.testCoverage;
+        this.dependencyVulnerabilities = db.dependencyVulnerabilities;
+        this.securityAlerts = db.securityAlerts;
+        
+        this.emailNotifications = np.emailNotifications;
+        this.inAppNotifications = np.inAppNotifications;
+        this.securityThreshold = np.securityAlertThreshold.toString();
+        this.dependencyUpdateFrequency = np.dependencyUpdateFrequency.charAt(0).toUpperCase() + np.dependencyUpdateFrequency.slice(1);
+        
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load preferences', err);
+        // Fallback to defaults or keep UI defaults if backend has no preferences yet
+        this.isLoading = false;
+      }
+    });
+  }
+
+  savePreferences(): void {
+    this.isSaving = true;
+    this.message = '';
+    
+    const payload: UpdatePreferencesDto = {
+      dashboardMetrics: {
+        codeQualityScore: this.codeQualityScore,
+        testCoverage: this.testCoverage,
+        dependencyVulnerabilities: this.dependencyVulnerabilities,
+        securityAlerts: this.securityAlerts,
+      },
+      notificationPreferences: {
+        emailNotifications: this.emailNotifications,
+        inAppNotifications: this.inAppNotifications,
+        securityAlertThreshold: parseInt(this.securityThreshold.replace('%', ''), 10) || 80,
+        dependencyUpdateFrequency: this.dependencyUpdateFrequency.toLowerCase(),
+      }
+    };
+
+    this.preferencesService.updatePreferences(payload).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.message = 'Preferences saved successfully!';
+        setTimeout(() => this.message = '', 3000);
+      },
+      error: (err) => {
+        console.error('Failed to save preferences', err);
+        this.isSaving = false;
+        this.message = 'Failed to save preferences.';
+      }
+    });
+  }
 }
