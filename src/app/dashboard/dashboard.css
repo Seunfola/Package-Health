@@ -150,7 +150,7 @@
 
 .empty-state p {
   color: var(--text-muted);
-  max-w-md: 28rem;
+  max-width: 28rem;
   margin: 0 auto 2rem auto;
   line-height: 1.6;
 }
