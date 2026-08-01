@@ -86,7 +86,7 @@ export class HeroSection {
       }
 
       const response = await firstValueFrom(
-        this.http.post(`${environment.apiBaseUrl}/repo-health/analyze-url`, {
+        this.http.post(`${environment.apiBaseUrl}/repo-health/analyze`, {
           url: parsedRepo.url,
         }),
       );
@@ -114,7 +114,7 @@ export class HeroSection {
     this.isAnalyzing = true;
 
     this.http
-      .post(`${environment.apiBaseUrl}/repo-health/analyze-package/paste`, {
+      .post(`${environment.apiBaseUrl}/repo-health/dependencies/json`, {
         json: JSON.stringify(parsed),
       })
       .subscribe({
@@ -153,7 +153,7 @@ export class HeroSection {
     this.isAnalyzing = true;
     try {
       const response = await firstValueFrom(
-        this.http.post(`${environment.apiBaseUrl}/repo-health/analyze-package/upload`, formData),
+        this.http.post(`${environment.apiBaseUrl}/repo-health/dependencies/upload`, formData),
       );
       this.handleAnalysisResult(response);
     } catch (error) {

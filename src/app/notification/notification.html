@@ -15,7 +15,7 @@
     <div class="action-buttons">
       <a href="#" class="settings-link">Go to Notification Settings</a>
       <button class="updates-button">Updates</button>
-      <button class="mark-as-read-button">Mark all as read</button>
+      <button class="mark-as-read-button" (click)="markAllAsRead()">Mark all as read</button>
     </div>
   </div>
 
@@ -24,7 +24,8 @@
   <div class="notifications-list">
     @for (notification of notifications; track notification.title) {
     <app-notification-item [type]="notification.type" [title]="notification.title"
-      [repository]="notification.repository" [time]="notification.time" [iconType]="notification.iconType"></app-notification-item>
+      [repository]="notification.repository" [time]="notification.time" [iconType]="notification.iconType"
+      [isRead]="notification.isRead" (click)="!notification.isRead && markAsRead(notification.id)"></app-notification-item>
     }
   </div>
 </div>
