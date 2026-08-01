@@ -42,9 +42,31 @@
 }
 
 .social-link svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 2;
+  width: 24px;
+  height: 24px;
+  stroke: currentColor; /* Inherit color from parent */
+  transition: transform 0.3s ease;
+}
+
+.social-link:hover svg {
+  transform: scale(1.1); /* Slight zoom on hover */
+}
+
+/* Legal Links */
+.footer-legal {
+  margin-top: 1rem;
+}
+
+.legal-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.legal-link:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

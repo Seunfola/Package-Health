@@ -1,24 +1,97 @@
 <div class="repo-health-container">
-    <div class="header-section">
-        <h1>Repository Health Dashboard</h1>
-        <p>Overview of health metrics for PackageHealth/package-analyzer.</p>
+  
+  <!-- Critical Alert Banner -->
+  <div class="alert-banner" *ngIf="hasCriticalVulnerabilities">
+    <div class="alert-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <div class="alert-content">
+      <strong>CRITICAL RISK DETECTED:</strong> This repository contains 2 critical vulnerabilities that fall below the organizational threshold. Installation is currently blocked by DepVault policies.
+    </div>
+  </div>
+
+  <div class="header-section">
+      <h1>Trust Score Dashboard</h1>
+      <p>DepVault / my-startup-api <span class="scanned-badge">Scanned {{ lastScanned }}</span></p>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="gauge-card">
+      <div class="gauge-container">
+        <svg class="circular-chart" viewBox="0 0 100 100">
+          <path class="circle-bg"
+            d="M50 5
+               a 45 45 0 0 1 0 90
+               a 45 45 0 0 1 0 -90"
+          />
+          <path class="circle-fill" [ngClass]="{'critical': trustScore < 50, 'warning': trustScore >= 50 && trustScore < 80, 'healthy': trustScore >= 80}"
+            [attr.stroke-dasharray]="282.7"
+            [attr.stroke-dashoffset]="strokeDashoffset"
+            d="M50 5
+               a 45 45 0 0 1 0 90
+               a 45 45 0 0 1 0 -90"
+          />
+          <text x="50" y="55" class="percentage">{{ trustScore }}</text>
+        </svg>
+      </div>
+      <div class="gauge-info">
+        <h2>Overall Trust Score</h2>
+        <p>A score below 50 indicates severe architectural or security risks.</p>
+      </div>
     </div>
 
+    <!-- Breakdown Grid -->
     <div class="metrics-grid">
-        @for (card of statusCards; track card.title) {
-        <app-status-card [title]="card.title" [value]="card.value" [icon]="card.icon" [iconContainerBg]="card.iconContainerBg"
-          [iconFillColor]="card.iconFillColor" [cardBorderRadius]="card.cardBorderRadius"></app-status-card>
-        }
-
+      @for (card of statusCards; track card.title) {
+        <app-status-card 
+          [title]="card.title" 
+          [value]="card.value" 
+          [icon]="card.icon" 
+          [iconContainerBg]="card.iconContainerBg"
+          [iconFillColor]="card.iconFillColor" 
+          [cardBorderRadius]="card.cardBorderRadius">
+        </app-status-card>
+      }
     </div>
+  </div>
 
-  <div class="performance-trends">
-        <h2>Performance Trends</h2>
-    <section class="charts-container">
-        <app-commit-activity-chart></app-commit-activity-chart>
-        <app-issue-resolution-chart></app-issue-resolution-chart>
-        <app-dependency-update-chart></app-dependency-update-chart>
-    </section>
+  <!-- Historical Trend Section -->
+  <div class="trend-section">
+    <app-trend-chart [history]="scanHistory"></app-trend-chart>
+  </div>
+
+  <!-- Risky Dependencies Data Table -->
+  <div class="data-table-section" *ngIf="riskyDependencies.length > 0">
+    <h2>Risky Dependencies</h2>
+    <p class="subtitle">These packages are actively dragging down the Trust Score.</p>
+    
+    <div class="table-card">
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>Package Name</th>
+            <th>Version</th>
+            <th>Severity</th>
+            <th>Issue</th>
+            <th>CVE</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pkg of riskyDependencies">
+            <td class="pkg-name">{{ pkg.name }}</td>
+            <td><span class="code-badge">{{ pkg.version }}</span></td>
+            <td>
+              <span class="severity-badge" [ngClass]="pkg.severity.toLowerCase()">{{ pkg.severity }}</span>
+            </td>
+            <td>{{ pkg.issue }}</td>
+            <td class="cve-cell">{{ pkg.cve }}</td>
+            <td><button class="btn-outline">View Details</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>
