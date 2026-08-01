@@ -2,4 +2,4 @@
 
 <why this change is needed>
 
-Co-authored-by: Name <email@example.com>
+Co-authored-by: seunfola1@gmail.com

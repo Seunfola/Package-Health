@@ -6,6 +6,7 @@ import { RepoDetails } from './repo-details/repo-details';
 import { DashboardSettings } from './dashboard-settings/dashboard-settings';
 import { Notification } from './notification/notification';
 import { UserProfile } from './user-profile/user-profile';
+import { PrivacyPolicy } from './legal/privacy/privacy';
 
 
 export const routes: Routes = [
@@ -21,6 +22,7 @@ export const routes: Routes = [
       { path: 'dashboard-settings', component: DashboardSettings },
       { path: 'notifications', component: Notification },
       { path: 'user-profile', component: UserProfile },
+      { path: 'privacy', component: PrivacyPolicy },
       { path: '**', redirectTo: '' },
     ],
   },

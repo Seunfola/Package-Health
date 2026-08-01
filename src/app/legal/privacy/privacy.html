@@ -1,0 +1,32 @@
+<div class="legal-container">
+  <h1>Privacy and Data Handling Policy</h1>
+  <p class="subtitle">DepVault is built with a <strong>Zero-Trust, Zero-Code</strong> philosophy. We designed our architecture specifically so that enterprise users never have to worry about exposing intellectual property or proprietary source code.</p>
+
+  <section>
+    <h2>1. What Data Do We Process?</h2>
+    <ul>
+      <li><strong>NO Source Code:</strong> DepVault NEVER uploads, scans, or touches your proprietary <code>.ts</code>, <code>.js</code>, or <code>.py</code> files.</li>
+      <li><strong>Dependency Lists Only:</strong> The local CLI parses your <code>package.json</code> (or equivalent) locally and only transmits the names and versions of open-source dependencies (e.g., <code>express@4.18.2</code>) to our backend.</li>
+      <li><strong>Private Packages:</strong> If you have internal private packages (e.g., <code>@mycompany/auth</code>), the backend will return a 404. We immediately discard this query and do not log or store private package names.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>2. Historical Trending Data</h2>
+    <p>To provide the "Time Machine" 30-day Trust Score graph, we store anonymized snapshots securely.</p>
+    <ul>
+      <li><strong>Data Stored:</strong> Ecosystem (e.g., <code>npm</code>), Package Name, Trust Score, Timestamp.</li>
+      <li><strong>Data NOT Stored:</strong> Who requested the scan, IP addresses, or internal project names.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>3. VectorDB and AI Processing</h2>
+    <p>DepVault scaffolds AI embeddings strictly for analyzing <strong>public</strong> vulnerability databases (e.g., DepVault HealthScan, NVD) and public package descriptions to detect malware/typosquatting heuristics. We do not train any Machine Learning or LLM models on your internal queries.</p>
+  </section>
+
+  <section>
+    <h2>4. CI/CD Gatekeeper Security</h2>
+    <p>The GitHub Actions workflow (<code>depvault-gatekeeper.yml</code>) runs entirely within your own CI/CD runner. The execution, evaluation, and blocking of Pull Requests happens completely on your infrastructure.</p>
+  </section>
+</div>
