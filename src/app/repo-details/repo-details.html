@@ -4,6 +4,15 @@
     <span>{{ analysisData.repoName }}</span>
   </h2>
 
+  <div *ngIf="analysisData.degraded" class="degraded-banner" role="status">
+    <span class="degraded-icon">&#9888;</span>
+    <span>
+      This analysis used partial data
+      <ng-container *ngIf="analysisData.degradedReason">&mdash; {{ analysisData.degradedReason }}</ng-container>.
+      The trust score below may be less precise than usual.
+    </span>
+  </div>
+
   <app-repo-details-dash [repoName]="analysisData.repoName"
     [stars]="analysisData.stars"
     [forks]="analysisData.forks"

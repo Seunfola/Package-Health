@@ -56,6 +56,14 @@ export interface AnalysisData {
     reliability: number;
     maintainability: number;
   };
+  /**
+   * True when this trust score was computed from partial dependency data
+   * (e.g. some package lookups failed) — the score is still the best
+   * available estimate, but the UI should say so rather than presenting it
+   * with the same confidence as a full analysis.
+   */
+  degraded?: boolean;
+  degradedReason?: string;
 }
 
 /**

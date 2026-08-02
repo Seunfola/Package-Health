@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '@/environments/environment';
 
 export interface GatekeeperPolicy {
   enabled: boolean;
@@ -18,7 +19,7 @@ export interface GatekeeperPolicyConfig {
   providedIn: 'root'
 })
 export class GatekeeperService {
-  private readonly baseUrl = '/api/gatekeeper/policies';
+  private readonly baseUrl = `${environment.apiBaseUrl}/gatekeeper/policies`;
 
   constructor(private readonly http: HttpClient) {}
 
