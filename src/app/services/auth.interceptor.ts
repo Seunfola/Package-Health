@@ -9,7 +9,7 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
-import { environment } from '@/environment/environment';
+import { environment } from '@/environments/environment';
 
 /**
  * HTTP INTERCEPTOR: Securely inject GitHub token into requests
@@ -22,9 +22,6 @@ import { environment } from '@/environment/environment';
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private readonly BACKEND_API_PATTERN =
-    /^\/api\/|^http:\/\/localhost|^https:\/\/localhost|^https?:\/\/[^/]+\/api\//;
-
   constructor(private readonly authService: AuthService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -61,25 +58,20 @@ export class AuthInterceptor implements HttpInterceptor {
 
   /**
    * SHOULD ADD TOKEN: Determine if token should be added to request
-   * - Only add to backend API endpoints
+   * - Only add to backend API endpoints (matched directly against the
+   *   consolidated environment's base URLs, not a narrow localhost/`/api/`
+   *   regex — that regex missed `authUrl` requests like `GET auth/me`,
+   *   which don't contain an `/api/` path segment).
    * - Skip external URLs, GitHub OAuth, etc.
    */
   private shouldAddToken(request: HttpRequest<unknown>): boolean {
     const url = request.url.toLowerCase();
-    const apiBase = environment.apiBaseUrl.toLowerCase();
+    const backendBaseUrls = [environment.apiBaseUrl, environment.apiUrl, environment.authUrl].map(
+      (base) => base.toLowerCase(),
+    );
 
-    // Add token only to internal API endpoints
-    if (this.BACKEND_API_PATTERN.test(url)) {
-      return true;
-    }
-    if (url.startsWith(apiBase)) {
-      return true;
-    }
-
-    // Don't add token to:
-    // - External GitHub API (uses token in request body if needed)
-    // - Google Analytics, CDNs, etc.
-    return false;
+    // Add token only to internal API/auth endpoints
+    return backendBaseUrls.some((base) => url.startsWith(base));
   }
 
   /**

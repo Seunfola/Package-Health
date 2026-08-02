@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { HeroSection } from './hero-section';
 import { AnalysisService } from '@/app/services/analysis.service';
 import { AuthService } from '@/app/services/auth.service';
-import { environment } from '@/environment/environment';
+import { environment } from '@/environments/environment';
 
 describe('HeroSection', () => {
   let component: HeroSection;
@@ -73,7 +73,7 @@ describe('HeroSection', () => {
 
     component.analyzeData();
 
-    const request = httpMock.expectOne(`${environment.apiBaseUrl}/repo-health/analyze-package/paste`);
+    const request = httpMock.expectOne(`${environment.apiBaseUrl}/repo-health/dependencies/json`);
     expect(request.request.method).toBe('POST');
     request.flush({ repoName: 'demo' });
 

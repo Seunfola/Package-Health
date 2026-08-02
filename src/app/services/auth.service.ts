@@ -33,7 +33,7 @@ export class AuthService {
 
   async setJwtToken(token: string): Promise<boolean> {
     try {
-      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.encryptToken(token));
+      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.obfuscateToken(token));
       
       // Fetch user profile from backend using the newly stored JWT
       const profile = await this.fetchUserProfile();
@@ -50,6 +50,23 @@ export class AuthService {
     } catch (e) {
       console.error('Failed to set JWT token or fetch profile', e);
       return false;
+    }
+  }
+
+  /**
+   * Exchanges the one-time OAuth callback code for the real JWT. The token
+   * itself never travels in a URL (browser history / proxy logs / Referer
+   * headers) — only this opaque, single-use code does.
+   */
+  async exchangeCode(code: string): Promise<string | null> {
+    try {
+      const response = await this.http
+        .post<{ token: string }>(`${environment.authUrl}/exchange`, { code })
+        .toPromise();
+      return response?.token ?? null;
+    } catch (e) {
+      console.error('Failed to exchange auth code', e);
+      return null;
     }
   }
 
@@ -83,7 +100,7 @@ export class AuthService {
       }
 
       // Store token ONLY in sessionStorage (not localStorage)
-      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.encryptToken(token));
+      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.obfuscateToken(token));
 
       // Store auth state in localStorage (non-sensitive)
       const authState: AuthState = {
@@ -128,7 +145,7 @@ export class AuthService {
     if (!encrypted) return undefined;
 
     try {
-      return this.decryptToken(encrypted);
+      return this.deobfuscateToken(encrypted);
     } catch {
       // Token corrupted or invalid, clear it
       this.logout();
@@ -227,14 +244,14 @@ export class AuthService {
    * Prevents casual viewing of token in sessionStorage
    * Real encryption would require crypto library
    */
-  private encryptToken(token: string): string {
+  private obfuscateToken(token: string): string {
     return btoa(token); // Base64 encode for obfuscation
   }
 
   /**
    * DECRYPT TOKEN: Decode encrypted token
    */
-  private decryptToken(encrypted: string): string {
+  private deobfuscateToken(encrypted: string): string {
     return atob(encrypted); // Base64 decode
   }
 

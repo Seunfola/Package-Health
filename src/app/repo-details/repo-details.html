@@ -13,25 +13,24 @@
   </app-repo-details-dash>
 
   <div class="chart-wrapper-container">
-    <app-chart-card title="Contribution Graph" subtitle="Daily contributions over the past year.">
-      <app-git-graph [data]="contributionData"></app-git-graph>
-    </app-chart-card>
-
-    <app-chart-card title="Commit Activity" subtitle="Monthly commit frequency over the last year.">
+    <app-chart-card title="Commit Activity" subtitle="Monthly commit frequency over the last 12 months.">
       <app-line-chart [lineChartData]="commitData" [lineChartOptions]="commitOptions" [lineChartType]="lineChartType">
       </app-line-chart>
     </app-chart-card>
+    
+    <app-contribution-graph [data]="analysisData.contributionData || []"></app-contribution-graph>
   </div>
 
   <div class="additional-components-wrapper">
     <app-security-alerts [securityAlerts]="analysisData.securityAlerts"></app-security-alerts>
-    <app-code-quality-metrics></app-code-quality-metrics>
+    <app-code-quality-metrics [healthMetrics]="analysisData.healthMetrics"></app-code-quality-metrics>
   </div>
 </div>
 
-<ng-template *ngIf="!analysisData">
+<div *ngIf="!analysisData">
   <div class="no-data-section">
-    <p>No repository data available. Please analyze a repository first.</p>
+    <p *ngIf="loadError">{{ loadError }}</p>
+    <p *ngIf="!loadError">No repository data available. Please analyze a repository first.</p>
     <button routerLink="/">Home</button>
   </div>
-</ng-template>
+</div>

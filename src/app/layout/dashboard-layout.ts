@@ -6,13 +6,13 @@ import { Sidebar } from '../shared/sidebar/sidebar';
 import { Footer } from '../shared/footer/footer';
 
 @Component({
-  selector: 'app-layout',
+  selector: 'app-dashboard-layout',
   standalone: true,
   imports: [CommonModule, RouterModule, Navbar, Sidebar, Footer],
-  templateUrl: './layout.html',
-  styleUrl: './layout.css',
+  templateUrl: './dashboard-layout.html',
+  styleUrl: './dashboard-layout.css',
 })
-export class Layout {
+export class DashboardLayout {
   public sidebarOpen: boolean = true;
 
   public toggleSidebar(): void {

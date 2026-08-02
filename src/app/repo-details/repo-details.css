@@ -113,3 +113,39 @@ app-repo-details-dash {
         font-size: 20px;
     }
 }
+
+.no-data-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    text-align: center;
+    color: #b5b9c2;
+    background: #171a1f;
+    border-radius: 12px;
+    border: 1px solid #323743;
+    margin: 40px auto;
+    max-width: 600px;
+}
+
+.no-data-section p {
+    font-size: 1.1rem;
+    margin-bottom: 24px;
+}
+
+.no-data-section button {
+    background: #00b3b3;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.no-data-section button:hover {
+    background: #00d0d0;
+}

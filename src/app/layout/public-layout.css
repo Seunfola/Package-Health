@@ -1,0 +1,19 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-wrapper.public-wrapper {
+  display: flex;
+  flex: 1;
+  padding-top: 60px; /* offset for fixed navbar */
+  width: 100%;
+}
+
+.content-area.public-content {
+  flex-grow: 1;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+}

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { environment } from '@/environment/environment';
+import { environment } from '@/environments/environment';
+import { generateIdempotencyKey } from '@/app/shared/utils';
 
 /**
  * Component for analyzing private GitHub repositories
@@ -275,9 +276,11 @@ export class PrivateRepoAnalysisComponent implements OnInit {
       // Call backend endpoint
       // Token is automatically injected by AuthInterceptor
       const response = await this.http
-        .post<any>(`${environment.apiBaseUrl}/repo-health/private`, {
-          url: repoUrl,
-        })
+        .post<any>(
+          `${environment.apiBaseUrl}/repo-health/private`,
+          { url: repoUrl },
+          { headers: { 'x-idempotency-key': generateIdempotencyKey() } },
+        )
         .toPromise();
 
       if (response) {

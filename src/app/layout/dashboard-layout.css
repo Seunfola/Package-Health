@@ -1,0 +1,31 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-obsidian);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.05), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(0, 255, 136, 0.05), transparent 25%);
+  color: var(--text-primary);
+}
+
+.main-wrapper {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  height: calc(100vh - 64px);
+}
+
+.content-area {
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: transparent;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .content-area {
+    padding: 1rem;
+  }
+}

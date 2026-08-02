@@ -1,4 +1,99 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-@layer reset, base, tokens, recipes, utilities;
-/* @import "./styled-system/styles.css"; */
+:root {
+  /* Core Colors */
+  --bg-obsidian: #0B0F19;
+  --bg-slate: #111827;
+  --bg-surface: #1F2937;
+  
+  /* Accents */
+  --accent-teal: #00E5FF;
+  --accent-teal-hover: #00B3B3;
+  --accent-emerald: #00FF88;
+  
+  /* Text */
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(17, 24, 39, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  
+  /* UI Glows */
+  --glow-teal: 0 0 15px rgba(0, 229, 255, 0.4);
+  --glow-emerald: 0 0 15px rgba(0, 255, 136, 0.4);
+  
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  /* Ambient mesh — the glassmorphism cards need something with texture
+     behind them to actually read as "glass"; a flat single-color body
+     makes a backdrop-filter: blur() card look like a plain bordered box,
+     which was the biggest single reason the whole app read as flat. */
+  background-color: var(--bg-obsidian);
+  background-image:
+    radial-gradient(ellipse 900px 600px at 15% -10%, rgba(0, 229, 255, 0.16), transparent 60%),
+    radial-gradient(ellipse 800px 700px at 110% 15%, rgba(0, 255, 136, 0.10), transparent 55%),
+    radial-gradient(ellipse 700px 900px at 50% 120%, rgba(0, 229, 255, 0.08), transparent 60%),
+    linear-gradient(180deg, var(--bg-obsidian), var(--bg-slate) 60%, var(--bg-obsidian));
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Faint grid — the classic "cyber" texture cue, kept subtle enough to sit behind content without competing with it. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 100% 60% at 50% 0%, black 40%, transparent 80%);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent-teal);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+a:hover {
+  color: var(--accent-teal-hover);
+  text-shadow: var(--glow-teal);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Auth Restricted Layout - Used by layout.html and unauthorized component */
+.auth-restricted-layout {
+  position: relative;
+  min-height: calc(100vh - 60px);
+  width: 100%;
+}
