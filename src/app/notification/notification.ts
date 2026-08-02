@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { NotificationItem as NotificationItemComponent } from './notification-item/notification-item';
 import { NotificationService, NotificationResponse } from '@/app/services/notification.service';
+import { AuthService } from '@/app/services/auth.service';
 import { CommonModule } from '@angular/common';
+import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [CommonModule, NotificationItemComponent],
+  imports: [CommonModule, NotificationItemComponent, UnauthorizedWarning],
   templateUrl: './notification.html',
   styleUrl: './notification.css',
 })
@@ -15,7 +17,14 @@ export class Notification implements OnInit {
   isLoading = true;
   error = '';
 
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly authService: AuthService
+  ) {}
+
+  get authState$() {
+    return this.authService.authState$;
+  }
 
   ngOnInit(): void {
     this.fetchNotifications();

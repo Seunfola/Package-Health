@@ -3,10 +3,16 @@
     <h3>Code Quality Metrics</h3>
     <p>Key indicators for code health.</p>
   </div>
-  <div class="metrics-grid">
-    <app-code-metric-item [percentage]="maintainability.percentage" [title]="maintainability.title"
-      [iconPath]="maintainability.iconPath"></app-code-metric-item>
-    <app-code-metric-item [percentage]="testCoverage.percentage" [title]="testCoverage.title"
-      [iconPath]="testCoverage.iconPath"></app-code-metric-item>
-  </div>
+  @if (healthMetrics) {
+    <div class="metrics-grid">
+      <app-code-metric-item [percentage]="maintainability.percentage" [title]="maintainability.title"
+        [iconPath]="maintainability.iconPath"></app-code-metric-item>
+      <app-code-metric-item [percentage]="reliability.percentage" [title]="reliability.title"
+        [iconPath]="reliability.iconPath"></app-code-metric-item>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>No code health metrics available yet.</p>
+    </div>
+  }
 </div>

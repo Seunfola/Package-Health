@@ -1,5 +1,11 @@
-<div class="card">
-    <img [src]="feature.icon" [alt]="feature.title" class="icon" />
+<div class="glass-feature-card">
+  <div class="card-glow-border"></div>
+  <div class="card-content">
+    <div class="icon-container">
+      <div class="icon-glow"></div>
+      <img [src]="feature.icon" [alt]="feature.title" class="icon-svg" />
+    </div>
     <h3>{{ feature.title }}</h3>
     <p>{{ feature.description }}</p>
+  </div>
 </div>

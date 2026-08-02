@@ -1,17 +1,23 @@
-<div class="insight-card">
+<div class="glass-insight-card">
+  <div class="card-glow-border"></div>
+  <div class="card-content">
     <div class="header">
-        <div class="title-row">
-            <h3 class="title">{{ insight.title }}</h3>
-            <div class="icon-container">
-                <img [src]="insight.icon" [alt]="insight.title" class="icon" />
-            </div>
+      <div class="title-row">
+        <h3 class="title">{{ insight.title }}</h3>
+        <div class="icon-container">
+          <div class="icon-glow"></div>
+          <img [src]="insight.icon" [alt]="insight.title" class="icon-svg" />
         </div>
-        <div class="value">{{ insight.value }}</div>
-        <p class="description">{{ insight.description }}</p>
-
+      </div>
+      <div class="value-glow-text">{{ insight.value }}</div>
+      <p class="description">{{ insight.description }}</p>
     </div>
-    <button type="button" class="view-details" (click)="onViewDetails()">
-        View Details
-    </button>
-
+    
+    <div class="card-footer">
+      <button type="button" class="campaign-btn btn-view-details" (click)="onViewDetails()">
+        <span class="btn-text">View Details</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </button>
+    </div>
+  </div>
 </div>

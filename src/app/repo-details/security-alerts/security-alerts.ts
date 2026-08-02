@@ -23,58 +23,14 @@ export interface Vulnerability {
 export class SecurityAlerts {
   @Input() securityAlerts?: Vulnerability[] = [];
 
-  // Fallback mock data for development/testing
-  fallbackAlerts = [
-    {
-      id: '1',
-      severity: 'high' as const,
-      title: 'XSS vulnerability in user input',
-      package: 'react',
-      vulnerable_version_range: '<18.0.0',
-      first_patched_version: '18.0.0',
-      state: 'open' as const,
-      created_at: new Date().toISOString(),
-      description: 'User input not properly sanitized',
-    },
-    {
-      id: '2',
-      severity: 'medium' as const,
-      title: "Outdated dependency: 'lodash'",
-      package: 'lodash',
-      vulnerable_version_range: '<4.17.20',
-      first_patched_version: '4.17.20',
-      state: 'open' as const,
-      created_at: new Date().toISOString(),
-      description: 'Update lodash to latest version',
-    },
-    {
-      id: '3',
-      severity: 'critical' as const,
-      title: 'SQL Injection risk in API endpoint',
-      package: 'express',
-      vulnerable_version_range: '<4.17.0',
-      first_patched_version: '4.17.0',
-      state: 'open' as const,
-      created_at: new Date().toISOString(),
-      description: 'SQL queries not properly parameterized',
-    },
-    {
-      id: '4',
-      severity: 'low' as const,
-      title: 'Unused CSS rules identified',
-      package: 'css-loader',
-      vulnerable_version_range: '<5.0.0',
-      first_patched_version: '5.0.0',
-      state: 'fixed' as const,
-      created_at: new Date().toISOString(),
-      description: 'Remove unused CSS rules',
-    },
-  ];
-
+  // No fallback mock data: an empty/undefined securityAlerts list means the
+  // scanned repo genuinely has no known vulnerabilities (or none were
+  // returned yet) — showing fabricated CVEs (react XSS, express SQLi) in
+  // that case would report an unsafe result for a repo that may be clean.
+  // The template's empty state ("No vulnerabilities detected") already
+  // handles this honestly.
   get displayAlerts(): Vulnerability[] {
-    return this.securityAlerts && this.securityAlerts.length > 0
-      ? this.securityAlerts
-      : this.fallbackAlerts;
+    return this.securityAlerts ?? [];
   }
 
   get openAlertsCount(): number {

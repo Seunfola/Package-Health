@@ -1,5 +1,6 @@
-<div class="settings-container">
-  <app-settings-card title="Dashboard Metrics"
+<ng-container *ngIf="(authState$ | async) as auth">
+  <div class="settings-container" *ngIf="auth.isAuthenticated; else unauthorized">
+    <app-settings-card title="Dashboard Metrics"
     subtitle="Select which repository health metrics are visible on your dashboard.">
     <app-settings-item [title]="'Code Quality Score'"
       [subtitle]="'Display an overall score reflecting code maintainability and best practices.'"
@@ -58,12 +59,163 @@
     </app-settings-input>
   </app-settings-card>
 
+  <app-settings-card title="Organization Gatekeeper Policies" subtitle="Customize the strictness of the predictive risk engine for your entire organization.">
+    <app-settings-item [title]="'Block Critical CVEs'"
+      [subtitle]="'Automatically reject installation of packages harboring CRITICAL severity vulnerabilities.'"
+      [(enabled)]="blockCriticalCves"></app-settings-item>
+
+    <app-settings-item [title]="'Block GPL (Toxic Copyleft)'"
+      [subtitle]="'Prevent developers from installing restrictive copyleft licenses like GPL and AGPL to avoid legal exposure.'"
+      [(enabled)]="blockGplLicenses"></app-settings-item>
+
+    <app-settings-item [title]="'Warn Ecosystem Conflicts'"
+      [subtitle]="'Detect and warn about conflicting packages (e.g. react-query vs @tanstack/react-query).'"
+      [(enabled)]="warnEcosystemConflicts"></app-settings-item>
+
+    <app-settings-item [title]="'Block Ghost Towns (Abandonware)'"
+      [subtitle]="'Block packages that fall below a minimum Trust Score for maintenance and popularity.'"
+      [(enabled)]="blockGhostTowns"></app-settings-item>
+
+    @if (blockGhostTowns) {
+      <app-settings-input title="Ghost Town Health Threshold"
+        subtitle="Minimum required Trust Score (0-100).">
+        <div class="input-container">
+          <input type="number" [(ngModel)]="ghostTownThreshold" class="settings-input-field"
+            aria-label="Ghost Town Health Threshold" min="0" max="60" />
+        </div>
+        <p class="guidance-text">
+          <strong>Guidance:</strong> Setting this above 50 risks blocking highly stable, older utility packages that simply haven't needed updates in years. We enforce a maximum limit of 60 to prevent catastrophic blocking of your legitimate ecosystem dependencies.
+        </p>
+      </app-settings-input>
+    }
+  </app-settings-card>
+
   <app-settings-card title="GitHub Authentication" 
     subtitle="Manage your GitHub token for analyzing private repositories and accessing advanced features.">
     <app-auth-login></app-auth-login>
   </app-settings-card>
 
   <app-private-repo-analysis></app-private-repo-analysis>
+
+  <app-settings-card title="CLI Token"
+    subtitle="For analyzing private repos with zero GitHub access: 'depvault upload' runs entirely on your machine and authenticates with this token alone.">
+    @if (hasCliToken) {
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <button (click)="copyCliToken()" class="save-button"
+          style="background: #10b981; color: white; padding: 8px 16px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer;">
+          {{ cliTokenCopied ? 'Copied!' : 'Copy CLI Token' }}
+        </button>
+        <span style="font-size: 13px; color: #9ca3af;">
+          Run <code>depvault login &lt;token&gt;</code>, then <code>depvault upload</code> from your repo's local checkout.
+        </span>
+      </div>
+    } @else {
+      <p style="font-size: 14px; color: #9ca3af;">Sign in above to get a CLI token.</p>
+    }
+  </app-settings-card>
+
+  <app-settings-card title="Organization Members" subtitle="Manage access control and roles for your organization members.">
+    <div class="members-management-container">
+      <div class="add-member-section" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; flex-wrap: wrap;">
+        <input type="email" [(ngModel)]="newMemberEmail" placeholder="User's email address" class="settings-input-field" style="flex: 1; min-width: 200px;" />
+        <div class="select-container" style="width: 120px;">
+          <select [(ngModel)]="newMemberRole" class="settings-select">
+            <option value="MEMBER">Member</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+          <span class="dropdown-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </span>
+        </div>
+        <button (click)="addMember()" [disabled]="!newMemberEmail || isAddingMember" class="save-button" style="background: var(--accent-teal); color: var(--bg-obsidian); padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer;">
+          {{ isAddingMember ? 'Adding...' : 'Add Member' }}
+        </button>
+      </div>
+
+      @if (memberMessage) {
+        <p class="status-message" style="color: var(--accent-teal); margin-bottom: 16px; font-size: 14px;">{{ memberMessage }}</p>
+      }
+      @if (memberError) {
+        <p class="error-message" style="color: #ef4444; margin-bottom: 16px; font-size: 14px;">{{ memberError }}</p>
+      }
+
+      <div class="members-table-container">
+        @if (isLoadingMembers) {
+          <p style="color: #9ca3af; font-size: 14px;">Loading members...</p>
+        } @else {
+          <table class="members-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (member of members; track member.userId._id) {
+                <tr>
+                  <td>
+                    <div class="member-info">
+                      <span class="member-email">{{ member.userId.email }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="select-container role-select-container">
+                      <select [ngModel]="member.role" (ngModelChange)="updateRole(member.userId._id, $event)" class="settings-select small-select">
+                        <option value="MEMBER">Member</option>
+                        <option value="ADMIN">Admin</option>
+                      </select>
+                      <span class="dropdown-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <button (click)="removeMember(member.userId._id)" class="remove-member-btn" title="Remove member">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18"/>
+                        <path d="m6 6 12 12"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" style="text-align: center; color: #9ca3af; padding: 24px;">No members found.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+  </app-settings-card>
+
+  <app-settings-card title="Danger Zone" subtitle="Irreversible and critical organization actions." class="danger-zone-card">
+    
+    <div class="danger-zone-content">
+      <h3 class="danger-zone-title">Transfer Ownership</h3>
+      <p class="danger-zone-desc">
+        Transfer this organization to another user. They will receive an email to accept the transfer. Once accepted, you will lose owner privileges but remain an ADMIN.
+      </p>
+      
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <input type="email" [(ngModel)]="newOwnerEmail" placeholder="Enter new owner's email" class="danger-zone-input" />
+        
+        <button (click)="initiateTransfer()" [disabled]="!newOwnerEmail || isTransferring" class="danger-zone-button">
+          {{ isTransferring ? 'Initiating...' : 'Transfer' }}
+        </button>
+      </div>
+      
+      @if (transferMessage) {
+        <p class="danger-message">{{ transferMessage }}</p>
+      }
+    </div>
+  </app-settings-card>
 
   <div class="save-actions" style="display: flex; justify-content: flex-end; align-items: center; margin-top: 24px; gap: 16px;">
     @if (message) {
@@ -74,4 +226,11 @@
       {{ isSaving ? 'Saving...' : 'Save Preferences' }}
     </button>
   </div>
-</div>
+  </div>
+
+  <ng-template #unauthorized>
+    <div class="settings-container auth-restricted-layout">
+      <app-unauthorized-warning></app-unauthorized-warning>
+    </div>
+  </ng-template>
+</ng-container>

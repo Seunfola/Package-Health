@@ -5,18 +5,79 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 1.5rem;
-  color: #fff;
+  color: var(--text-primary);
   overflow: hidden;
   text-align: center;
   border-radius: 20px;
-  box-shadow: 0px 0px 1px #171a1f12, 0px 0px 2px #171a1f1F;
+  box-shadow: var(--glass-shadow);
 }
 
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: #171A1FFF;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
   z-index: 0;
+}
+
+/* Soft floating glows behind the glass card — this is what actually sells
+   "glassmorphism"; a blur filter over a flat background just looks like a
+   translucent box, the same shape sitting over color variation is what
+   reads as glass. */
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.hero-glow-teal {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.35), transparent 70%);
+}
+
+.hero-glow-emerald {
+  width: 380px;
+  height: 380px;
+  bottom: -140px;
+  right: -80px;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.25), transparent 70%);
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  color: var(--accent-teal);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hero-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.8);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
 }
 
 .hero-content {
@@ -30,15 +91,20 @@
 }
 
 .hero-text h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
   margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 4px 12px rgba(0, 229, 255, 0.15);
 }
 
 .hero-text p {
-  font-size: 1.1rem;
-  color: #b5b9c2;
+  font-size: 1.15rem;
+  color: var(--text-secondary);
   line-height: 1.6;
   max-width: 600px;
   margin: 0 auto;
@@ -65,25 +131,28 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: transparent;
-  border: 1px solid #323743;
-  color: #b5b9c2;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: var(--transition-smooth);
 }
 
 .tab-buttons button.active {
-  background: #00b3b3;
-  border-color: #00b3b3;
-  color: #fff;
+  background: rgba(0, 229, 255, 0.1);
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.1);
 }
 
-.tab-buttons button:hover {
-  border-color: #00b3b3;
-  color: #fff;
+.tab-buttons button:hover:not(.active) {
+  border-color: var(--accent-teal-hover);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .tab-buttons img {
@@ -101,19 +170,21 @@
 .input-wrapper textarea {
   width: 100%;
   min-width: 400px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid #323743;
-  color: #fff;
-  border-radius: 6px;
-  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
   font-size: 1rem;
-  transition: border-color 0.25s;
+  transition: var(--transition-smooth);
 }
 
 .input-wrapper input:focus,
 .input-wrapper textarea:focus {
-  border-color: #00b3b3;
+  border-color: var(--accent-teal);
   outline: none;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: var(--glow-teal);
 }
 
 .input-wrapper textarea {
@@ -133,20 +204,20 @@
   position: relative;
   width: 100%;
   max-width: 600px;
-  border: 2px solid #323743;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 0.75rem 1rem 0.75rem 2.75rem;
-  color: #fff;
+  border: 1px dashed var(--glass-border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem 1rem 1rem 3rem;
+  color: var(--text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: border-color 0.25s, background 0.25s;
+  transition: var(--transition-smooth);
 }
 
 .upload-input-wrapper:hover {
-  border-color: #00b3b3;
-  background: rgba(0, 0, 0, 0.75);
+  border-color: var(--accent-teal);
+  background: rgba(0, 229, 255, 0.05);
 }
 
 .upload-input-wrapper input[type='file'] {
@@ -181,23 +252,54 @@
 }
 
 .analyze-button {
-  background: #00b3b3;
-  color: #fff;
+  background: var(--accent-teal);
+  color: #000;
   border: none;
-  border-radius: 6px;
-  padding: 0.85rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
 }
 
 .analyze-button:hover {
-  background: #00d0d0;
+  background: #00F0FF;
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 229, 255, 0.5);
+}
+
+.hero-trust-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.hero-trust-stat strong {
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.hero-trust-divider {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.5;
 }
 
 @media (max-width: 768px) {
+  .hero-trust-divider {
+    display: none;
+  }
+
+
   .hero-text h1 {
     font-size: 1.8rem;
   }

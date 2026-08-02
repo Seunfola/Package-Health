@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '@/environment/environment';
+import { environment } from '@/environments/environment';
 import { AnalysisService } from '@/app/services/analysis.service';
 import { AuthService } from '@/app/services/auth.service';
+import { generateIdempotencyKey } from '@/app/shared/utils';
 
 type RepoVisibility = 'public' | 'private' | 'unknown';
 
@@ -86,9 +87,11 @@ export class HeroSection {
       }
 
       const response = await firstValueFrom(
-        this.http.post(`${environment.apiBaseUrl}/repo-health/analyze`, {
-          url: parsedRepo.url,
-        }),
+        this.http.post(
+          `${environment.apiBaseUrl}/repo-health/analyze`,
+          { url: parsedRepo.url },
+          { headers: { 'x-idempotency-key': generateIdempotencyKey() } },
+        ),
       );
       this.handleAnalysisResult(response);
     } catch (error) {

@@ -1,6 +1,6 @@
 export const environment = {
-  production: true,
-  apiUrl: 'https://api.depvault.io/api/v1',
-  apiBaseUrl: 'https://api.depvault.io/api',
-  authUrl: 'https://api.depvault.io/auth',
+  production: false,
+  apiUrl: 'http://localhost:3000/api/v1',
+  apiBaseUrl: 'http://localhost:3000/api',
+  authUrl: 'http://localhost:3000/auth',
 };

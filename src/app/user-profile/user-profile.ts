@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { UserProfileService } from '@/app/services/user-profile.service';
 import { AuthService } from '@/app/services/auth.service';
 import { Subscription } from 'rxjs';
+import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UnauthorizedWarning],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
@@ -38,6 +39,10 @@ export class UserProfile implements OnInit, OnDestroy {
     private readonly userProfileService: UserProfileService,
     private readonly authService: AuthService
   ) {}
+
+  get authState$() {
+    return this.authService.authState$;
+  }
 
   ngOnInit(): void {
     this.authSub = this.authService.authState$.subscribe(state => {

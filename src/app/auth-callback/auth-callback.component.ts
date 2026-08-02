@@ -18,14 +18,22 @@ export class AuthCallbackComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(async (params) => {
-      const token = params['token'];
+      const code = params['code'];
+      if (!code) {
+        // Handle missing code, maybe redirect to an error page or login
+        console.error('Authentication failed: No code received.');
+        this.router.navigate(['/home']);
+        return;
+      }
+
+      // The callback URL only ever carries a one-time code, never the JWT
+      // itself — exchange it server-side for the real token.
+      const token = await this.authService.exchangeCode(code);
       if (token) {
-        // Save the token and redirect to dashboard
         await this.authService.setJwtToken(token);
         this.router.navigate(['/dashboard']);
       } else {
-        // Handle missing token, maybe redirect to an error page or login
-        console.error('Authentication failed: No token received.');
+        console.error('Authentication failed: code exchange failed.');
         this.router.navigate(['/home']);
       }
     });
