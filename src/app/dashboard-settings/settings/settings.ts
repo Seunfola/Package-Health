@@ -10,6 +10,7 @@ import { PreferencesService, UpdatePreferencesDto } from '@/app/services/prefere
 import { AuthService } from '@/app/services/auth.service';
 import { GatekeeperService, GatekeeperPolicyConfig } from '@/app/services/gatekeeper.service';
 import { OrganizationService, OrganizationMember } from '@/app/services/organization.service';
+import { NotificationWebhookService, NotificationWebhook, NotificationWebhookType } from '@/app/services/notification-webhook.service';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
 @Component({
@@ -68,11 +69,23 @@ export class Settings implements OnInit {
   memberMessage = '';
   memberError = '';
 
+  // Notification Webhooks State
+  webhooks: NotificationWebhook[] = [];
+  isLoadingWebhooks = false;
+  newWebhookType: NotificationWebhookType = 'slack';
+  newWebhookUrl = '';
+  newWebhookLabel = '';
+  isAddingWebhook = false;
+  webhookMessage = '';
+  webhookError = '';
+  webhookTypes: NotificationWebhookType[] = ['slack', 'discord', 'pagerduty', 'custom'];
+
   constructor(
     private readonly preferencesService: PreferencesService,
     private readonly authService: AuthService,
     private readonly gatekeeperService: GatekeeperService,
     private readonly organizationService: OrganizationService,
+    private readonly notificationWebhookService: NotificationWebhookService,
   ) {}
 
   get authState$() {
@@ -102,6 +115,7 @@ export class Settings implements OnInit {
     this.loadPreferences();
     this.loadGatekeeperPolicies();
     this.loadMembers();
+    this.loadWebhooks();
   }
 
   loadMembers(): void {
@@ -178,6 +192,85 @@ export class Settings implements OnInit {
         this.loadMembers(); // reload to revert select box
         setTimeout(() => this.memberError = '', 3000);
       }
+    });
+  }
+
+  loadWebhooks(): void {
+    this.isLoadingWebhooks = true;
+    this.notificationWebhookService.list().subscribe({
+      next: (webhooks) => {
+        this.webhooks = webhooks;
+        this.isLoadingWebhooks = false;
+      },
+      error: (err) => {
+        console.error('Failed to load notification webhooks', err);
+        this.webhookError = 'Failed to load notification webhooks.';
+        this.isLoadingWebhooks = false;
+      },
+    });
+  }
+
+  addWebhook(): void {
+    if (!this.newWebhookUrl) return;
+    this.isAddingWebhook = true;
+    this.webhookMessage = '';
+    this.webhookError = '';
+
+    this.notificationWebhookService
+      .create({
+        type: this.newWebhookType,
+        url: this.newWebhookUrl,
+        label: this.newWebhookLabel || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.isAddingWebhook = false;
+          this.webhookMessage = 'Webhook added successfully.';
+          this.newWebhookUrl = '';
+          this.newWebhookLabel = '';
+          this.loadWebhooks();
+          setTimeout(() => (this.webhookMessage = ''), 3000);
+        },
+        error: (err) => {
+          console.error('Failed to add webhook', err);
+          this.isAddingWebhook = false;
+          this.webhookError = err.error?.message || 'Failed to add webhook.';
+          setTimeout(() => (this.webhookError = ''), 3000);
+        },
+      });
+  }
+
+  toggleWebhookEnabled(webhook: NotificationWebhook): void {
+    const enabled = !webhook.enabled;
+    this.notificationWebhookService.update(webhook._id, { enabled }).subscribe({
+      next: () => {
+        webhook.enabled = enabled;
+      },
+      error: (err) => {
+        console.error('Failed to update webhook', err);
+        this.webhookError = err.error?.message || 'Failed to update webhook.';
+        setTimeout(() => (this.webhookError = ''), 3000);
+      },
+    });
+  }
+
+  removeWebhook(id: string): void {
+    if (!confirm('Are you sure you want to remove this webhook?')) return;
+
+    this.webhookMessage = '';
+    this.webhookError = '';
+
+    this.notificationWebhookService.remove(id).subscribe({
+      next: () => {
+        this.webhookMessage = 'Webhook removed successfully.';
+        this.loadWebhooks();
+        setTimeout(() => (this.webhookMessage = ''), 3000);
+      },
+      error: (err) => {
+        console.error('Failed to remove webhook', err);
+        this.webhookError = err.error?.message || 'Failed to remove webhook.';
+        setTimeout(() => (this.webhookError = ''), 3000);
+      },
     });
   }
 

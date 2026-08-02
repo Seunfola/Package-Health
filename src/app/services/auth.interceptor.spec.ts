@@ -5,7 +5,7 @@ import {
   withInterceptorsFromDi,
   HttpClient,
 } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 
 import { AuthInterceptor } from './auth.interceptor';
 import { AuthService } from './auth.service';
@@ -21,9 +21,9 @@ describe('AuthInterceptor', () => {
     authService.getToken.and.returnValue('test-token');
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
         { provide: AuthService, useValue: authService },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
       ],
