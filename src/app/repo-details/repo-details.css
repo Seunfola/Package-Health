@@ -21,6 +21,25 @@ app-repo-details-dash {
     margin-bottom: 32px;
 }
 
+.degraded-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #fbbf24;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.degraded-icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
 .chart-wrapper-container {
     display: flex;
     flex-wrap: wrap;
