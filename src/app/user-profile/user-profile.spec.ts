@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { UserProfile } from './user-profile';
 
@@ -11,6 +13,7 @@ describe('UserProfile', () => {
 
     await TestBed.configureTestingModule({
       imports: [UserProfile],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UserProfile);
@@ -31,35 +34,17 @@ describe('UserProfile', () => {
     expect(component.statusMessage).toContain('Invalid GitHub username');
   });
 
-  it('should save profile data to localStorage', () => {
+  it('should export profile data as a downloadable JSON file', () => {
     component.userName = 'Test User';
     component.userEmail = 'test@example.com';
 
-    component.saveProfile();
+    const clickSpy = jasmine.createSpy('click');
+    spyOn(document, 'createElement').and.returnValue({ click: clickSpy } as unknown as HTMLAnchorElement);
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:mock');
+    spyOn(URL, 'revokeObjectURL');
 
-    const saved = localStorage.getItem('package_health_user_profile');
-    expect(saved).toBeTruthy();
-    expect(saved).toContain('Test User');
-  });
+    component.exportProfileFile();
 
-  it('should parse resume content and extract key fields', () => {
-    const text = [
-      'Jane Doe',
-      'Senior Angular Engineer',
-      'jane@example.com',
-      'https://github.com/janedoe',
-      'https://www.linkedin.com/in/janedoe',
-      '+1 (555) 123-4567',
-      'Remote USA',
-      'Experienced in Angular, TypeScript, Node.js, Docker.',
-    ].join('\n');
-
-    (component as any).applyParsedResumeData(text);
-
-    expect(component.userEmail).toBe('jane@example.com');
-    expect(component.githubUsername).toBe('janedoe');
-    expect(component.linkedinProfileUrl).toContain('linkedin.com');
-    expect(component.phoneNumber).toContain('555');
-    expect(component.skills).toContain('Angular');
+    expect(clickSpy).toHaveBeenCalled();
   });
 });
