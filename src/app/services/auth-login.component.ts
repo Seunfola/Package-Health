@@ -64,6 +64,10 @@ export class AuthLogin implements OnInit {
     this.authService.loginWithGoogle();
   }
 
+  loginWithOidc(): void {
+    this.authService.loginWithOidc();
+  }
+
   /**
    * LOGIN: Handle login form submission
    */
