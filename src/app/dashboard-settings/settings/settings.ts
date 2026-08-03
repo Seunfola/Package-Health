@@ -9,7 +9,7 @@ import { PrivateRepoAnalysisComponent } from '@/app/services/private-repo-analys
 import { PreferencesService, UpdatePreferencesDto } from '@/app/services/preferences.service';
 import { AuthService } from '@/app/services/auth.service';
 import { GatekeeperService, GatekeeperPolicyConfig } from '@/app/services/gatekeeper.service';
-import { OrganizationService, OrganizationMember, Organization, OrgInvitation } from '@/app/services/organization.service';
+import { OrganizationService, OrganizationMember, Organization, OrgInvitation, OrgAuditLogEntry } from '@/app/services/organization.service';
 import { NotificationWebhookService, NotificationWebhook, NotificationWebhookType } from '@/app/services/notification-webhook.service';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
@@ -87,6 +87,11 @@ export class Settings implements OnInit {
   inviteMessage = '';
   inviteError = '';
 
+  // Audit log state
+  auditLog: OrgAuditLogEntry[] = [];
+  isLoadingAuditLog = false;
+  auditLogError = '';
+
   // Notification Webhooks State
   webhooks: NotificationWebhook[] = [];
   isLoadingWebhooks = false;
@@ -160,6 +165,32 @@ export class Settings implements OnInit {
     this.loadMembers();
     this.loadWebhooks();
     this.loadInvitations();
+    this.loadAuditLog();
+  }
+
+  loadAuditLog(): void {
+    this.isLoadingAuditLog = true;
+    this.auditLogError = '';
+    this.organizationService.getAuditLog(this.activeOrgId).subscribe({
+      next: (entries) => {
+        this.auditLog = entries;
+        this.isLoadingAuditLog = false;
+      },
+      error: (err) => {
+        // Non-admins get a 403 here (audit log is ADMIN+ only) — that's
+        // expected, not an error worth surfacing loudly to a plain member.
+        console.error('Failed to load audit log', err);
+        this.isLoadingAuditLog = false;
+      },
+    });
+  }
+
+  /** "member.role_changed" -> "Role Changed" for a readable table without a giant switch/lookup map. */
+  formatAuditAction(action: string): string {
+    const withoutPrefix = action.includes('.') ? action.split('.').slice(1).join(' ') : action;
+    return withoutPrefix
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
   }
 
   switchOrg(orgId: string): void {
