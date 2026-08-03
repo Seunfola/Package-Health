@@ -34,6 +34,30 @@ export interface UpdateRoleRequest {
   role: 'ADMIN' | 'MEMBER';
 }
 
+export interface Organization {
+  _id: string;
+  orgId: string;
+  name: string;
+  ownerId: string;
+}
+
+export interface CreateOrganizationRequest {
+  name: string;
+}
+
+export interface CreateInvitationRequest {
+  email: string;
+  role: 'ADMIN' | 'MEMBER';
+}
+
+export interface OrgInvitation {
+  _id: string;
+  orgId: string;
+  email: string;
+  role: 'ADMIN' | 'MEMBER';
+  createdAt: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -41,6 +65,14 @@ export class OrganizationService {
   private readonly baseUrl = `${environment.apiBaseUrl}/org`;
 
   constructor(private readonly http: HttpClient) {}
+
+  listMyOrganizations(): Observable<Organization[]> {
+    return this.http.get<Organization[]>(this.baseUrl);
+  }
+
+  createOrganization(payload: CreateOrganizationRequest): Observable<Organization> {
+    return this.http.post<Organization>(this.baseUrl, payload);
+  }
 
   initiateTransfer(orgId: string, payload: TransferOwnershipRequest): Observable<TransferResponse> {
     return this.http.post<TransferResponse>(`${this.baseUrl}/${orgId}/transfer-ownership`, payload);
@@ -64,5 +96,21 @@ export class OrganizationService {
 
   updateMemberRole(orgId: string, userId: string, payload: UpdateRoleRequest): Observable<{ message: string }> {
     return this.http.patch<{ message: string }>(`${this.baseUrl}/${orgId}/members/${userId}/role`, payload);
+  }
+
+  createInvitation(orgId: string, payload: CreateInvitationRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/${orgId}/invitations`, payload);
+  }
+
+  listInvitations(orgId: string): Observable<OrgInvitation[]> {
+    return this.http.get<OrgInvitation[]>(`${this.baseUrl}/${orgId}/invitations`);
+  }
+
+  revokeInvitation(orgId: string, invitationId: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/${orgId}/invitations/${invitationId}`);
+  }
+
+  acceptInvitation(token: string): Observable<{ message: string; orgId: string; orgName: string }> {
+    return this.http.post<{ message: string; orgId: string; orgName: string }>(`${this.baseUrl}/invitations/accept`, { token });
   }
 }

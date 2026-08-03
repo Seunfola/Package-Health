@@ -9,6 +9,7 @@ import { Notification } from './notification/notification';
 import { UserProfile } from './user-profile/user-profile';
 import { PrivacyPolicy } from './legal/privacy/privacy';
 import { AuthCallbackComponent } from './auth-callback/auth-callback.component';
+import { AcceptInviteComponent } from './accept-invite/accept-invite.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { authGuard } from './services/auth.guard';
 
@@ -21,6 +22,7 @@ export const routes: Routes = [
       { path: 'home', component: Homepage },
       { path: 'privacy', component: PrivacyPolicy },
       { path: 'auth/callback', component: AuthCallbackComponent },
+      { path: 'accept-invite', component: AcceptInviteComponent },
     ],
   },
   {

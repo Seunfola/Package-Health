@@ -35,19 +35,19 @@ export class NotificationWebhookService {
 
   constructor(private readonly http: HttpClient) {}
 
-  list(): Observable<NotificationWebhook[]> {
-    return this.http.get<NotificationWebhook[]>(this.baseUrl);
+  list(orgId: string = 'default-org'): Observable<NotificationWebhook[]> {
+    return this.http.get<NotificationWebhook[]>(`${this.baseUrl}/${orgId}`);
   }
 
-  create(payload: CreateNotificationWebhookRequest): Observable<NotificationWebhook> {
-    return this.http.post<NotificationWebhook>(this.baseUrl, payload);
+  create(payload: CreateNotificationWebhookRequest, orgId: string = 'default-org'): Observable<NotificationWebhook> {
+    return this.http.post<NotificationWebhook>(`${this.baseUrl}/${orgId}`, payload);
   }
 
-  update(id: string, payload: UpdateNotificationWebhookRequest): Observable<NotificationWebhook> {
-    return this.http.patch<NotificationWebhook>(`${this.baseUrl}/${id}`, payload);
+  update(id: string, payload: UpdateNotificationWebhookRequest, orgId: string = 'default-org'): Observable<NotificationWebhook> {
+    return this.http.patch<NotificationWebhook>(`${this.baseUrl}/${orgId}/${id}`, payload);
   }
 
-  remove(id: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.baseUrl}/${id}`);
+  remove(id: string, orgId: string = 'default-org'): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/${orgId}/${id}`);
   }
 }

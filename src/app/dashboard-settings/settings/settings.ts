@@ -9,7 +9,7 @@ import { PrivateRepoAnalysisComponent } from '@/app/services/private-repo-analys
 import { PreferencesService, UpdatePreferencesDto } from '@/app/services/preferences.service';
 import { AuthService } from '@/app/services/auth.service';
 import { GatekeeperService, GatekeeperPolicyConfig } from '@/app/services/gatekeeper.service';
-import { OrganizationService, OrganizationMember } from '@/app/services/organization.service';
+import { OrganizationService, OrganizationMember, Organization, OrgInvitation } from '@/app/services/organization.service';
 import { NotificationWebhookService, NotificationWebhook, NotificationWebhookType } from '@/app/services/notification-webhook.service';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
@@ -60,6 +60,15 @@ export class Settings implements OnInit {
   transferMessage = '';
   isTransferring = false;
 
+  // Org switcher / creation state
+  myOrgs: Organization[] = [];
+  activeOrgId = 'default-org';
+  isLoadingOrgs = false;
+  newOrgName = '';
+  isCreatingOrg = false;
+  orgSwitcherMessage = '';
+  orgSwitcherError = '';
+
   // Members State
   members: OrganizationMember[] = [];
   isLoadingMembers = false;
@@ -68,6 +77,15 @@ export class Settings implements OnInit {
   isAddingMember = false;
   memberMessage = '';
   memberError = '';
+
+  // Invitations state (email-based, works even if the invitee has no account yet)
+  invitations: OrgInvitation[] = [];
+  isLoadingInvitations = false;
+  newInviteEmail = '';
+  newInviteRole: 'ADMIN' | 'MEMBER' = 'MEMBER';
+  isInviting = false;
+  inviteMessage = '';
+  inviteError = '';
 
   // Notification Webhooks State
   webhooks: NotificationWebhook[] = [];
@@ -113,14 +131,70 @@ export class Settings implements OnInit {
 
   ngOnInit(): void {
     this.loadPreferences();
+    this.loadMyOrganizations();
+  }
+
+  /** Every org the user owns or belongs to — powers the org switcher. Falls back to the single-tenant 'default-org' behavior if this fails or comes back empty. */
+  loadMyOrganizations(): void {
+    this.isLoadingOrgs = true;
+    this.organizationService.listMyOrganizations().subscribe({
+      next: (orgs) => {
+        this.myOrgs = orgs;
+        if (orgs.length > 0 && !orgs.some((o) => o.orgId === this.activeOrgId)) {
+          this.activeOrgId = orgs[0].orgId;
+        }
+        this.isLoadingOrgs = false;
+        this.loadOrgScopedData();
+      },
+      error: (err) => {
+        console.error('Failed to load organizations', err);
+        this.isLoadingOrgs = false;
+        this.loadOrgScopedData();
+      },
+    });
+  }
+
+  /** Re-fetches everything scoped to activeOrgId — called on load and whenever the switcher changes org. */
+  loadOrgScopedData(): void {
     this.loadGatekeeperPolicies();
     this.loadMembers();
     this.loadWebhooks();
+    this.loadInvitations();
+  }
+
+  switchOrg(orgId: string): void {
+    if (orgId === this.activeOrgId) return;
+    this.activeOrgId = orgId;
+    this.loadOrgScopedData();
+  }
+
+  createOrganization(): void {
+    if (!this.newOrgName.trim()) return;
+    this.isCreatingOrg = true;
+    this.orgSwitcherMessage = '';
+    this.orgSwitcherError = '';
+
+    this.organizationService.createOrganization({ name: this.newOrgName.trim() }).subscribe({
+      next: (org) => {
+        this.isCreatingOrg = false;
+        this.newOrgName = '';
+        this.orgSwitcherMessage = `Organization "${org.name}" created.`;
+        this.myOrgs = [...this.myOrgs, org];
+        this.switchOrg(org.orgId);
+        setTimeout(() => (this.orgSwitcherMessage = ''), 3000);
+      },
+      error: (err) => {
+        console.error('Failed to create organization', err);
+        this.isCreatingOrg = false;
+        this.orgSwitcherError = err.error?.message || 'Failed to create organization.';
+        setTimeout(() => (this.orgSwitcherError = ''), 3000);
+      },
+    });
   }
 
   loadMembers(): void {
     this.isLoadingMembers = true;
-    this.organizationService.getMembers('default-org').subscribe({
+    this.organizationService.getMembers(this.activeOrgId).subscribe({
       next: (members) => {
         this.members = members;
         this.isLoadingMembers = false;
@@ -139,7 +213,7 @@ export class Settings implements OnInit {
     this.memberMessage = '';
     this.memberError = '';
 
-    this.organizationService.addMember('default-org', { email: this.newMemberEmail, role: this.newMemberRole }).subscribe({
+    this.organizationService.addMember(this.activeOrgId, { email: this.newMemberEmail, role: this.newMemberRole }).subscribe({
       next: () => {
         this.isAddingMember = false;
         this.memberMessage = 'Member added successfully.';
@@ -158,11 +232,11 @@ export class Settings implements OnInit {
 
   removeMember(userId: string): void {
     if (!confirm('Are you sure you want to remove this member?')) return;
-    
+
     this.memberMessage = '';
     this.memberError = '';
-    
-    this.organizationService.removeMember('default-org', userId).subscribe({
+
+    this.organizationService.removeMember(this.activeOrgId, userId).subscribe({
       next: () => {
         this.memberMessage = 'Member removed successfully.';
         this.loadMembers();
@@ -179,8 +253,8 @@ export class Settings implements OnInit {
   updateRole(userId: string, newRole: 'ADMIN' | 'MEMBER'): void {
     this.memberMessage = '';
     this.memberError = '';
-    
-    this.organizationService.updateMemberRole('default-org', userId, { role: newRole }).subscribe({
+
+    this.organizationService.updateMemberRole(this.activeOrgId, userId, { role: newRole }).subscribe({
       next: () => {
         this.memberMessage = 'Role updated successfully.';
         this.loadMembers();
@@ -195,9 +269,65 @@ export class Settings implements OnInit {
     });
   }
 
+  loadInvitations(): void {
+    this.isLoadingInvitations = true;
+    this.organizationService.listInvitations(this.activeOrgId).subscribe({
+      next: (invitations) => {
+        this.invitations = invitations;
+        this.isLoadingInvitations = false;
+      },
+      error: (err) => {
+        console.error('Failed to load invitations', err);
+        this.isLoadingInvitations = false;
+      },
+    });
+  }
+
+  sendInvitation(): void {
+    if (!this.newInviteEmail) return;
+    this.isInviting = true;
+    this.inviteMessage = '';
+    this.inviteError = '';
+
+    this.organizationService
+      .createInvitation(this.activeOrgId, { email: this.newInviteEmail, role: this.newInviteRole })
+      .subscribe({
+        next: () => {
+          this.isInviting = false;
+          this.inviteMessage = `Invitation sent to ${this.newInviteEmail}.`;
+          this.newInviteEmail = '';
+          this.loadInvitations();
+          setTimeout(() => (this.inviteMessage = ''), 3000);
+        },
+        error: (err) => {
+          console.error('Failed to send invitation', err);
+          this.isInviting = false;
+          this.inviteError = err.error?.message || 'Failed to send invitation.';
+          setTimeout(() => (this.inviteError = ''), 3000);
+        },
+      });
+  }
+
+  revokeInvitation(invitationId: string): void {
+    if (!confirm('Revoke this invitation?')) return;
+
+    this.organizationService.revokeInvitation(this.activeOrgId, invitationId).subscribe({
+      next: () => {
+        this.inviteMessage = 'Invitation revoked.';
+        this.loadInvitations();
+        setTimeout(() => (this.inviteMessage = ''), 3000);
+      },
+      error: (err) => {
+        console.error('Failed to revoke invitation', err);
+        this.inviteError = err.error?.message || 'Failed to revoke invitation.';
+        setTimeout(() => (this.inviteError = ''), 3000);
+      },
+    });
+  }
+
   loadWebhooks(): void {
     this.isLoadingWebhooks = true;
-    this.notificationWebhookService.list().subscribe({
+    this.notificationWebhookService.list(this.activeOrgId).subscribe({
       next: (webhooks) => {
         this.webhooks = webhooks;
         this.isLoadingWebhooks = false;
@@ -217,11 +347,14 @@ export class Settings implements OnInit {
     this.webhookError = '';
 
     this.notificationWebhookService
-      .create({
-        type: this.newWebhookType,
-        url: this.newWebhookUrl,
-        label: this.newWebhookLabel || undefined,
-      })
+      .create(
+        {
+          type: this.newWebhookType,
+          url: this.newWebhookUrl,
+          label: this.newWebhookLabel || undefined,
+        },
+        this.activeOrgId,
+      )
       .subscribe({
         next: () => {
           this.isAddingWebhook = false;
@@ -242,7 +375,7 @@ export class Settings implements OnInit {
 
   toggleWebhookEnabled(webhook: NotificationWebhook): void {
     const enabled = !webhook.enabled;
-    this.notificationWebhookService.update(webhook._id, { enabled }).subscribe({
+    this.notificationWebhookService.update(webhook._id, { enabled }, this.activeOrgId).subscribe({
       next: () => {
         webhook.enabled = enabled;
       },
@@ -260,7 +393,7 @@ export class Settings implements OnInit {
     this.webhookMessage = '';
     this.webhookError = '';
 
-    this.notificationWebhookService.remove(id).subscribe({
+    this.notificationWebhookService.remove(id, this.activeOrgId).subscribe({
       next: () => {
         this.webhookMessage = 'Webhook removed successfully.';
         this.loadWebhooks();
@@ -275,7 +408,7 @@ export class Settings implements OnInit {
   }
 
   loadGatekeeperPolicies(): void {
-    this.gatekeeperService.getPolicies().subscribe({
+    this.gatekeeperService.getPolicies(this.activeOrgId).subscribe({
       next: (config) => {
         this.blockCriticalCves = config.block_critical_cves.enabled;
         this.blockGhostTowns = config.block_ghost_towns.enabled;
@@ -356,7 +489,7 @@ export class Settings implements OnInit {
       warn_ecosystem_conflicts: { enabled: this.warnEcosystemConflicts },
     };
 
-    this.gatekeeperService.updatePolicies('default-org', gatekeeperPayload).subscribe({
+    this.gatekeeperService.updatePolicies(this.activeOrgId, gatekeeperPayload).subscribe({
       next: () => {
         this.isSaving = false;
         this.message = 'Organization Settings saved successfully!';
@@ -375,7 +508,7 @@ export class Settings implements OnInit {
     this.isTransferring = true;
     this.transferMessage = '';
 
-    this.organizationService.initiateTransfer('default-org', { newOwnerEmail: this.newOwnerEmail }).subscribe({
+    this.organizationService.initiateTransfer(this.activeOrgId, { newOwnerEmail: this.newOwnerEmail }).subscribe({
       next: (res) => {
         this.isTransferring = false;
         // In a real application, an email is sent. For dev testing, we show the token if available.
