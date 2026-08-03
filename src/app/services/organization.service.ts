@@ -58,6 +58,18 @@ export interface OrgInvitation {
   createdAt: string;
 }
 
+export interface OrgAuditLogEntry {
+  _id: string;
+  orgId: string;
+  action: string;
+  actorUserId: string;
+  actorEmail?: string;
+  target?: string;
+  before?: Record<string, unknown>;
+  after?: Record<string, unknown>;
+  createdAt: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -112,5 +124,9 @@ export class OrganizationService {
 
   acceptInvitation(token: string): Observable<{ message: string; orgId: string; orgName: string }> {
     return this.http.post<{ message: string; orgId: string; orgName: string }>(`${this.baseUrl}/invitations/accept`, { token });
+  }
+
+  getAuditLog(orgId: string): Observable<OrgAuditLogEntry[]> {
+    return this.http.get<OrgAuditLogEntry[]>(`${this.baseUrl}/${orgId}/audit-log`);
   }
 }

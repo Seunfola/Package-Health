@@ -369,6 +369,37 @@
     </div>
   </app-settings-card>
 
+  <app-settings-card title="Audit Log" subtitle="Who changed what in this organization, and when. Admin/owner only.">
+    <div class="members-table-container">
+      @if (isLoadingAuditLog) {
+        <p style="color: #9ca3af; font-size: 14px;">Loading audit log...</p>
+      } @else if (auditLog.length > 0) {
+        <table class="members-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Actor</th>
+              <th>Target</th>
+              <th>When</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of auditLog; track entry._id) {
+              <tr>
+                <td>{{ formatAuditAction(entry.action) }}</td>
+                <td><span class="member-email">{{ entry.actorEmail || entry.actorUserId }}</span></td>
+                <td style="color: #9ca3af; font-size: 13px;">{{ entry.target || '—' }}</td>
+                <td style="color: #9ca3af; font-size: 13px;">{{ entry.createdAt | date: 'medium' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p style="color: #9ca3af; font-size: 14px;">No audit entries yet — actions like adding members, changing policies, or updating webhooks will show up here. If you're not an owner/admin of this organization, this list will stay empty.</p>
+      }
+    </div>
+  </app-settings-card>
+
   <app-settings-card title="Danger Zone" subtitle="Irreversible and critical organization actions." class="danger-zone-card">
     
     <div class="danger-zone-content">
