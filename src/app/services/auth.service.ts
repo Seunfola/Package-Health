@@ -31,6 +31,11 @@ export class AuthService {
     window.location.href = `${environment.authUrl}/google`;
   }
 
+  /** Enterprise SSO via whatever OIDC provider the backend is configured against (Okta, Azure AD, Auth0, etc.). */
+  loginWithOidc(): void {
+    window.location.href = `${environment.authUrl}/oidc`;
+  }
+
   async setJwtToken(token: string): Promise<boolean> {
     try {
       sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.obfuscateToken(token));
