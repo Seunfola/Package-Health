@@ -34,7 +34,7 @@
     margin: 0;
 }
 
-/* ✅ Scrollable chart section */
+/* Scrollable chart section */
 .card-content {
     flex-grow: 1;
     margin-top: 24px;

@@ -34,6 +34,10 @@
     <app-security-alerts [securityAlerts]="analysisData.securityAlerts"></app-security-alerts>
     <app-code-quality-metrics [healthMetrics]="analysisData.healthMetrics"></app-code-quality-metrics>
   </div>
+
+  <app-chart-card title="Dependency Graph" subtitle="Direct dependencies, colored by risk tier.">
+    <app-dependency-graph [data]="analysisData.dependencyData"></app-dependency-graph>
+  </app-chart-card>
 </div>
 
 <div *ngIf="!analysisData">

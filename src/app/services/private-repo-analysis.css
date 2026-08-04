@@ -73,10 +73,17 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
 
-  &::before {
-    content: '⚠️';
-  }
+.form-error-icon,
+.metric-icon,
+.btn-icon {
+  font-size: 14px;
+}
+
+.alert-icon {
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
 .form-actions {

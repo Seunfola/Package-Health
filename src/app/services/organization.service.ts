@@ -13,7 +13,6 @@ export interface AcceptTransferRequest {
 
 export interface TransferResponse {
   message: string;
-  transferToken?: string;
 }
 
 export interface OrganizationMember {

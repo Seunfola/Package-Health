@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { OrganizationService } from '../services/organization.service';
 import { PENDING_INVITE_TOKEN_KEY } from '../accept-invite/accept-invite.component';
+import { PENDING_TRANSFER_KEY } from '../accept-transfer/accept-transfer.component';
 
 @Component({
   selector: 'app-auth-callback',
@@ -36,6 +37,7 @@ export class AuthCallbackComponent implements OnInit {
       if (token) {
         await this.authService.setJwtToken(token);
         await this.finishPendingInviteIfAny();
+        await this.finishPendingTransferIfAny();
         this.router.navigate(['/dashboard']);
       } else {
         console.error('Authentication failed: code exchange failed.');
@@ -60,6 +62,24 @@ export class AuthCallbackComponent implements OnInit {
       await firstValueFrom(this.organizationService.acceptInvitation(pendingToken));
     } catch (error) {
       console.error('Failed to accept pending invitation after sign-in', error);
+    }
+  }
+
+  /**
+   * Same idea as finishPendingInviteIfAny(), for the /accept-transfer flow:
+   * the orgId+token pair is stashed before the OAuth redirect and resumed
+   * here once a real session exists.
+   */
+  private async finishPendingTransferIfAny(): Promise<void> {
+    const raw = sessionStorage.getItem(PENDING_TRANSFER_KEY);
+    if (!raw) return;
+
+    sessionStorage.removeItem(PENDING_TRANSFER_KEY);
+    try {
+      const { orgId, token } = JSON.parse(raw) as { orgId: string; token: string };
+      await firstValueFrom(this.organizationService.acceptTransfer(orgId, { transferToken: token }));
+    } catch (error) {
+      console.error('Failed to accept pending ownership transfer after sign-in', error);
     }
   }
 }

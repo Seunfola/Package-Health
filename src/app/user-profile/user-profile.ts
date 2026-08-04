@@ -14,7 +14,6 @@ import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthori
   styleUrl: './user-profile.css',
 })
 export class UserProfile implements OnInit, OnDestroy {
-  userId: string = '';
   internalUsername: string = '';
   userName: string = 'User';
   userEmail: string = '';
@@ -64,7 +63,6 @@ export class UserProfile implements OnInit, OnDestroy {
     this.isLoading = true;
     this.userProfileService.getProfile(username).subscribe({
       next: (profile) => {
-        this.userId = profile.id || '';
         this.userName = profile.username || 'User';
         this.userEmail = profile.email || '';
         this.githubUsername = profile.githubUsername || '';
@@ -93,15 +91,15 @@ export class UserProfile implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.userId) {
+    if (!this.internalUsername) {
       this.setStatus('You must be logged in to upload a resume.', 'error');
       return;
     }
 
     this.resumeFileName = file.name;
     this.setStatus('Uploading and analyzing resume...', 'success');
-    
-    this.userProfileService.uploadResume(this.userId, file).subscribe({
+
+    this.userProfileService.uploadResume(file).subscribe({
       next: (res) => {
         this.setStatus('Resume analyzed and profile updated.', 'success');
         if (this.internalUsername) {
@@ -123,7 +121,7 @@ export class UserProfile implements OnInit, OnDestroy {
       return;
     }
     
-    this.userProfileService.linkSocialProfile(this.userId, 'github', this.githubUsername).subscribe({
+    this.userProfileService.linkSocialProfile('github', this.githubUsername).subscribe({
       next: () => this.setStatus('GitHub profile linked.', 'success'),
       error: () => this.setStatus('Failed to link GitHub profile.', 'error')
     });
@@ -136,7 +134,7 @@ export class UserProfile implements OnInit, OnDestroy {
       return;
     }
     
-    this.userProfileService.linkSocialProfile(this.userId, 'linkedin', this.linkedinProfileUrl).subscribe({
+    this.userProfileService.linkSocialProfile('linkedin', this.linkedinProfileUrl).subscribe({
       next: () => this.setStatus('LinkedIn profile linked.', 'success'),
       error: () => this.setStatus('Failed to link LinkedIn profile.', 'error')
     });
@@ -149,7 +147,7 @@ export class UserProfile implements OnInit, OnDestroy {
       return;
     }
     
-    this.userProfileService.linkSocialProfile(this.userId, 'twitter', this.twitterHandle).subscribe({
+    this.userProfileService.linkSocialProfile('twitter', this.twitterHandle).subscribe({
       next: () => this.setStatus('Twitter account linked.', 'success'),
       error: () => this.setStatus('Failed to link Twitter account.', 'error')
     });

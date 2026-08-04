@@ -1,0 +1,28 @@
+<div class="dependency-graph-root">
+  @if (isEmpty) {
+    <div class="empty-state">
+      <p>No direct-dependency graph available for this scan yet — this is only
+        built for manifests DepVault can parse (package.json, requirements.txt,
+        pyproject.toml, Cargo.toml, go.mod).</p>
+    </div>
+  } @else {
+    <div class="legend">
+      <span class="legend-item"><span class="dot root"></span>Repository</span>
+      <span class="legend-item"><span class="dot safe"></span>Safe</span>
+      <span class="legend-item"><span class="dot vulnerable"></span>Vulnerable</span>
+      <span class="legend-item"><span class="dot critical"></span>Critical</span>
+    </div>
+    <div #svgContainer class="graph-canvas"></div>
+    @if (hoveredNode) {
+      <div class="node-tooltip">
+        <strong>{{ hoveredNode.id === 'root' ? 'This repository' : hoveredNode.id }}</strong>
+        @if (hoveredNode.id !== 'root') {
+          <span class="tooltip-type" [class]="hoveredNode.type">{{ hoveredNode.type }}</span>
+        }
+      </div>
+    }
+    <p class="graph-caveat">
+      Direct dependencies only — transitive dependencies aren't resolved yet (no lockfile is parsed).
+    </p>
+  }
+</div>

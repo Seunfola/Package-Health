@@ -26,17 +26,16 @@ export class UserProfileService {
     return this.http.get<UserProfileResponse>(`${this.API_URL}/${username}`);
   }
 
-  linkSocialProfile(userId: string, platform: string, username: string): Observable<any> {
+  linkSocialProfile(platform: string, username: string): Observable<any> {
     return this.http.post<any>(`${this.API_URL}/link-social`, {
-      userId,
       platform,
       username,
     });
   }
 
-  uploadResume(userId: string, file: File): Observable<any> {
+  uploadResume(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('resume', file);
-    return this.http.post<any>(`${this.API_URL}/upload-resume/${userId}`, formData);
+    return this.http.post<any>(`${this.API_URL}/upload-resume`, formData);
   }
 }
