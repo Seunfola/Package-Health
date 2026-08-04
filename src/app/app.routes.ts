@@ -8,8 +8,10 @@ import { DashboardSettings } from './dashboard-settings/dashboard-settings';
 import { Notification } from './notification/notification';
 import { UserProfile } from './user-profile/user-profile';
 import { PrivacyPolicy } from './legal/privacy/privacy';
+import { TermsOfService } from './legal/terms/terms';
 import { AuthCallbackComponent } from './auth-callback/auth-callback.component';
 import { AcceptInviteComponent } from './accept-invite/accept-invite.component';
+import { AcceptTransferComponent } from './accept-transfer/accept-transfer.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { authGuard } from './services/auth.guard';
 
@@ -21,8 +23,10 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: Homepage },
       { path: 'privacy', component: PrivacyPolicy },
+      { path: 'terms', component: TermsOfService },
       { path: 'auth/callback', component: AuthCallbackComponent },
       { path: 'accept-invite', component: AcceptInviteComponent },
+      { path: 'accept-transfer', component: AcceptTransferComponent },
     ],
   },
   {

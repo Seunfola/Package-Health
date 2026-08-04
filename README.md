@@ -7,7 +7,7 @@ DepVault is a web app and CLI ecosystem that analyzes repository and package hea
 - Live app: `https://package-health-rho.vercel.app`
 - API: `https://package-health-backup.onrender.com/api`
 
-## 🧠 Why DepVault?
+## Why DepVault?
 
 Standard scanners like `npm audit` or Google OSV only look at binary states: *Does a known CVE exist right now? Yes or No?* 
 
@@ -20,7 +20,7 @@ We outshine them because DepVault is a **Predictive Risk Engine**, not just a vu
 
 Because we built our logic around the centralized registry and layer it with advanced mathematical scoring, DepVault covers **npm, yarn, pnpm, and bun** flawlessly with the exact same, hyper-reliable data pipeline!
 
-## 🚀 Features
+## Features
 
 - **DepVault HealthScan**: Vulnerability insight cards powered by our advanced scoring algorithm.
 - **DepVault Shield**: A zero-trust package installation interceptor that uses Poisson distribution models to block toxic dependencies.

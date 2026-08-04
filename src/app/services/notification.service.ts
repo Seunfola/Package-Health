@@ -37,10 +37,10 @@ export class NotificationService {
   }
 
   markAsRead(id: string): Observable<NotificationResponse> {
-    return this.http.put<NotificationResponse>(`${this.API_URL}/${id}/read`, {});
+    return this.http.post<NotificationResponse>(`${this.API_URL}/${id}/read`, {});
   }
 
   markAllAsRead(): Observable<any> {
-    return this.http.put<any>(`${this.API_URL}/read/all`, {});
+    return this.http.post<any>(`${this.API_URL}/read-all`, {});
   }
 }

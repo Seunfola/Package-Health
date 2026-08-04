@@ -138,4 +138,9 @@ export class RepoService {
   getRepoStats(): Observable<RepoStats> {
     return this.http.get<RepoStats>(`${environment.apiBaseUrl}/repos/stats`);
   }
+
+  /** `GET /api/repos/mine` — scans the signed-in user has uploaded via `depvault upload`. */
+  getMyUploadedRepos(): Observable<RepoListItem[]> {
+    return this.http.get<RepoListItem[]>(`${environment.apiBaseUrl}/repos/mine`);
+  }
 }

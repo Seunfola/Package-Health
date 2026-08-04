@@ -9,6 +9,7 @@ import { CodeQualityMetrics } from './code-quality-metrics/code-quality-metrics'
 import { SecurityAlerts } from './security-alerts/security-alerts';
 import { AnalysisData, RepoService } from '../services/RepoService';
 import { ContributionGraph } from './git-graph/contribution-graph/contribution-graph';
+import { DependencyGraph } from './dependency-graph/dependency-graph';
 
 @Component({
   selector: 'app-repo-details',
@@ -21,6 +22,7 @@ import { ContributionGraph } from './git-graph/contribution-graph/contribution-g
     CodeQualityMetrics,
     SecurityAlerts,
     ContributionGraph,
+    DependencyGraph,
   ],
   templateUrl: './repo-details.html',
   styleUrls: ['./repo-details.css'],

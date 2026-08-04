@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { environment } from '@/environments/environment';
-import { generateIdempotencyKey } from '@/app/shared/utils';
+import { RepoHealthAnalysisService } from './repo-health-analysis.service';
+import { IconComponent } from '@/app/shared/icon/icon';
 
 /**
  * Component for analyzing private GitHub repositories
@@ -26,7 +25,7 @@ import { generateIdempotencyKey } from '@/app/shared/utils';
 @Component({
   selector: 'app-private-repo-analysis',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, IconComponent],
   template: `
     <div class="private-repo-analysis-container">
       <div class="analysis-section">
@@ -38,7 +37,7 @@ import { generateIdempotencyKey } from '@/app/shared/utils';
 
         @if (!authService.isAuthenticated()) {
           <div class="alert alert-warning">
-            <span class="icon">⚠️</span>
+            <app-icon iconType="alert" class="alert-icon"></app-icon>
             <span>
               You must authenticate with a GitHub token first to analyze private repositories.
               Please set up your GitHub token above.
@@ -61,13 +60,17 @@ import { generateIdempotencyKey } from '@/app/shared/utils';
                 analysisForm.get('repoUrl')?.hasError('required') &&
                 analysisForm.get('repoUrl')?.touched
               ) {
-                <div class="form-error">Repository URL is required</div>
+                <div class="form-error">
+                  <app-icon iconType="alert" class="form-error-icon"></app-icon>
+                  Repository URL is required
+                </div>
               }
               @if (
                 analysisForm.get('repoUrl')?.hasError('pattern') &&
                 analysisForm.get('repoUrl')?.touched
               ) {
                 <div class="form-error">
+                  <app-icon iconType="alert" class="form-error-icon"></app-icon>
                   Please enter a valid GitHub URL (e.g., https://github.com/owner/repo)
                 </div>
               }
@@ -83,7 +86,8 @@ import { generateIdempotencyKey } from '@/app/shared/utils';
                   <span class="spinner"></span>
                   Analyzing...
                 } @else {
-                  🔍 Analyze Repository
+                  <app-icon iconType="search" class="btn-icon"></app-icon>
+                  Analyze Repository
                 }
               </button>
             </div>
@@ -91,7 +95,7 @@ import { generateIdempotencyKey } from '@/app/shared/utils';
 
           @if (errorMessage) {
             <div class="alert alert-error">
-              <span class="icon">❌</span>
+              <app-icon iconType="alert" class="alert-icon"></app-icon>
               <span>{{ errorMessage }}</span>
             </div>
           }
@@ -127,17 +131,26 @@ import { generateIdempotencyKey } from '@/app/shared/utils';
 
                   <div class="result-item">
                     <label>Stars</label>
-                    <div class="metric-value">⭐ {{ analysisResult.stars || 0 }}</div>
+                    <div class="metric-value">
+                      <app-icon iconType="star" class="metric-icon"></app-icon>
+                      {{ analysisResult.stars || 0 }}
+                    </div>
                   </div>
 
                   <div class="result-item">
                     <label>Forks</label>
-                    <div class="metric-value">🔀 {{ analysisResult.forks || 0 }}</div>
+                    <div class="metric-value">
+                      <app-icon iconType="gitfork" class="metric-icon"></app-icon>
+                      {{ analysisResult.forks || 0 }}
+                    </div>
                   </div>
 
                   <div class="result-item">
                     <label>Open Issues</label>
-                    <div class="metric-value">⚠️ {{ analysisResult.open_issues || 0 }}</div>
+                    <div class="metric-value">
+                      <app-icon iconType="alert" class="metric-icon"></app-icon>
+                      {{ analysisResult.open_issues || 0 }}
+                    </div>
                   </div>
 
                   <div class="result-item">
@@ -224,7 +237,7 @@ export class PrivateRepoAnalysisComponent implements OnInit {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly http: HttpClient,
+    private readonly repoHealthAnalysisService: RepoHealthAnalysisService,
     public readonly authService: AuthService,
   ) {
     this.analysisForm = this.fb.group({
@@ -275,12 +288,8 @@ export class PrivateRepoAnalysisComponent implements OnInit {
 
       // Call backend endpoint
       // Token is automatically injected by AuthInterceptor
-      const response = await this.http
-        .post<any>(
-          `${environment.apiBaseUrl}/repo-health/private`,
-          { url: repoUrl },
-          { headers: { 'x-idempotency-key': generateIdempotencyKey() } },
-        )
+      const response = await this.repoHealthAnalysisService
+        .analyzePrivateRepository(repoUrl)
         .toPromise();
 
       if (response) {

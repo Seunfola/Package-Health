@@ -11,6 +11,7 @@ import { AuthService } from '@/app/services/auth.service';
 import { GatekeeperService, GatekeeperPolicyConfig } from '@/app/services/gatekeeper.service';
 import { OrganizationService, OrganizationMember, Organization, OrgInvitation, OrgAuditLogEntry } from '@/app/services/organization.service';
 import { NotificationWebhookService, NotificationWebhook, NotificationWebhookType } from '@/app/services/notification-webhook.service';
+import { RepoService, RepoListItem } from '@/app/services/RepoService';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
 @Component({
@@ -103,12 +104,16 @@ export class Settings implements OnInit {
   webhookError = '';
   webhookTypes: NotificationWebhookType[] = ['slack', 'discord', 'pagerduty', 'custom'];
 
+  myUploadedRepos: RepoListItem[] = [];
+  isLoadingUploadedRepos = false;
+
   constructor(
     private readonly preferencesService: PreferencesService,
     private readonly authService: AuthService,
     private readonly gatekeeperService: GatekeeperService,
     private readonly organizationService: OrganizationService,
     private readonly notificationWebhookService: NotificationWebhookService,
+    private readonly repoService: RepoService,
   ) {}
 
   get authState$() {
@@ -134,9 +139,25 @@ export class Settings implements OnInit {
     return !!this.authService.getToken();
   }
 
+  /** Scans uploaded via `depvault upload` — the only visibility into CLI cloud sync this dashboard has, beyond the CLI's own output. */
+  loadMyUploadedRepos(): void {
+    this.isLoadingUploadedRepos = true;
+    this.repoService.getMyUploadedRepos().subscribe({
+      next: (repos) => {
+        this.myUploadedRepos = repos;
+        this.isLoadingUploadedRepos = false;
+      },
+      error: (err) => {
+        console.error('Failed to load uploaded scans', err);
+        this.isLoadingUploadedRepos = false;
+      },
+    });
+  }
+
   ngOnInit(): void {
     this.loadPreferences();
     this.loadMyOrganizations();
+    this.loadMyUploadedRepos();
   }
 
   /** Every org the user owns or belongs to — powers the org switcher. Falls back to the single-tenant 'default-org' behavior if this fails or comes back empty. */
@@ -478,6 +499,23 @@ export class Settings implements OnInit {
     });
   }
 
+  resetPreferencesToDefaults(): void {
+    this.isSaving = true;
+    this.message = '';
+    this.preferencesService.resetToDefaults().subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.message = 'Preferences reset to defaults.';
+        this.loadPreferences();
+      },
+      error: (err) => {
+        console.error('Failed to reset preferences', err);
+        this.isSaving = false;
+        this.message = 'Failed to reset preferences.';
+      },
+    });
+  }
+
   savePreferences(): void {
     this.isSaving = true;
     this.message = '';
@@ -542,11 +580,9 @@ export class Settings implements OnInit {
     this.organizationService.initiateTransfer(this.activeOrgId, { newOwnerEmail: this.newOwnerEmail }).subscribe({
       next: (res) => {
         this.isTransferring = false;
-        // In a real application, an email is sent. For dev testing, we show the token if available.
+        // The backend emails the new owner a link to /accept-transfer — there's
+        // nothing left for this screen to show beyond its own success message.
         this.transferMessage = res.message;
-        if (res.transferToken) {
-           this.transferMessage += ` (Dev Token: ${res.transferToken})`;
-        }
         this.newOwnerEmail = '';
       },
       error: (err) => {
