@@ -31,6 +31,43 @@
       @if (orgSwitcherError) {
         <p class="error-message" style="color: #ef4444; margin-top: 12px; font-size: 14px;">{{ orgSwitcherError }}</p>
       }
+
+      @if (currentOrg) {
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <span [style.background]="isPaidOrg ? 'var(--accent-emerald)' : 'var(--glass-bg)'"
+                [style.color]="isPaidOrg ? 'var(--bg-obsidian)' : 'var(--text-secondary)'"
+                style="padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid var(--glass-border);">
+            {{ isPaidOrg ? 'PAID' : 'FREE' }} PLAN
+          </span>
+          @if (orgUsage) {
+            <span style="font-size: 13px; color: var(--text-secondary);">
+              {{ orgUsage.repoCount }}{{ orgUsage.repoLimit === Infinity ? '' : ' / ' + orgUsage.repoLimit }} repos ·
+              {{ orgUsage.memberCount }}{{ orgUsage.memberLimit === Infinity ? '' : ' / ' + orgUsage.memberLimit }} members
+              <!-- ^ Infinity refers to Settings.Infinity above, not the global (Angular templates can't see globals) -->
+
+            </span>
+          }
+        </div>
+
+        @if (currentOrg.logoUrl) {
+          <img [src]="currentOrg.logoUrl" alt="Organization logo" style="max-height: 40px; margin-top: 12px;" />
+        }
+
+        @if (isPaidOrg) {
+          <div style="margin-top: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" (change)="onLogoFileSelected($event)" />
+            <button (click)="uploadLogo()" [disabled]="!logoFile || isUploadingLogo" class="save-button" style="background: var(--accent-teal); color: var(--bg-obsidian); padding: 6px 14px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer;">
+              {{ isUploadingLogo ? 'Uploading...' : 'Upload Logo' }}
+            </button>
+          </div>
+          @if (logoMessage) { <p style="color: var(--accent-teal); font-size: 13px; margin-top: 8px;">{{ logoMessage }}</p> }
+          @if (logoError) { <p style="color: #ef4444; font-size: 13px; margin-top: 8px;">{{ logoError }}</p> }
+        } @else {
+          <p style="margin-top: 12px; font-size: 13px; color: var(--text-secondary);">
+            Custom branding (logo on your dashboard and notification emails) is a paid feature.
+          </p>
+        }
+      }
     </app-settings-card>
 
     <app-settings-card title="Dashboard Metrics"
@@ -93,6 +130,13 @@
   </app-settings-card>
 
   <app-settings-card title="Organization Gatekeeper Policies" subtitle="Customize the strictness of the predictive risk engine for your entire organization.">
+    @if (!isPaidOrg) {
+      <p style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px 16px; font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+        Customizing these policies (and custom scoring weights below) is a paid feature. Your organization currently uses the same sensible defaults every FREE org starts with — read-only until you upgrade.
+      </p>
+    }
+
+    <fieldset [disabled]="!isPaidOrg" style="border: none; padding: 0; margin: 0;">
     <app-settings-item [title]="'Block Critical CVEs'"
       [subtitle]="'Automatically reject installation of packages harboring CRITICAL severity vulnerabilities.'"
       [(enabled)]="blockCriticalCves"></app-settings-item>
@@ -121,6 +165,34 @@
         </p>
       </app-settings-input>
     }
+
+    <app-settings-item [title]="'Custom Trust Score Weights'"
+      [subtitle]="'Override the default 45/20/20/15 (security/license/maintenance/popularity) split to match what your organization actually cares about.'"
+      [(enabled)]="useCustomWeights"></app-settings-item>
+
+    @if (useCustomWeights) {
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0;">
+        <label>Security (%)
+          <input type="number" [(ngModel)]="weightSecurity" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>License (%)
+          <input type="number" [(ngModel)]="weightLicense" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>Maintenance (%)
+          <input type="number" [(ngModel)]="weightMaintenance" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>Popularity (%)
+          <input type="number" [(ngModel)]="weightPopularity" class="settings-input-field" min="0" max="100" />
+        </label>
+      </div>
+      <p [style.color]="weightsSum === 100 ? 'var(--accent-teal)' : '#ef4444'" style="font-size: 13px;">
+        Sum: {{ weightsSum }} / 100 {{ weightsSum === 100 ? '' : '— must equal 100 to save' }}
+      </p>
+      @if (weightsError) {
+        <p style="color: #ef4444; font-size: 13px;">{{ weightsError }}</p>
+      }
+    }
+    </fieldset>
   </app-settings-card>
 
   <app-settings-card title="GitHub Authentication" 
