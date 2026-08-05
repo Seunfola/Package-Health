@@ -1,0 +1,101 @@
+.dependency-graph-root {
+  position: relative;
+  width: 100%;
+}
+
+.empty-state {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.root {
+  background: var(--accent-teal);
+}
+
+.dot.safe {
+  background: var(--accent-emerald);
+}
+
+.dot.vulnerable {
+  background: #F5A524;
+}
+
+.dot.critical {
+  background: #EF4444;
+}
+
+.graph-canvas {
+  width: 100%;
+  min-height: 240px;
+}
+
+.graph-caveat {
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.node-tooltip {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+.tooltip-type {
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+}
+
+.tooltip-type.safe {
+  color: var(--accent-emerald);
+  background: rgba(0, 255, 136, 0.12);
+}
+
+.tooltip-type.vulnerable {
+  color: #F5A524;
+  background: rgba(245, 165, 36, 0.14);
+}
+
+.tooltip-type.critical {
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.14);
+}

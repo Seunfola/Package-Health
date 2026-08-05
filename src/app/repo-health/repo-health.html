@@ -1,97 +1,195 @@
 <div class="repo-health-container">
-  
-  <!-- Critical Alert Banner -->
-  <div class="alert-banner" *ngIf="hasCriticalVulnerabilities">
-    <div class="alert-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    </div>
-    <div class="alert-content">
-      <strong>CRITICAL RISK DETECTED:</strong> This repository contains 2 critical vulnerabilities that fall below the organizational threshold. Installation is currently blocked by DepVault policies.
-    </div>
-  </div>
 
   <div class="header-section">
-      <h1>Trust Score Dashboard</h1>
-      <p>DepVault / my-startup-api <span class="scanned-badge">Scanned {{ lastScanned }}</span></p>
+    <h1>Package Trust Score</h1>
+    <p>Look up any package's security, license, maintenance and popularity score.</p>
   </div>
 
-  <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="gauge-card">
-      <div class="gauge-container">
-        <svg class="circular-chart" viewBox="0 0 100 100">
-          <path class="circle-bg"
-            d="M50 5
-               a 45 45 0 0 1 0 90
-               a 45 45 0 0 1 0 -90"
-          />
-          <path class="circle-fill" [ngClass]="{'critical': trustScore < 50, 'warning': trustScore >= 50 && trustScore < 80, 'healthy': trustScore >= 80}"
-            [attr.stroke-dasharray]="282.7"
-            [attr.stroke-dashoffset]="strokeDashoffset"
-            d="M50 5
-               a 45 45 0 0 1 0 90
-               a 45 45 0 0 1 0 -90"
-          />
-          <text x="50" y="55" class="percentage">{{ trustScore }}</text>
-        </svg>
-      </div>
-      <div class="gauge-info">
-        <h2>Overall Trust Score</h2>
-        <p>A score below 50 indicates severe architectural or security risks.</p>
-      </div>
+  <!-- Package Lookup Form -->
+  <form class="lookup-form" (ngSubmit)="scan()">
+    <div class="form-field">
+      <label for="ecosystem-select">Ecosystem</label>
+      <select id="ecosystem-select" name="ecosystem" [(ngModel)]="ecosystem">
+        @for (eco of ecosystems; track eco) {
+          <option [value]="eco">{{ eco }}</option>
+        }
+      </select>
     </div>
-
-    <!-- Breakdown Grid -->
-    <div class="metrics-grid">
-      @for (card of statusCards; track card.title) {
-        <app-status-card 
-          [title]="card.title" 
-          [value]="card.value" 
-          [icon]="card.icon" 
-          [iconContainerBg]="card.iconContainerBg"
-          [iconFillColor]="card.iconFillColor" 
-          [cardBorderRadius]="card.cardBorderRadius">
-        </app-status-card>
+    <div class="form-field grow">
+      <label for="package-name">Package name</label>
+      <input
+        id="package-name"
+        name="packageName"
+        type="text"
+        placeholder="e.g. express, requests, serde"
+        [(ngModel)]="packageName"
+      />
+    </div>
+    <div class="form-field">
+      <label for="package-version">Version (optional)</label>
+      <input id="package-version" name="version" type="text" placeholder="latest" [(ngModel)]="version" />
+    </div>
+    <button type="submit" class="btn-primary" [disabled]="isLoading">
+      @if (isLoading) {
+        <span class="spinner"></span>
+        Scanning...
+      } @else {
+        Scan Package
       }
-    </div>
-  </div>
+    </button>
+  </form>
 
-  <!-- Historical Trend Section -->
-  <div class="trend-section">
-    <app-trend-chart [history]="scanHistory"></app-trend-chart>
-  </div>
-
-  <!-- Risky Dependencies Data Table -->
-  <div class="data-table-section" *ngIf="riskyDependencies.length > 0">
-    <h2>Risky Dependencies</h2>
-    <p class="subtitle">These packages are actively dragging down the Trust Score.</p>
-    
-    <div class="table-card">
-      <table class="clean-table">
-        <thead>
-          <tr>
-            <th>Package Name</th>
-            <th>Version</th>
-            <th>Severity</th>
-            <th>Issue</th>
-            <th>CVE</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let pkg of riskyDependencies">
-            <td class="pkg-name">{{ pkg.name }}</td>
-            <td><span class="code-badge">{{ pkg.version }}</span></td>
-            <td>
-              <span class="severity-badge" [ngClass]="pkg.severity.toLowerCase()">{{ pkg.severity }}</span>
-            </td>
-            <td>{{ pkg.issue }}</td>
-            <td class="cve-cell">{{ pkg.cve }}</td>
-            <td><button class="btn-outline">View Details</button></td>
-          </tr>
-        </tbody>
-      </table>
+  @if (errorMessage) {
+    <div class="alert-banner error">
+      <div class="alert-content">{{ errorMessage }}</div>
     </div>
-  </div>
+  }
+
+  @if (scanResult) {
+    <!-- Critical Alert Banner -->
+    @if (scanResult.hasCriticalVulnerabilities) {
+      <div class="alert-banner">
+        <div class="alert-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="alert-content">
+          <strong>CRITICAL RISK DETECTED:</strong> {{ scanResult.package }}&#64;{{ scanResult.version }} has known
+          critical vulnerabilities.
+        </div>
+      </div>
+    }
+
+    <p class="scanned-subtitle">
+      {{ scanResult.ecosystem }} / {{ scanResult.package }}
+      <span class="scanned-badge">v{{ scanResult.version }}</span>
+    </p>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="gauge-card">
+        <div class="gauge-container">
+          <svg class="circular-chart" viewBox="0 0 100 100">
+            <path class="circle-bg"
+              d="M50 5
+                 a 45 45 0 0 1 0 90
+                 a 45 45 0 0 1 0 -90"
+            />
+            <path class="circle-fill" [ngClass]="getHealthLevel(finalScore)"
+              [attr.stroke-dasharray]="282.7"
+              [attr.stroke-dashoffset]="strokeDashoffset"
+              d="M50 5
+                 a 45 45 0 0 1 0 90
+                 a 45 45 0 0 1 0 -90"
+            />
+            <text x="50" y="55" class="percentage">{{ finalScore | number: '1.0-0' }}</text>
+          </svg>
+        </div>
+        <div class="gauge-info">
+          <h2>Overall Trust Score</h2>
+          <p>A score below 50 indicates severe architectural or security risks.</p>
+          @if (scanResult.trustScore.ci) {
+            <p class="ci-band">
+              95% CI: {{ scanResult.trustScore.ci.p2_5 | number: '1.0-0' }}&ndash;{{
+                scanResult.trustScore.ci.p97_5 | number: '1.0-0'
+              }}
+              (median {{ scanResult.trustScore.ci.p50 | number: '1.0-0' }})
+            </p>
+          }
+        </div>
+      </div>
+
+      <!-- Breakdown Grid -->
+      <div class="metrics-grid">
+        @for (card of statusCards; track card.title) {
+          <app-status-card
+            [title]="card.title"
+            [value]="card.value"
+            [icon]="card.icon"
+            [iconContainerBg]="card.iconContainerBg"
+            [iconFillColor]="card.iconFillColor"
+            [cardBorderRadius]="card.cardBorderRadius">
+          </app-status-card>
+        }
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-section">
+      <button type="button" class="btn-outline" (click)="getFixSuggestions()" [disabled]="isFetchingFixes">
+        {{ isFetchingFixes ? 'Loading...' : 'Get Fix Suggestions' }}
+      </button>
+      <button type="button" class="btn-outline" (click)="downloadReport()" [disabled]="isDownloadingReport">
+        {{ isDownloadingReport ? 'Preparing...' : 'Download Report' }}
+      </button>
+      <button type="button" class="btn-outline" (click)="generateSbom()" [disabled]="isGeneratingSbom">
+        {{ isGeneratingSbom ? 'Generating...' : 'Generate SBOM' }}
+      </button>
+      <button type="button" class="btn-outline" (click)="getBadge()" [disabled]="isFetchingBadge">
+        {{ isFetchingBadge ? 'Loading...' : 'Get Badge' }}
+      </button>
+    </div>
+
+    @if (fixError) {
+      <p class="action-error">{{ fixError }}</p>
+    }
+    @if (reportError) {
+      <p class="action-error">{{ reportError }}</p>
+    }
+    @if (sbomError) {
+      <p class="action-error">{{ sbomError }}</p>
+    }
+    @if (badgeError) {
+      <p class="action-error">{{ badgeError }}</p>
+    }
+
+    @if (badgeSvg) {
+      <div class="badge-preview" [innerHTML]="badgeSvg"></div>
+    }
+
+    <!-- Fix Suggestions -->
+    @if (fixSuggestions) {
+      <div class="data-table-section">
+        <h2>Fix Suggestions</h2>
+        @if (fixSuggestions.length === 0) {
+          <p class="subtitle">No score-improving fix was found for this package's current vulnerabilities.</p>
+        } @else {
+          <p class="subtitle">Recommended upgrades, ranked by score improvement.</p>
+          <div class="table-card">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Package</th>
+                  <th>Current</th>
+                  <th>Fixed</th>
+                  <th>Score Before</th>
+                  <th>Score After</th>
+                  <th>&#916;</th>
+                  <th>Command</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (fix of fixSuggestions; track fix.package) {
+                  <tr>
+                    <td class="pkg-name">{{ fix.package }}</td>
+                    <td><span class="code-badge">{{ fix.currentVersion }}</span></td>
+                    <td><span class="code-badge">{{ fix.fixedVersion }}</span></td>
+                    <td>{{ fix.scoreBefore }}</td>
+                    <td>{{ fix.scoreAfter }}</td>
+                    <td class="delta-positive">+{{ fix.deltaScore }}</td>
+                    <td><span class="code-badge">{{ fix.command }}</span></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Historical Trend Section -->
+    <div class="trend-section">
+      <app-trend-chart [history]="scanHistory"></app-trend-chart>
+    </div>
+  }
 
 </div>

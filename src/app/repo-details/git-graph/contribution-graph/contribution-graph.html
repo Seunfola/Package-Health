@@ -1,0 +1,54 @@
+<div class="contribution-container">
+  <div class="contribution-header">
+    <h3>{{ totalContributions | number }} scans in the last year</h3>
+    <div class="settings">
+      <span>Scan settings</span>
+      <svg width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+    </div>
+  </div>
+
+  <div class="graph-card">
+    <div class="graph-scroll-wrapper">
+      <div class="graph-inner">
+        <!-- Months row -->
+        <div class="months">
+          <span *ngFor="let month of months" [style.gridColumn]="month.offset + 2">{{ month.name }}</span>
+        </div>
+
+        <!-- Graph body -->
+        <div class="graph-body">
+          <div class="days-labels">
+            <span>Mon</span>
+            <span>Wed</span>
+            <span>Fri</span>
+          </div>
+          <div class="weeks-grid">
+            <div class="week" *ngFor="let week of weeks">
+              <div 
+                class="day" 
+                *ngFor="let day of week" 
+                [attr.data-level]="day.level"
+                [attr.title]="day.count + ' scans on ' + day.date"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="graph-footer">
+      <a href="#" class="learn-more">Learn how we count scans</a>
+      <div class="legend">
+        <span>Less</span>
+        <div class="legend-scale">
+          <div class="day" data-level="0"></div>
+          <div class="day" data-level="1"></div>
+          <div class="day" data-level="2"></div>
+          <div class="day" data-level="3"></div>
+          <div class="day" data-level="4"></div>
+        </div>
+        <span>More</span>
+      </div>
+    </div>
+  </div>
+</div>

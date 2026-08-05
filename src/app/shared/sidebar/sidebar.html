@@ -3,11 +3,9 @@
 <aside class="sidebar" [class.open]="isOpen">
   <ul class="list">
     @for (item of menuItems; track $index) {
-    <li class="list-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{ exact: true }" role="button"
-      tabindex="0" (click)="setActive($index)">
-      <a [routerLink]="item.path">
-        <img [src]="'assets/icons/' + item.icon + '.svg'" [attr.alt]="item.label" [attr.title]="item.label" width="24"
-          height="24" />
+    <li class="list-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{ exact: true }">
+      <a [routerLink]="item.path" (click)="setActive($index)">
+        <img [src]="'assets/icons/' + item.icon + '.svg'" [attr.alt]="item.label" [attr.title]="item.label" width="24" height="24" />
         <span>{{ item.label }}</span>
       </a>
     </li>

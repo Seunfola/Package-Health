@@ -12,7 +12,7 @@ export class IconComponent {
   @Input() iconType = '';
 
   get iconUrl(): string {
-    // ✅ expects files like src/assets/icons/alert.svg
+    // expects files like src/assets/icons/alert.svg
     return `assets/icons/${this.iconType}.svg`;
   }
 }

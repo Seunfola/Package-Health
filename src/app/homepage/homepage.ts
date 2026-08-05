@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { HeroSection } from './hero-section/hero-section';
 import { Updates } from './updates/updates';
 import { FeatureSection } from './feature-section/feature-section';
+import { AboutSection } from './about-section/about-section';
 
 @Component({
   selector: 'app-homepage',
   standalone: true,
-  imports: [CommonModule, HeroSection, Updates, FeatureSection],
+  imports: [CommonModule, HeroSection, Updates, FeatureSection, AboutSection],
   templateUrl: './homepage.html',
   styleUrl: './homepage.css',
 })

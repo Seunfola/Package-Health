@@ -4,13 +4,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #007a7a;
-  box-shadow: 0 0 1px #171a1f12, 0 0 2px #171a1f1f;
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   padding: 0 3.5rem;
-  color: #fff;
+  color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   position: relative;
   z-index: 10;
+}
+
+/* A flat border reads as a plain HTML default; a thin brand-colored gradient
+   in its place is one of the cheapest "this was actually designed" signals
+   available, and it's visible on literally every page. */
+.navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.5), rgba(0, 255, 136, 0.3), transparent);
 }
 
 .navbar__logo img {
@@ -46,21 +62,23 @@
   width: 100%;
   height: 40px;
   padding: 0 1rem 0 3rem;
-  border: none;
-  border-radius: 6px;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
   font-size: 14px;
-  transition: background-color 0.2s ease;
+  transition: var(--transition-smooth);
 }
 
 .search-input::placeholder {
-  color: #b0e0e0;
+  color: var(--text-muted);
 }
 
 .search-input:focus {
   outline: none;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-teal);
+  box-shadow: var(--glow-teal);
 }
 
 .navbar__actions {
@@ -76,14 +94,39 @@
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
+  border: 1px solid var(--glass-border);
+  transition: var(--transition-smooth);
 }
 
 .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* ✨ Here is the change! It inverts the colors to turn the icon white. */
-  filter: invert(1);
+}
+
+/* Logged-in real photos render as-is; only the logged-out placeholder icon
+   gets the invert+dim treatment (a real user photo inverted looks broken,
+   which is what the previous single blanket filter did unconditionally). */
+.avatar--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.25);
+  cursor: pointer;
+  padding: 0;
+}
+
+.avatar--placeholder:hover {
+  background: rgba(0, 229, 255, 0.16);
+  box-shadow: var(--glow-teal);
+}
+
+.avatar--placeholder img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(88%) sepia(56%) saturate(3767%) hue-rotate(140deg) brightness(101%) contrast(101%);
 }
 
 .menu-toggle {

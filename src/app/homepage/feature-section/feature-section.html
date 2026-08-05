@@ -1,4 +1,12 @@
-<h2>Featured Insights</h2>
-<div class="insights-grid">
+<section class="insights-campaign-section">
+  <div class="insights-ambient-glow"></div>
+  <div class="insights-campaign-header">
+    <div class="eyebrow">Intelligence</div>
+    <h2>Featured Insights</h2>
+    <div class="campaign-header-line"></div>
+  </div>
+
+  <div class="insights-grid">
     <app-insight-card *ngFor="let insight of insights" [insight]="insight"></app-insight-card>
-</div>
+  </div>
+</section>
