@@ -18,6 +18,7 @@ export class NotificationItem implements OnChanges {
   @Input() repository: string = '';
   @Input() severity: string = '';
   @Input() iconType: string = '';
+  @Input() isRead: boolean = false;
 
   formattedTime: string = '';
 

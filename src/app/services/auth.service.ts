@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -20,6 +21,68 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient) {
     this.cleanupExpiredToken();
+  }
+
+  loginWithGithub(): void {
+    window.location.href = `${environment.authUrl}/github`;
+  }
+
+  loginWithGoogle(): void {
+    window.location.href = `${environment.authUrl}/google`;
+  }
+
+  /** Enterprise SSO via whatever OIDC provider the backend is configured against (Okta, Azure AD, Auth0, etc.). */
+  loginWithOidc(): void {
+    window.location.href = `${environment.authUrl}/oidc`;
+  }
+
+  async setJwtToken(token: string): Promise<boolean> {
+    try {
+      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.obfuscateToken(token));
+      
+      // Fetch user profile from backend using the newly stored JWT
+      const profile = await this.fetchUserProfile();
+      
+      const authState: AuthState = {
+        isAuthenticated: true,
+        username: profile?.username || 'OAuth User',
+        lastAuthTime: Date.now(),
+      };
+      
+      localStorage.setItem(this.AUTH_STATE_LOCAL_KEY, JSON.stringify(authState));
+      this.authStateSubject.next(authState);
+      return true;
+    } catch (e) {
+      console.error('Failed to set JWT token or fetch profile', e);
+      return false;
+    }
+  }
+
+  /**
+   * Exchanges the one-time OAuth callback code for the real JWT. The token
+   * itself never travels in a URL (browser history / proxy logs / Referer
+   * headers) — only this opaque, single-use code does.
+   */
+  async exchangeCode(code: string): Promise<string | null> {
+    try {
+      const response = await this.http
+        .post<{ token: string }>(`${environment.authUrl}/exchange`, { code })
+        .toPromise();
+      return response?.token ?? null;
+    } catch (e) {
+      console.error('Failed to exchange auth code', e);
+      return null;
+    }
+  }
+
+  private async fetchUserProfile(): Promise<any> {
+    try {
+      // The AuthInterceptor will attach the Bearer token automatically
+      const response = await this.http.get(`${environment.authUrl}/me`).toPromise();
+      return response;
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -42,7 +105,7 @@ export class AuthService {
       }
 
       // Store token ONLY in sessionStorage (not localStorage)
-      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.encryptToken(token));
+      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.obfuscateToken(token));
 
       // Store auth state in localStorage (non-sensitive)
       const authState: AuthState = {
@@ -87,7 +150,7 @@ export class AuthService {
     if (!encrypted) return undefined;
 
     try {
-      return this.decryptToken(encrypted);
+      return this.deobfuscateToken(encrypted);
     } catch {
       // Token corrupted or invalid, clear it
       this.logout();
@@ -186,14 +249,14 @@ export class AuthService {
    * Prevents casual viewing of token in sessionStorage
    * Real encryption would require crypto library
    */
-  private encryptToken(token: string): string {
+  private obfuscateToken(token: string): string {
     return btoa(token); // Base64 encode for obfuscation
   }
 
   /**
    * DECRYPT TOKEN: Decode encrypted token
    */
-  private decryptToken(encrypted: string): string {
+  private deobfuscateToken(encrypted: string): string {
     return atob(encrypted); // Base64 decode
   }
 

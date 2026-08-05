@@ -1,115 +1,81 @@
-<div class="auth-login-container">
+<div class="auth-campaign-container">
   <ng-container *ngIf="(authState$ | async) as auth">
     <!-- NOT AUTHENTICATED: Show login form -->
     @if (!auth.isAuthenticated) {
-      <div class="auth-section">
-        <div class="auth-header">
-          <h3>GitHub Authentication</h3>
-          <p>Analyze private repositories with a GitHub personal access token</p>
+      <div class="auth-campaign-card">
+        <div class="card-glow-border"></div>
+        <div class="auth-content">
+          <div class="auth-header">
+            <h3>Authenticate to DepVault</h3>
+            <p>Connect your account to analyze private repositories and unlock deep risk insights.</p>
+          </div>
+
+          @if (!showTokenInput) {
+            <div class="auth-buttons-group">
+              <button (click)="loginWithGithub()" class="campaign-btn btn-github">
+                <div class="btn-bg-glow"></div>
+                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.45-1.15-1.11-1.46-1.11-1.46c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/></svg>
+                <span class="btn-text">Continue with GitHub</span>
+              </button>
+
+              <button (click)="loginWithGoogle()" class="campaign-btn btn-google">
+                <div class="btn-bg-glow"></div>
+                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27c3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10c5.35 0 9.25-3.67 9.25-9.09c0-1.15-.15-1.81-.15-1.81Z"/></svg>
+                <span class="btn-text">Continue with Google</span>
+              </button>
+
+              <button (click)="loginWithOidc()" class="campaign-btn btn-oidc">
+                <div class="btn-bg-glow"></div>
+                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span class="btn-text">Enterprise SSO</span>
+              </button>
+            </div>
+          }
         </div>
-
-        @if (!showTokenInput) {
-          <button (click)="toggleTokenInput()" class="btn btn-primary">
-            <span class="icon">🔐</span>
-            Connect GitHub Account
-          </button>
-        } @else {
-          <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="token-form">
-            <div class="form-group">
-              <label for="token">GitHub Personal Access Token</label>
-              <input
-                type="password"
-                id="token"
-                formControlName="token"
-                placeholder="ghp_..."
-                class="token-input"
-                autocomplete="off"
-                [attr.aria-label]="'GitHub token input'"
-              />
-              
-              @if (getFormError()) {
-                <div class="form-error">{{ getFormError() }}</div>
-              }
-
-              <div class="token-instructions">
-                <p>
-                  <strong>How to create a token:</strong>
-                </p>
-                <ol>
-                  <li>Go to <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">GitHub Settings</a></li>
-                  <li>Click "Generate new token"</li>
-                  <li>Select scopes: <code>repo</code>, <code>read:security_events</code></li>
-                  <li>Copy and paste token below</li>
-                </ol>
-                <button
-                  type="button"
-                  (click)="openGitHubTokenSettings()"
-                  class="btn btn-secondary"
-                >
-                  Create Token on GitHub
-                </button>
-              </div>
-            </div>
-
-            @if (errorMessage) {
-              <div class="alert alert-error">{{ errorMessage }}</div>
-            }
-
-            <div class="form-actions">
-              <button
-                type="submit"
-                [disabled]="loginForm.invalid || isLoading"
-                class="btn btn-primary"
-              >
-                @if (isLoading) {
-                  <span>Authenticating...</span>
-                } @else {
-                  <span>Authenticate</span>
-                }
-              </button>
-              <button
-                type="button"
-                (click)="toggleTokenInput()"
-                class="btn btn-secondary"
-              >
-                Cancel
-              </button>
-            </div>
-
-            <div class="security-notice">
-              <span class="icon">ℹ️</span>
-              <p>
-                <strong>Security:</strong> Your token is stored securely in your session and
-                automatically cleared when you close the browser.
-              </p>
-            </div>
-          </form>
-        }
       </div>
     }
 
     <!-- AUTHENTICATED: Show user info and logout button -->
     @if (auth.isAuthenticated) {
-      <div class="auth-section authenticated">
-        <div class="auth-status">
-          <div class="status-icon">✓</div>
-          <div class="status-info">
-            <h4>Connected</h4>
-            <p>{{ auth.username || 'GitHub User' }}</p>
+      <div class="auth-campaign-card authenticated">
+        <div class="card-glow-border-success"></div>
+        <div class="auth-content">
+          <div class="auth-status-panel">
+            <div class="status-icon-glow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00FF88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            
+            <div class="status-info">
+              <h4>Securely Connected</h4>
+              <p>{{ auth.username || 'Authorized User' }}</p>
+            </div>
+            
+            <button (click)="onLogout()" class="campaign-btn btn-logout">Disconnect</button>
           </div>
-          <button (click)="onLogout()" class="btn btn-danger">Logout</button>
-        </div>
 
-        <div class="token-expiry">
-          <span class="label">Session expires in:</span>
-          <span class="value">{{ getTokenStatus().expiresIn }}</span>
+          <div class="token-expiry-panel">
+            <span class="expiry-label">Session Status</span>
+            <div class="expiry-value">
+              <span class="pulse-dot"></span>
+              {{ getTokenStatus().expiresIn }}
+            </div>
+          </div>
         </div>
       </div>
     }
   </ng-container>
 
-  <!-- SUCCESS MESSAGE -->
+  <!-- ALERTS -->
   @if (successMessage) {
-    <div class="alert alert-success">{{ successMessage }}</div>
+    <div class="campaign-alert alert-success">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      {{ successMessage }}
+    </div>
+  }
+  @if (errorMessage) {
+    <div class="campaign-alert alert-error">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      {{ errorMessage }}
+    </div>
   }
 </div>

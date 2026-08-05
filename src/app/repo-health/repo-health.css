@@ -1,3 +1,135 @@
+/* Package Lookup Form */
+.lookup-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 140px;
+}
+
+.form-field.grow {
+    flex: 1;
+    min-width: 220px;
+}
+
+.form-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.form-field input,
+.form-field select {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0f172a;
+    background: #fff;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.lookup-form .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.lookup-form .btn-primary:hover:not(:disabled) {
+    background: #4f46e5;
+}
+
+.lookup-form .btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.scanned-subtitle {
+    font-size: 16px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.ci-band {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 8px;
+}
+
+/* Actions */
+.actions-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.actions-section .btn-outline {
+    padding: 10px 16px;
+}
+
+.action-error {
+    color: #991b1b;
+    font-size: 14px;
+    margin: 0 0 12px 0;
+}
+
+.badge-preview {
+    display: inline-flex;
+    margin-bottom: 24px;
+}
+
+.delta-positive {
+    color: #166534;
+    font-weight: 700;
+}
+
 /* Alert Banner */
 .alert-banner {
     display: flex;
@@ -8,6 +140,12 @@
     padding: 16px;
     margin-bottom: 24px;
     color: #991b1b;
+}
+
+.alert-banner.error {
+    background-color: #fff7ed;
+    border-color: #fdba74;
+    color: #9a3412;
 }
 
 .alert-icon {

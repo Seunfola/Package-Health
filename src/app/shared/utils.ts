@@ -1,3 +1,23 @@
+/**
+ * Generates a random UUID (v4) for use as an `x-idempotency-key` header on
+ * side-effecting, double-submit-prone POST calls (e.g. repo-health analyze).
+ * Prefers the native `crypto.randomUUID()` (available in all modern browsers
+ * and Node 19+ for SSR); falls back to a Math.random-based generator for
+ * older/non-secure contexts where `crypto.randomUUID` is unavailable.
+ */
+export function generateIdempotencyKey(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  // Fallback: RFC4122-ish v4 UUID without relying on crypto.randomUUID.
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 export function dateToRelativeTime(date: Date): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();

@@ -1,106 +1,115 @@
-<div class="profile-container">
-  <h1 class="page-title">User Profile</h1>
-  @if (statusMessage) {
-    <p class="card-description">{{ statusMessage }}</p>
-  }
+<ng-container *ngIf="(authState$ | async) as auth">
+  <div class="user-profile-container" *ngIf="auth.isAuthenticated; else unauthorized">
+    <div class="profile-container">
+      <h1 class="page-title">User Profile</h1>
+      @if (statusMessage) {
+        <p class="card-description">{{ statusMessage }}</p>
+      }
 
-  <div class="profile-content">
+      <div class="profile-content">
 
-    <div class="profile-sidebar">
+        <div class="profile-sidebar">
 
-      <div class="profile-card user-info">
-        <img [src]="userAvatar" alt="User Avatar" class="user-avatar">
-        <h3 class="user-name">{{ userName }}</h3>
-        <p class="user-email">{{ userEmail }}</p>
-        @if (phoneNumber) {
-          <p class="user-email">{{ phoneNumber }}</p>
-        }
-        @if (location) {
-          <p class="user-email">{{ location }}</p>
-        }
-      </div>
-
-      <div class="profile-card social-accounts-connected">
-        <h4 class="card-title">Connected Social Accounts</h4>
-        <p class="card-description">Review your linked profiles and add new connections to enrich your PackageHealth
-          profile.</p>
-
-        <div class="social-link-item">
-          <div class="social-icon">
-            <img src="assets/icons/github.svg" alt="GitHub">
+          <div class="profile-card user-info">
+            <img [src]="userAvatar" alt="User Avatar" class="user-avatar">
+            <h3 class="user-name">{{ userName }}</h3>
+            <p class="user-email">{{ userEmail }}</p>
+            @if (phoneNumber) {
+              <p class="user-email">{{ phoneNumber }}</p>
+            }
+            @if (location) {
+              <p class="user-email">{{ location }}</p>
+            }
           </div>
-          <span class="social-username">{{ githubUsername }}</span>
-        </div>
 
-        <div class="social-link-item">
-          <div class="social-icon">
-            <img src="assets/icons/linkedin.svg" alt="LinkedIn" class="add-icon" width="20" height="20" />
+          <div class="profile-card social-accounts-connected">
+            <h4 class="card-title">Connected Social Accounts</h4>
+            <p class="card-description">Review your linked profiles and add new connections to enrich your PackageHealth
+              profile.</p>
+
+            <div class="social-link-item">
+              <div class="social-icon">
+                <img src="assets/icons/github.svg" alt="GitHub">
+              </div>
+              <span class="social-username">{{ githubUsername }}</span>
+            </div>
+
+            <div class="social-link-item">
+              <div class="social-icon">
+                <img src="assets/icons/linkedin.svg" alt="LinkedIn" class="add-icon" width="20" height="20" />
+              </div>
+              <span class="social-username">{{ linkedinProfileUrl }}</span>
+            </div>
+
+            <button class="add-social-btn" (click)="addSocialLink()">
+              <img src="assets/icons/circleplus.svg" alt="add" class="add-icon" width="20" height="20" />
+              Add Social Link
+            </button>
           </div>
-          <span class="social-username">{{ linkedinProfileUrl }}</span>
         </div>
 
-        <button class="add-social-btn" (click)="addSocialLink()">
-          <img src="assets/icons/circleplus.svg" alt="add" class="add-icon" width="20" height="20" />
-          Add Social Link
-        </button>
-      </div>
-    </div>
+        <div class="profile-main">
 
-    <div class="profile-main">
-
-      <div class="profile-card resume-management">
-        <h4 class="card-title">Resume Management</h4>
-        <p class="card-description">Upload your resume in PDF format to enhance your profile and connect with
-          opportunities.</p>
-        <div class="upload-area">
-          <label for="resume-upload" class="upload-button">
-            <img src="assets/icons/upload.svg" alt="upload" class="upload-icon" width="20" height="20" />
-            Upload Resume (PDF)
-          </label>
-          <input id="resume-upload" type="file" accept=".pdf,.txt,.md,.json" (change)="onFileSelected($event)">
-        </div>
-        <p class="file-status">{{ resumeFileName ? resumeFileName : 'No resume file selected.' }}</p>
-        @if (profileSummary) {
-          <p class="card-description">{{ profileSummary }}</p>
-        }
-        @if (skills.length > 0) {
-          <p class="card-description">Skills: {{ skills.join(', ') }}</p>
-        }
-      </div>
-
-      <div class="profile-card social-media-link">
-        <h4 class="card-title">Link Social Media Accounts</h4>
-        <p class="card-description">Connect your social profiles to display your work and expand your network.</p>
-
-        <div class="social-link-form">
-          <h5 class="social-platform">GitHub</h5>
-          <div class="input-group">
-            <input type="text" [(ngModel)]="githubUsername" placeholder="Your GitHub Username">
+          <div class="profile-card resume-management">
+            <h4 class="card-title">Resume Management</h4>
+            <p class="card-description">Upload your resume in PDF format to enhance your profile and connect with
+              opportunities.</p>
+            <div class="upload-area">
+              <label for="resume-upload" class="upload-button">
+                <img src="assets/icons/upload.svg" alt="upload" class="upload-icon" width="20" height="20" />
+                Upload Resume (PDF)
+              </label>
+              <input id="resume-upload" type="file" accept=".pdf,.txt,.md,.json" (change)="onFileSelected($event)">
+            </div>
+            <p class="file-status">{{ resumeFileName ? resumeFileName : 'No resume file selected.' }}</p>
+            @if (profileSummary) {
+              <p class="card-description">{{ profileSummary }}</p>
+            }
+            @if (skills.length > 0) {
+              <p class="card-description">Skills: {{ skills.join(', ') }}</p>
+            }
           </div>
-          <button class="link-btn" (click)="linkGithub()">Link GitHub</button>
-        </div>
 
-        <div class="social-link-form">
-          <h5 class="social-platform">LinkedIn</h5>
-          <div class="input-group">
-            <input type="text" [(ngModel)]="linkedinProfileUrl" placeholder="Your LinkedIn Profile URL">
+          <div class="profile-card social-media-link">
+            <h4 class="card-title">Link Social Media Accounts</h4>
+            <p class="card-description">Connect your social profiles to display your work and expand your network.</p>
+
+            <div class="social-link-form">
+              <h5 class="social-platform">GitHub</h5>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="githubUsername" placeholder="Your GitHub Username">
+              </div>
+              <button class="link-btn" (click)="linkGithub()">Link GitHub</button>
+            </div>
+
+            <div class="social-link-form">
+              <h5 class="social-platform">LinkedIn</h5>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="linkedinProfileUrl" placeholder="Your LinkedIn Profile URL">
+              </div>
+              <button class="link-btn" (click)="linkLinkedin()">Link LinkedIn</button>
+            </div>
+
+            <div class="social-link-form">
+              <h5 class="social-platform">Twitter</h5>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="twitterHandle" placeholder="Your Twitter Handle">
+              </div>
+              <button class="link-btn" (click)="linkTwitter()">Link Twitter</button>
+            </div>
+            <div class="social-link-form">
+              <button class="link-btn" (click)="exportProfileFile()">Download Profile JSON</button>
+            </div>
+
           </div>
-          <button class="link-btn" (click)="linkLinkedin()">Link LinkedIn</button>
         </div>
-
-        <div class="social-link-form">
-          <h5 class="social-platform">Twitter</h5>
-          <div class="input-group">
-            <input type="text" [(ngModel)]="twitterHandle" placeholder="Your Twitter Handle">
-          </div>
-          <button class="link-btn" (click)="linkTwitter()">Link Twitter</button>
-        </div>
-        <div class="social-link-form">
-          <button class="link-btn" (click)="saveProfile()">Save Profile</button>
-          <button class="link-btn" (click)="exportProfileFile()">Download Profile JSON</button>
-        </div>
-
       </div>
     </div>
   </div>
-</div>
+
+  <ng-template #unauthorized>
+    <div class="user-profile-container auth-restricted-layout">
+      <app-unauthorized-warning></app-unauthorized-warning>
+    </div>
+  </ng-template>
+</ng-container>

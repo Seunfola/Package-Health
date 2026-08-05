@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '@/environment/environment';
 import { AnalysisService } from '@/app/services/analysis.service';
 import { AuthService } from '@/app/services/auth.service';
+import { RepoHealthAnalysisService } from '@/app/services/repo-health-analysis.service';
 
 type RepoVisibility = 'public' | 'private' | 'unknown';
 
@@ -28,10 +27,10 @@ export class HeroSection {
   analysisWarnings: string[] = [];
 
   constructor(
-    private readonly http: HttpClient,
     private readonly router: Router,
     private readonly analysisService: AnalysisService,
     private readonly authService: AuthService,
+    private readonly repoHealthAnalysisService: RepoHealthAnalysisService,
   ) {}
 
   setActiveTab(tab: 'github' | 'paste' | 'upload') {
@@ -86,9 +85,7 @@ export class HeroSection {
       }
 
       const response = await firstValueFrom(
-        this.http.post(`${environment.apiBaseUrl}/repo-health/analyze-url`, {
-          url: parsedRepo.url,
-        }),
+        this.repoHealthAnalysisService.analyzeRepository(parsedRepo.url),
       );
       this.handleAnalysisResult(response);
     } catch (error) {
@@ -113,10 +110,8 @@ export class HeroSection {
     this.analysisWarnings = this.getPackageSecurityWarnings(parsed);
     this.isAnalyzing = true;
 
-    this.http
-      .post(`${environment.apiBaseUrl}/repo-health/analyze-package/paste`, {
-        json: JSON.stringify(parsed),
-      })
+    this.repoHealthAnalysisService
+      .analyzeDependenciesFromJson(parsed)
       .subscribe({
         next: (res: any) => this.handleAnalysisResult(res),
         error: (err) => this.handleError(err),
@@ -147,13 +142,10 @@ export class HeroSection {
 
     this.analysisWarnings = this.getPackageSecurityWarnings(parsed);
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     this.isAnalyzing = true;
     try {
       const response = await firstValueFrom(
-        this.http.post(`${environment.apiBaseUrl}/repo-health/analyze-package/upload`, formData),
+        this.repoHealthAnalysisService.analyzeDependenciesFromFile(file),
       );
       this.handleAnalysisResult(response);
     } catch (error) {

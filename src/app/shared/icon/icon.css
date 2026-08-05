@@ -1,0 +1,13 @@
+/* Sized in em so each usage site can control it via font-size, since Angular's
+   emulated view encapsulation means a parent component can't reach in and
+   style this component's own <img> directly (font-size inherits through the
+   DOM regardless of encapsulation, so this is the one property that reliably
+   flows through). Previously unstyled entirely, so every usage rendered each
+   SVG at its raw intrinsic size (24x24) with no way to resize it from a
+   parent component's stylesheet. */
+.icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: middle;
+}

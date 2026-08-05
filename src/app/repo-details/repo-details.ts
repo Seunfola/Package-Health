@@ -3,12 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
-import { ContributionGraph } from './git-graph/git-graph';
 import { ChartCard } from './git-graph/chart-card/chart-card';
 import { LineChart } from './line-chart/line-chart';
 import { CodeQualityMetrics } from './code-quality-metrics/code-quality-metrics';
 import { SecurityAlerts } from './security-alerts/security-alerts';
 import { AnalysisData, RepoService } from '../services/RepoService';
+import { ContributionGraph } from './git-graph/contribution-graph/contribution-graph';
+import { DependencyGraph } from './dependency-graph/dependency-graph';
 
 @Component({
   selector: 'app-repo-details',
@@ -17,17 +18,19 @@ import { AnalysisData, RepoService } from '../services/RepoService';
     CommonModule,
     RepoDetailsDash,
     ChartCard,
-    ContributionGraph,
     LineChart,
     CodeQualityMetrics,
     SecurityAlerts,
+    ContributionGraph,
+    DependencyGraph,
   ],
   templateUrl: './repo-details.html',
   styleUrls: ['./repo-details.css'],
 })
 export class RepoDetails implements OnInit {
   analysisData: AnalysisData | null = null;
-  contributionData: { date: string; count: number }[] = [];
+  /** Set on a failed fetch (as opposed to "no repo selected") so the empty state can say what actually happened. */
+  loadError: string | null = null;
 
   public commitData: ChartConfiguration<'line'>['data'] = {
     datasets: [
@@ -76,7 +79,6 @@ export class RepoDetails implements OnInit {
     const name = this.route.snapshot.paramMap.get('name');
 
     if (owner && name) {
-      // Fetch live data
       this.repoService.getAnalysisData(owner, name).subscribe({
         next: (data) => {
           this.analysisData = data;
@@ -84,35 +86,17 @@ export class RepoDetails implements OnInit {
         },
         error: (err) => {
           console.error('Error fetching repo:', err);
-          this.loadDefaultData();
+          this.analysisData = null;
+          this.loadError = 'Failed to load repository analysis. Please try again.';
         },
       });
-    } else {
-      // load default
-      this.loadDefaultData();
     }
-  }
-
-  loadDefaultData() {
-    this.analysisData = {
-      repoName: 'PackageHealth/Example-Repo',
-      stars: 2400,
-      forks: 320,
-      lastCommit: '2025-10-20',
-      openChecks: 3,
-      contributionData: this.generateYearlyData(),
-      commitData: [120, 140, 75, 200, 130, 250, 190, 220, 150, 200],
-      commitLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-      overallHealth: 87,
-    };
-
-    this.initializeChartData();
+    // No owner/name in the route: analysisData stays null and the template's
+    // "No repository data available" empty state renders — no fake data.
   }
 
   initializeChartData() {
     if (!this.analysisData) return;
-
-    this.contributionData = this.analysisData.contributionData || this.generateYearlyData();
 
     this.commitData = {
       datasets: [
@@ -130,17 +114,5 @@ export class RepoDetails implements OnInit {
       ],
       labels: this.analysisData.commitLabels || [],
     };
-  }
-
-  generateYearlyData() {
-    const data = [];
-    const today = new Date();
-    const oneYearAgo = new Date(today);
-    oneYearAgo.setFullYear(today.getFullYear() - 1);
-
-    for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
-      data.push({ date: d.toISOString().split('T')[0], count: Math.floor(Math.random() * 20) });
-    }
-    return data;
   }
 }

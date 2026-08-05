@@ -46,37 +46,26 @@ export class AuthLogin implements OnInit {
         '',
         [
           Validators.required,
-          Validators.minLength(30),
-          Validators.maxLength(500),
-          this.tokenFormatValidator.bind(this),
+          Validators.minLength(40),
+          Validators.pattern(/^gh[pousr]_[a-zA-Z0-9]{36}$/),
         ],
       ],
     });
   }
 
   /**
-   * TOKEN FORMAT VALIDATOR: Validate GitHub token format
-   * Prevents invalid tokens from being submitted
+   * LOGIN WITH GITHUB: Trigger OAuth flow
    */
-  private tokenFormatValidator(control: { value: string }): { [key: string]: boolean } | null {
-    const token = control.value;
+  loginWithGithub(): void {
+    this.authService.loginWithGithub();
+  }
 
-    if (!token) return null;
+  loginWithGoogle(): void {
+    this.authService.loginWithGoogle();
+  }
 
-    // GitHub tokens must start with valid prefix
-    const validPrefixes = ['ghp_', 'ghu_', 'ghs_', 'ghr_'];
-    const hasValidPrefix = validPrefixes.some((prefix) => token.startsWith(prefix));
-
-    if (!hasValidPrefix) {
-      return { invalidTokenFormat: true };
-    }
-
-    // Token should not contain spaces
-    if (token.includes(' ')) {
-      return { tokenContainsSpace: true };
-    }
-
-    return null;
+  loginWithOidc(): void {
+    this.authService.loginWithOidc();
   }
 
   /**
@@ -95,7 +84,6 @@ export class AuthLogin implements OnInit {
     try {
       const token = this.loginForm.get('token')?.value;
 
-      // Password field will be cleared by browser auto-clear after submission
       const success = await this.authService.loginWithToken(token);
 
       if (success) {
@@ -103,7 +91,6 @@ export class AuthLogin implements OnInit {
         this.loginForm.reset();
         this.showTokenInput = false;
 
-        // Clear messages after 3 seconds
         setTimeout(() => {
           this.successMessage = '';
         }, 3000);

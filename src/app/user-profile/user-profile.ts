@@ -1,34 +1,23 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-interface StoredUserProfile {
-  userName: string;
-  userEmail: string;
-  userAvatar: string;
-  resumeFileName: string;
-  profileSummary: string;
-  githubUsername: string;
-  linkedinProfileUrl: string;
-  twitterHandle: string;
-  phoneNumber: string;
-  location: string;
-  skills: string[];
-}
+import { UserProfileService } from '@/app/services/user-profile.service';
+import { AuthService } from '@/app/services/auth.service';
+import { Subscription } from 'rxjs';
+import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UnauthorizedWarning],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
-export class UserProfile {
-  private readonly PROFILE_STORAGE_KEY = 'package_health_user_profile';
-
-  userName: string = 'Seun Fola';
-  userEmail: string = 'seunfola1@gmail.com';
-  userAvatar: string = 'assets/images/C1.jpg';
+export class UserProfile implements OnInit, OnDestroy {
+  internalUsername: string = '';
+  userName: string = 'User';
+  userEmail: string = '';
+  userAvatar: string = 'assets/icons/user.svg';
 
   resumeFileName: string = '';
   profileSummary: string = '';
@@ -42,8 +31,53 @@ export class UserProfile {
   statusMessage: string = '';
   statusType: 'success' | 'error' = 'success';
 
-  constructor() {
-    this.loadProfile();
+  isLoading = true;
+  private authSub?: Subscription;
+
+  constructor(
+    private readonly userProfileService: UserProfileService,
+    private readonly authService: AuthService
+  ) {}
+
+  get authState$() {
+    return this.authService.authState$;
+  }
+
+  ngOnInit(): void {
+    this.authSub = this.authService.authState$.subscribe(state => {
+      if (state.isAuthenticated && state.username) {
+        this.internalUsername = state.username;
+        // Load the extended profile data from the backend
+        this.loadProfile(this.internalUsername);
+      } else {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.authSub) this.authSub.unsubscribe();
+  }
+
+  loadProfile(username: string): void {
+    this.isLoading = true;
+    this.userProfileService.getProfile(username).subscribe({
+      next: (profile) => {
+        this.userName = profile.username || 'User';
+        this.userEmail = profile.email || '';
+        this.githubUsername = profile.githubUsername || '';
+        this.linkedinProfileUrl = profile.linkedinProfileUrl || '';
+        this.twitterHandle = profile.twitterHandle || '';
+        this.profileSummary = profile.profileSummary || '';
+        this.location = profile.location || '';
+        this.skills = profile.skills || [];
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching profile:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
   async onFileSelected(event: Event): Promise<void> {
@@ -57,11 +91,26 @@ export class UserProfile {
       return;
     }
 
+    if (!this.internalUsername) {
+      this.setStatus('You must be logged in to upload a resume.', 'error');
+      return;
+    }
+
     this.resumeFileName = file.name;
-    const resumeText = await this.extractTextFromFile(file);
-    this.applyParsedResumeData(resumeText);
-    this.persistProfile();
-    this.setStatus('Resume analyzed and profile updated.', 'success');
+    this.setStatus('Uploading and analyzing resume...', 'success');
+
+    this.userProfileService.uploadResume(file).subscribe({
+      next: (res) => {
+        this.setStatus('Resume analyzed and profile updated.', 'success');
+        if (this.internalUsername) {
+          this.loadProfile(this.internalUsername);
+        }
+      },
+      error: (err) => {
+        console.error('Resume upload failed', err);
+        this.setStatus('Failed to upload resume.', 'error');
+      }
+    });
   }
 
   linkGithub(): void {
@@ -71,8 +120,11 @@ export class UserProfile {
       this.setStatus('Invalid GitHub username format.', 'error');
       return;
     }
-    this.persistProfile();
-    this.setStatus('GitHub profile linked.', 'success');
+    
+    this.userProfileService.linkSocialProfile('github', this.githubUsername).subscribe({
+      next: () => this.setStatus('GitHub profile linked.', 'success'),
+      error: () => this.setStatus('Failed to link GitHub profile.', 'error')
+    });
   }
 
   linkLinkedin(): void {
@@ -81,8 +133,11 @@ export class UserProfile {
       this.setStatus('LinkedIn URL must start with https://www.linkedin.com/', 'error');
       return;
     }
-    this.persistProfile();
-    this.setStatus('LinkedIn profile linked.', 'success');
+    
+    this.userProfileService.linkSocialProfile('linkedin', this.linkedinProfileUrl).subscribe({
+      next: () => this.setStatus('LinkedIn profile linked.', 'success'),
+      error: () => this.setStatus('Failed to link LinkedIn profile.', 'error')
+    });
   }
 
   linkTwitter(): void {
@@ -91,21 +146,29 @@ export class UserProfile {
       this.setStatus('Twitter handle must be 1-15 characters (letters, numbers, underscore).', 'error');
       return;
     }
-    this.persistProfile();
-    this.setStatus('Twitter account linked.', 'success');
+    
+    this.userProfileService.linkSocialProfile('twitter', this.twitterHandle).subscribe({
+      next: () => this.setStatus('Twitter account linked.', 'success'),
+      error: () => this.setStatus('Failed to link Twitter account.', 'error')
+    });
   }
 
   addSocialLink(): void {
     alert('Adding new social link functionality (not implemented in UI)');
   }
 
-  saveProfile(): void {
-    this.persistProfile();
-    this.setStatus('Profile saved.', 'success');
-  }
 
   exportProfileFile(): void {
-    const profile = this.toStoredProfile();
+    const profile = {
+      userName: this.userName,
+      userEmail: this.userEmail,
+      githubUsername: this.githubUsername,
+      linkedinProfileUrl: this.linkedinProfileUrl,
+      twitterHandle: this.twitterHandle,
+      phoneNumber: this.phoneNumber,
+      location: this.location,
+      skills: this.skills,
+    };
     const payload = JSON.stringify(profile, null, 2);
     const blob = new Blob([payload], { type: 'application/json' });
     const objectUrl = URL.createObjectURL(blob);
@@ -121,118 +184,5 @@ export class UserProfile {
   private setStatus(message: string, type: 'success' | 'error'): void {
     this.statusMessage = message;
     this.statusType = type;
-  }
-
-  private loadProfile(): void {
-    const stored = localStorage.getItem(this.PROFILE_STORAGE_KEY);
-    if (!stored) return;
-
-    try {
-      const parsed = JSON.parse(stored) as StoredUserProfile;
-      this.userName = parsed.userName || this.userName;
-      this.userEmail = parsed.userEmail || this.userEmail;
-      this.userAvatar = parsed.userAvatar || this.userAvatar;
-      this.resumeFileName = parsed.resumeFileName || '';
-      this.profileSummary = parsed.profileSummary || '';
-      this.githubUsername = parsed.githubUsername || '';
-      this.linkedinProfileUrl = parsed.linkedinProfileUrl || '';
-      this.twitterHandle = parsed.twitterHandle || '';
-      this.phoneNumber = parsed.phoneNumber || '';
-      this.location = parsed.location || '';
-      this.skills = Array.isArray(parsed.skills) ? parsed.skills : [];
-    } catch {
-      localStorage.removeItem(this.PROFILE_STORAGE_KEY);
-    }
-  }
-
-  private persistProfile(): void {
-    localStorage.setItem(this.PROFILE_STORAGE_KEY, JSON.stringify(this.toStoredProfile()));
-  }
-
-  private toStoredProfile(): StoredUserProfile {
-    return {
-      userName: this.userName.trim(),
-      userEmail: this.userEmail.trim(),
-      userAvatar: this.userAvatar,
-      resumeFileName: this.resumeFileName,
-      profileSummary: this.profileSummary.trim(),
-      githubUsername: this.githubUsername.trim(),
-      linkedinProfileUrl: this.linkedinProfileUrl.trim(),
-      twitterHandle: this.twitterHandle.trim(),
-      phoneNumber: this.phoneNumber.trim(),
-      location: this.location.trim(),
-      skills: this.skills,
-    };
-  }
-
-  private async extractTextFromFile(file: File): Promise<string> {
-    const lowerName = file.name.toLowerCase();
-    if (lowerName.endsWith('.txt') || lowerName.endsWith('.md') || lowerName.endsWith('.json')) {
-      return file.text();
-    }
-
-    if (lowerName.endsWith('.pdf')) {
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
-    }
-
-    return '';
-  }
-
-  private applyParsedResumeData(text: string): void {
-    const lines = text
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    if (!this.userName || this.userName === 'Seun Fola') {
-      const probableName = lines.find((line) => /^[A-Za-z][A-Za-z\s.'-]{2,50}$/.test(line));
-      if (probableName) {
-        this.userName = probableName;
-      }
-    }
-
-    const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
-    if (emailMatch) this.userEmail = emailMatch[0];
-
-    const phoneMatch = text.match(
-      /(?:\+?\d{1,3}[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/,
-    );
-    if (phoneMatch) this.phoneNumber = phoneMatch[0];
-
-    const linkedInMatch = text.match(/https?:\/\/(?:www\.)?linkedin\.com\/[^\s)]+/i);
-    if (linkedInMatch) this.linkedinProfileUrl = linkedInMatch[0];
-
-    const githubMatch = text.match(/https?:\/\/(?:www\.)?github\.com\/([A-Za-z0-9-]+)/i);
-    if (githubMatch) this.githubUsername = githubMatch[1];
-
-    const summaryLine = lines.find((line) => line.length >= 40 && line.length <= 220);
-    if (summaryLine) this.profileSummary = summaryLine;
-
-    const locationLine = lines.find((line) =>
-      /(remote|usa|united states|new york|california|texas|lagos|london|toronto)/i.test(line),
-    );
-    if (locationLine) this.location = locationLine;
-
-    const skillKeywords = [
-      'Angular',
-      'TypeScript',
-      'JavaScript',
-      'Node.js',
-      'React',
-      'Python',
-      'AWS',
-      'Docker',
-      'Kubernetes',
-      'SQL',
-      'PostgreSQL',
-      'Git',
-      'CI/CD',
-      'Jest',
-    ];
-
-    this.skills = skillKeywords.filter((keyword) =>
-      new RegExp(`\\b${keyword.replace('/', '\\/')}\\b`, 'i').test(text),
-    );
   }
 }

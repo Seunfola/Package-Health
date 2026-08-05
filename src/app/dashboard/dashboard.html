@@ -1,0 +1,97 @@
+<ng-container *ngIf="(authState$ | async) as auth">
+  <div class="dashboard-page" *ngIf="auth.isAuthenticated; else unauthorized">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-text">
+        <h1>Dashboard Overview</h1>
+        <p>Welcome back, <span class="username-highlight">{{ auth.username || 'User' }}</span></p>
+      </div>
+    </header>
+
+  <!-- Stat Tiles -->
+  <div class="dashboard-metrics-grid" *ngIf="!isLoadingStats && statTiles.length > 0">
+    <app-status-card
+      *ngFor="let tile of statTiles"
+      [title]="tile.title"
+      [value]="tile.value"
+      [icon]="tile.icon"
+      [iconContainerBg]="tile.iconContainerBg"
+      [iconFillColor]="tile.iconFillColor"
+      [cardBorderRadius]="tile.cardBorderRadius">
+    </app-status-card>
+  </div>
+
+  <!-- Repo List -->
+  <section class="repos-section" *ngIf="!isLoadingRepos && repos.length > 0">
+    <div class="repos-header">
+      <h2>Your Analyzed Repositories</h2>
+      <button class="btn-primary" (click)="connectRepo()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Connect Another Repository
+      </button>
+    </div>
+
+    <div class="table-card">
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>Repository</th>
+            <th>Health Score</th>
+            <th>Stars</th>
+            <th>Open Issues</th>
+            <th>Security Alerts</th>
+            <th>Last Pushed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let repo of repos" (click)="viewRepo(repo)" class="repo-row">
+            <td class="pkg-name">{{ repo.owner }}/{{ repo.repo }}</td>
+            <td>
+              <span class="health-badge" [ngClass]="getHealthLevel(repo.overall_health?.score)">
+                {{ repo.overall_health?.score ?? 'N/A' }}
+              </span>
+            </td>
+            <td>{{ repo.stars ?? 0 }}</td>
+            <td>{{ repo.open_issues ?? 0 }}</td>
+            <td>
+              <span [ngClass]="(repo.security_alerts ?? 0) > 0 ? 'has-alerts' : 'no-alerts'">
+                {{ repo.security_alerts ?? 0 }}
+              </span>
+            </td>
+            <td>{{ repo.last_pushed ? (repo.last_pushed | date: 'mediumDate') : 'Unknown' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button class="btn-outline" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
+      <span class="pagination-label">Page {{ page }} of {{ totalPages }} &middot; {{ total }} repositories</span>
+      <button class="btn-outline" (click)="nextPage()" [disabled]="page >= totalPages">Next</button>
+    </div>
+  </section>
+
+  <p class="repos-error" *ngIf="reposError">{{ reposError }}</p>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoadingRepos && repos.length === 0 && !reposError">
+    <div class="empty-icon-container">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+    </div>
+    <h2>No Repositories Connected</h2>
+    <p>
+      Connect your GitHub repositories to start analyzing dependencies and protecting your supply chain with our AI-powered mathematical scanner.
+    </p>
+    <button class="btn-primary" (click)="connectRepo()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Connect GitHub Repository
+    </button>
+  </div>
+  </div>
+  
+  <ng-template #unauthorized>
+    <div class="dashboard-page auth-restricted-layout">
+      <app-unauthorized-warning></app-unauthorized-warning>
+    </div>
+  </ng-template>
+</ng-container>
