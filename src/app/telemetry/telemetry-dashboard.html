@@ -1,0 +1,57 @@
+<div class="telemetry-page">
+  <header class="telemetry-header">
+    <h1>Usage Telemetry</h1>
+    <p>Anonymous, aggregate invocation counts from the CLI, MCP server, and LSP server — last 90 days.</p>
+  </header>
+
+  <div class="state-banner" *ngIf="isForbidden">
+    Your account doesn't have platform admin access.
+  </div>
+  <div class="state-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <ng-container *ngIf="!isLoading && !isForbidden && !errorMessage">
+    <div class="metrics-grid">
+      <app-status-card
+        title="Total Invocations (90d)"
+        [value]="totalPings.toString()"
+        icon="assets/icons/activity.svg"
+        iconContainerBg="rgba(0, 229, 255, 0.15)"
+        iconFillColor="invert(100%)"
+        cardBorderRadius="12px">
+      </app-status-card>
+      <app-status-card
+        title="Distinct Installs (approx.)"
+        [value]="distinctInstalls.toString()"
+        icon="assets/icons/users.svg"
+        iconContainerBg="rgba(0, 255, 136, 0.15)"
+        iconFillColor="invert(100%)"
+        cardBorderRadius="12px">
+      </app-status-card>
+    </div>
+
+    <section class="chart-card">
+      <h2>Invocations Over Time</h2>
+      <div class="chart-wrap">
+        <app-line-chart [lineChartData]="dailyChartData" [lineChartOptions]="lineChartOptions" lineChartType="line"></app-line-chart>
+      </div>
+    </section>
+
+    <div class="chart-row">
+      <section class="chart-card">
+        <h2>By Source</h2>
+        <div class="chart-wrap">
+          <app-line-chart [lineChartData]="sourceChartData" [lineChartOptions]="barChartOptions" lineChartType="bar"></app-line-chart>
+        </div>
+      </section>
+
+      <section class="chart-card">
+        <h2>By Tool</h2>
+        <div class="chart-wrap">
+          <app-line-chart [lineChartData]="toolChartData" [lineChartOptions]="barChartOptions" lineChartType="bar"></app-line-chart>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+
+  <div class="state-banner" *ngIf="isLoading">Loading...</div>
+</div>

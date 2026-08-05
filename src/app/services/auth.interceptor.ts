@@ -42,9 +42,13 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        // Handle auth-related errors
-        if (error.status === 401 || error.status === 403) {
-          // Invalid/expired token - logout user
+        // Only 401 means the token itself is invalid/expired — logging out
+        // is correct there. 403 means a valid, authenticated token was
+        // rejected for lacking permission on this specific resource (e.g.
+        // OrgMembershipGuard, PlatformAdminGuard) — logging the user out of
+        // their entire session over that would be wrong; they're still
+        // validly signed in everywhere else.
+        if (error.status === 401) {
           this.authService.logout();
           console.warn('Session expired. Please login again.');
         }
