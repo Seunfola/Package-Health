@@ -1,28 +1,21 @@
 <section class="about-campaign-section">
-  <div class="about-ambient-glow about-glow-left"></div>
-  <div class="about-ambient-glow about-glow-right"></div>
-  
   <div class="about-campaign-container">
     <div class="about-campaign-header">
-      <div class="eyebrow">The Foundation</div>
-      <h2>The Dynamics of Secured Salvation</h2>
-      <div class="campaign-header-line"></div>
+      <div class="section-eyebrow">How It Works</div>
+      <h2 class="section-heading section-heading--gradient">From Manifest to Trust Score</h2>
+      <div class="section-divider"></div>
     </div>
-    
-    <div class="about-campaign-content">
-      <div class="glass-panel">
-        <p class="lead-text">
-          Code security is never secondary. It is the very foundation that changes the dynamics of modern software engineering.
-        </p>
-        <p>
-          In an ecosystem driven by scale and velocity, deploying vulnerable packages is not merely a risk—it is a structural collapse waiting to happen. You need secure packages and dependencies to stand firm upon a <span class="gradient-highlight">salvation secured code standard</span>. 
-        </p>
-        <p>
-          True security doesn't originate as an afterthought; it is forged from the ground up, demanding a secure package manager and an unyielding risk engine. DepVault merges artistic precision with deep technical abilities—evaluating Poisson distributions and measuring Shannon Entropy—to deliver the pristine dependency health you require.
-        </p>
-        <p class="closing-text">
-          When you embrace secure components, you transcend basic development—you build digital fortresses.
-        </p>
+
+    <div class="glass-panel">
+      <div class="process-steps">
+        @for (step of steps; track step.number) {
+          <div class="process-step">
+            <div class="process-step-number">{{ step.number }}</div>
+            <img [src]="step.icon" [alt]="step.title" class="process-step-icon" />
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+          </div>
+        }
       </div>
     </div>
   </div>

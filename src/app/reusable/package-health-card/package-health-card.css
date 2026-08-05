@@ -1,54 +1,13 @@
+/* Base .glass-feature-card / .card-glow-border / @keyframes spin / .card-content
+   now live in styles.css — this file keeps only what's unique to this card. */
 .glass-feature-card {
-  position: relative;
   width: 100%;
   height: 100%;
   min-height: 280px;
-  border-radius: 16px;
-  background: linear-gradient(145deg, rgba(25, 33, 48, 0.6) 0%, rgba(15, 20, 30, 0.4) 100%);
-  padding: 1px; /* border space for the gradient */
-  overflow: hidden;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
-}
-
-.glass-feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 24px 48px rgba(0, 229, 255, 0.15);
-}
-
-.card-glow-border {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(
-    transparent 0deg,
-    rgba(0, 229, 255, 0.2) 90deg,
-    transparent 180deg,
-    rgba(0, 255, 136, 0.2) 270deg,
-    transparent 360deg
-  );
-  animation: spin 10s linear infinite;
-  z-index: 1;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 .card-content {
-  position: relative;
-  z-index: 2;
-  background: rgba(11, 15, 25, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 15px;
   padding: 1.5rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -68,7 +27,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(0, 229, 255, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
   border-radius: 50%;
   z-index: 0;
 }
@@ -76,21 +35,20 @@
 .icon-svg {
   width: 32px;
   height: 32px;
-  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
+  filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.3));
   z-index: 1;
 }
 
 .card-content h3 {
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin: 0 0 1rem 0;
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .card-content p {
-  color: #9CA3AF;
+  color: var(--text-secondary);
   line-height: 1.6;
   font-size: 1rem;
   margin: 0;

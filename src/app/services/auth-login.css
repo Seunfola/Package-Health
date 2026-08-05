@@ -6,64 +6,24 @@
   z-index: 20;
 }
 
-/* Premium Glassmorphism Card */
+/* Flat card — was a dark gradient glass card; now a plain white surface
+   matching every other card on the site. */
 .auth-campaign-card {
   position: relative;
   border-radius: 24px;
-  background: linear-gradient(145deg, rgba(25, 33, 48, 0.7) 0%, rgba(15, 20, 30, 0.5) 100%);
-  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.5);
-  padding: 1px; /* border space */
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
   overflow: hidden;
   animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Animated gradient border wrapper */
-.card-glow-border {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(
-    transparent 0deg,
-    rgba(0, 229, 255, 0.3) 90deg,
-    transparent 180deg,
-    rgba(0, 255, 136, 0.3) 270deg,
-    transparent 360deg
-  );
-  animation: spin 8s linear infinite;
-  z-index: 1;
-}
-
-.card-glow-border-success {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(
-    transparent 0deg,
-    rgba(0, 255, 136, 0.4) 90deg,
-    transparent 180deg,
-    rgba(16, 185, 129, 0.4) 270deg,
-    transparent 360deg
-  );
-  animation: spin 10s linear infinite;
-  z-index: 1;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+/* The rotating conic-gradient border is dropped app-wide (see styles.css)
+   — no reference mockup has this effect on a flat card. */
 
 .auth-content {
   position: relative;
   z-index: 2;
-  background: rgba(11, 15, 25, 0.85); /* Inner card background */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 23px;
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
@@ -80,16 +40,15 @@
   font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin: 0 0 12px 0;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .auth-header p {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   line-height: 1.5;
-  color: #9CA3AF;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -105,10 +64,10 @@
   position: relative;
   width: 100%;
   padding: 16px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  color: #FFFFFF;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -126,7 +85,7 @@
   left: 50%;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.06) 0%, transparent 60%);
   transform: translate(-50%, -50%) scale(0);
   transition: transform 0.4s ease;
   z-index: 0;
@@ -137,8 +96,8 @@
 }
 
 .campaign-btn:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(15, 23, 42, 0.2);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
   transform: translateY(-2px);
 }
 
@@ -148,21 +107,21 @@
 }
 
 .btn-github:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+  border-color: rgba(15, 23, 42, 0.3);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
 }
 
 .btn-github .btn-icon {
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 .btn-github:hover .btn-bg-glow {
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.06) 0%, transparent 60%);
 }
 
 .btn-google:hover {
   border-color: rgba(66, 133, 244, 0.5);
-  box-shadow: 0 8px 24px rgba(66, 133, 244, 0.15);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.15);
 }
 
 .btn-google .btn-icon {
@@ -170,20 +129,20 @@
 }
 
 .btn-google:hover .btn-bg-glow {
-  background: radial-gradient(circle, rgba(66, 133, 244, 0.15) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(66, 133, 244, 0.12) 0%, transparent 60%);
 }
 
 .btn-oidc:hover {
-  border-color: rgba(0, 229, 255, 0.5);
-  box-shadow: 0 8px 24px rgba(0, 229, 255, 0.15);
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
 .btn-oidc .btn-icon {
-  color: var(--accent-teal, #00E5FF);
+  color: var(--accent-teal, #2563EB);
 }
 
 .btn-oidc:hover .btn-bg-glow {
-  background: radial-gradient(circle, rgba(0, 229, 255, 0.15) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 60%);
 }
 
 /* Authenticated State */
@@ -200,52 +159,55 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: rgba(0, 255, 136, 0.1);
+  background: rgba(34, 197, 94, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
   animation: pulse-success 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
 }
 
 @keyframes pulse-success {
-  0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); }
-  70% { box-shadow: 0 0 0 20px rgba(0, 255, 136, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35); }
+  70% { box-shadow: 0 0 0 20px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
 }
 
 .status-info h4 {
   font-size: 20px;
-  color: #00FF88;
+  color: var(--color-success);
   margin: 0 0 8px 0;
   font-weight: 700;
 }
 
 .status-info p {
   font-size: 16px;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin: 0;
 }
 
+/* Default state: pale red wash + dark red text (readable on light bg).
+   Hover: solid red bg + white text — only readable once the background
+   is actually solid, not a pale tint. */
 .btn-logout {
   padding: 12px 24px;
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.2);
-  color: #FCA5A5;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #B91C1C;
   margin-top: 10px;
 }
 
 .btn-logout:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: var(--color-danger);
+  border-color: var(--color-danger);
   color: #FFFFFF;
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.25);
 }
 
 .token-expiry-panel {
   width: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -255,7 +217,7 @@
 
 .expiry-label {
   font-size: 14px;
-  color: #9CA3AF;
+  color: var(--text-secondary);
 }
 
 .expiry-value {
@@ -264,14 +226,14 @@
   gap: 8px;
   font-family: 'Monaco', 'Courier New', monospace;
   font-size: 14px;
-  color: #00FF88;
+  color: var(--color-success);
 }
 
 .pulse-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #00FF88;
+  background: var(--color-success);
   animation: pulse-dot-anim 1.5s infinite;
 }
 
@@ -281,7 +243,8 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Alerts */
+/* Alerts — pale tint + a darker shade of the same hue for text, so
+   contrast holds up against a light (not dark) banner background. */
 .campaign-alert {
   display: flex;
   align-items: center;
@@ -295,15 +258,15 @@
 }
 
 .alert-success {
-  background: rgba(0, 255, 136, 0.1);
-  border: 1px solid rgba(0, 255, 136, 0.2);
-  color: #00FF88;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #15803D;
 }
 
 .alert-error {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #FCA5A5;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #B91C1C;
 }
 
 @keyframes slideUpFade {

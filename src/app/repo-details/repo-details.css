@@ -7,12 +7,12 @@
 .page-title {
     font-size: 30px;
     font-weight: 700;
-    color: #f3f4f6;
+    color: var(--text-primary);
     margin-bottom: 24px;
 }
 
 .page-title span {
-    color: #3b9191;
+    color: var(--accent-teal);
 }
 
 app-repo-details-dash {
@@ -30,7 +30,7 @@ app-repo-details-dash {
     border-radius: 10px;
     background: rgba(245, 158, 11, 0.1);
     border: 1px solid rgba(245, 158, 11, 0.35);
-    color: #fbbf24;
+    color: #92400E;
     font-size: 0.9rem;
     line-height: 1.4;
 }
@@ -140,10 +140,10 @@ app-repo-details-dash {
     justify-content: center;
     padding: 64px 24px;
     text-align: center;
-    color: #b5b9c2;
-    background: #171a1f;
+    color: var(--text-secondary);
+    background: var(--bg-slate);
     border-radius: 12px;
-    border: 1px solid #323743;
+    border: 1px solid var(--border-color);
     margin: 40px auto;
     max-width: 600px;
 }
@@ -154,7 +154,7 @@ app-repo-details-dash {
 }
 
 .no-data-section button {
-    background: #00b3b3;
+    background: var(--accent-teal);
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -166,5 +166,5 @@ app-repo-details-dash {
 }
 
 .no-data-section button:hover {
-    background: #00d0d0;
+    background: var(--accent-teal-hover);
 }

@@ -44,29 +44,28 @@
 
 .metric-card {
   background: var(--card-bg);
-  backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--glass-shadow);
 }
 
 .metric-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
 }
 
 .metric-card.protected {
   border-top: 3px solid var(--primary-color);
 }
 .metric-card.scans {
-  border-top: 3px solid #3b82f6; /* blue-500 */
+  border-top: 3px solid var(--accent-teal);
 }
 .metric-card.blocked {
-  border-top: 3px solid #10b981; /* green-500 */
+  border-top: 3px solid var(--color-success);
 }
 
 .metric-icon-bg {
@@ -80,8 +79,8 @@
 }
 
 .metric-card.protected .metric-icon-bg { color: var(--primary-color); opacity: 0.1; }
-.metric-card.scans .metric-icon-bg { color: #3b82f6; opacity: 0.1; }
-.metric-card.blocked .metric-icon-bg { color: #10b981; opacity: 0.1; }
+.metric-card.scans .metric-icon-bg { color: var(--accent-teal); opacity: 0.1; }
+.metric-card.blocked .metric-icon-bg { color: var(--color-success); opacity: 0.1; }
 
 .metric-card:hover .metric-icon-bg {
   transform: scale(1.1);
@@ -107,15 +106,14 @@
 
 /* Empty State */
 .empty-state {
-  background: rgba(20, 20, 25, 0.6);
-  border: 2px dashed rgba(255, 255, 255, 0.1);
+  background: var(--bg-slate);
+  border: 2px dashed var(--border-color);
   border-radius: 16px;
   padding: 3rem 1.5rem;
   text-align: center;
   position: relative;
   overflow: hidden;
   margin-top: 3rem;
-  backdrop-filter: blur(10px);
 }
 
 .empty-state::before {
@@ -125,14 +123,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.05));
+  background: linear-gradient(to bottom, transparent, rgba(37, 99, 235, 0.04));
   pointer-events: none;
 }
 
 .empty-icon-container {
   width: 5rem;
   height: 5rem;
-  background: rgba(168, 85, 247, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -169,12 +167,12 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
 }
 
 .empty-state .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
   background: var(--primary-hover);
 }
 

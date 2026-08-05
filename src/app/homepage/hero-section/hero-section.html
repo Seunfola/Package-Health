@@ -1,7 +1,6 @@
-<div class="hero-container">
+<div class="hero-container" id="analyze">
   <div class="hero-bg"></div>
   <div class="hero-glow hero-glow-teal"></div>
-  <div class="hero-glow hero-glow-emerald"></div>
 
   <div class="hero-content">
     <div class="hero-eyebrow">
@@ -15,9 +14,9 @@
         Standard scanners only look for known vulnerabilities (CVEs). 
         <strong>DepVault</strong> is a <em>Predictive Risk Engine</em> that catches unmaintained packages, toxic licenses, and pre-release instability <strong>before</strong> they become a threat. 
       </p>
-      <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
-        Powered by advanced mathematical scoring over the centralized registry. 
-        Works flawlessly across <strong>npm, yarn, pnpm, and bun</strong>.
+      <p class="hero-subtext">
+        Powered by a predictive math engine — Monte Carlo simulation, Shannon Entropy, and Analytic
+        Hierarchy Process — running across <strong>npm, PyPI, Cargo, and Go</strong>.
       </p>
     </div>
 
@@ -80,7 +79,7 @@
       </div>
       }
 
-      <button type="button" class="analyze-button" (click)="analyzeData()" [disabled]="isAnalyzing">
+      <button type="button" class="analyze-button btn-primary" (click)="analyzeData()" [disabled]="isAnalyzing">
         {{ isAnalyzing ? 'Analyzing...' : 'Analyze' }}
       </button>
 

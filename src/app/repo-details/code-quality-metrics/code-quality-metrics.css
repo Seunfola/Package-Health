@@ -1,9 +1,10 @@
 .code-metrics-container {
-  background-color: #212121;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 24px;
-  color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  box-shadow: var(--glass-shadow);
 }
 
 .metrics-header h3 {
@@ -14,7 +15,7 @@
 
 .metrics-header p {
   font-size: 14px;
-  color: #bdc1ca;
+  color: var(--text-secondary);
   margin: 0 0 24px 0;
 }
 

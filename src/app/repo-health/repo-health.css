@@ -43,8 +43,8 @@
 .form-field input:focus,
 .form-field select:focus {
     outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .lookup-form .btn-primary {
@@ -52,7 +52,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: #6366f1;
+    background: #2563EB;
     color: #fff;
     border: none;
     padding: 11px 20px;
@@ -65,7 +65,7 @@
 }
 
 .lookup-form .btn-primary:hover:not(:disabled) {
-    background: #4f46e5;
+    background: #1D4ED8;
 }
 
 .lookup-form .btn-primary:disabled {

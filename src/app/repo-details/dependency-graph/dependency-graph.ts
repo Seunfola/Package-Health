@@ -16,8 +16,8 @@ interface SimNode extends DependencyNode, d3.SimulationNodeDatum {}
 interface SimLink extends d3.SimulationLinkDatum<SimNode> {}
 
 const TYPE_COLOR: Record<DependencyNode['type'], string> = {
-  safe: '#00FF88',
-  vulnerable: '#F5A524',
+  safe: '#22C55E',
+  vulnerable: '#F59E0B',
   critical: '#EF4444',
 };
 
@@ -84,7 +84,7 @@ export class DependencyGraph implements AfterViewInit, OnChanges, OnDestroy {
 
     const linkSelection = svg
       .append('g')
-      .attr('stroke', 'rgba(255,255,255,0.18)')
+      .attr('stroke', 'rgba(15,23,42,0.2)')
       .attr('stroke-width', 1)
       .selectAll('line')
       .data(links)
@@ -96,7 +96,7 @@ export class DependencyGraph implements AfterViewInit, OnChanges, OnDestroy {
       .data(nodes)
       .join('circle')
       .attr('r', (d) => (d.id === 'root' ? 14 : 8))
-      .attr('fill', (d) => (d.id === 'root' ? '#00E5FF' : TYPE_COLOR[d.type]))
+      .attr('fill', (d) => (d.id === 'root' ? '#2563EB' : TYPE_COLOR[d.type]))
       .attr('stroke', 'rgba(0,0,0,0.35)')
       .attr('stroke-width', 1.5)
       .style('cursor', 'pointer')
@@ -114,7 +114,7 @@ export class DependencyGraph implements AfterViewInit, OnChanges, OnDestroy {
       .join('text')
       .text((d) => (d.id === 'root' ? d.id : d.id))
       .attr('font-size', 10)
-      .attr('fill', 'rgba(249,250,251,0.75)')
+      .attr('fill', 'rgba(15,23,42,0.75)')
       .attr('text-anchor', 'middle')
       .attr('dy', (d) => (d.id === 'root' ? -20 : -12))
       .style('pointer-events', 'none');

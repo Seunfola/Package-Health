@@ -1,6 +1,6 @@
 .notifications-center-container {
-  color: #e0e0e0;
-  font-family: Arial, sans-serif;
+  color: var(--text-primary);
+  font-family: 'Inter', Arial, sans-serif;
   border-radius: 8px;
   width: 100%;
   max-width: 1200px;
@@ -19,7 +19,7 @@
 
 .header-text p {
   font-size: 16px;
-  color: #aaa;
+  color: var(--text-secondary);
   margin-bottom: 16px;
 }
 
@@ -42,8 +42,8 @@
 
 .filter-button {
   background: transparent;
-  border: 1px solid #3a3a3a;
-  color: #f5f5f5;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   border-radius: 6px;
   padding: 6px 12px;
   font-size: 0.9rem;
@@ -52,13 +52,13 @@
 }
 
 .filter-button.active {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--accent-teal);
+  border-color: var(--accent-teal);
   color: #fff;
 }
 
 .filter-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(15, 23, 42, 0.05);
 }
 
 .action-buttons {
@@ -70,7 +70,7 @@
 }
 
 .settings-link {
-  color: #00bcd4;
+  color: var(--accent-teal);
   font-size: 0.9rem;
   text-decoration: none;
   margin-right: 0.5rem;
@@ -83,9 +83,9 @@
 .updates-button,
 .mark-as-read-button {
   background: transparent;
-  border: 1px solid #3a3a3a;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  color: #f5f5f5;
+  color: var(--text-primary);
   padding: 6px 12px;
   font-size: 0.9rem;
   cursor: pointer;
@@ -94,7 +94,7 @@
 
 .updates-button:hover,
 .mark-as-read-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(15, 23, 42, 0.05);
 }
 
 .notifications-list {
