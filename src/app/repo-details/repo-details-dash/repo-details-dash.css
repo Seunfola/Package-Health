@@ -1,9 +1,10 @@
 .repo-overview-card {
-    background-color: #212121;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    color: #fff;
+    color: var(--text-primary);
     padding: 32px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--glass-shadow);
     max-width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
@@ -13,7 +14,7 @@
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 32px;
-    color: #e2e8f0;
+    color: var(--text-primary);
     text-align: left;
 }
 
@@ -56,7 +57,7 @@
 .no-data-section {
     text-align: center;
     padding: 32px;
-      color: #cbd5e0;
+      color: var(--text-secondary);
 }
 
 .no-data-section p {
@@ -64,8 +65,8 @@
 }
 
 .no-data-section button {
-    background: #e2e8f0;
-      color: #212121;
+    background: var(--accent-teal);
+      color: #fff;
       border: none;
     padding: 8px 16px;
       border-radius: 4px;
@@ -74,18 +75,18 @@
 }
 
 .no-data-section button:hover {
-    background: #cbd5e0;
+    background: var(--accent-teal-hover);
 }
 .star-icon {
     filter: invert(69%) sepia(91%) saturate(2251%) hue-rotate(352deg) brightness(101%) contrast(92%);
 }
 
 .fork-icon {
-    filter: invert(34%) sepia(95%) saturate(307%) hue-rotate(174deg) brightness(103%) contrast(88%);
+    filter: invert(34%) sepia(95%) saturate(307%) hue-rotate(214deg) brightness(103%) contrast(88%);
 }
 
 .commit-icon {
-    filter: invert(44%) sepia(35%) saturate(307%) hue-rotate(174deg) brightness(96%) contrast(87%);
+    filter: invert(44%) sepia(35%) saturate(307%) hue-rotate(214deg) brightness(96%) contrast(87%);
 }
 
 .check-icon {
@@ -95,12 +96,12 @@
 .metric-value {
     font-size: 26px;
     font-weight: 700;
-    color: #e2e8f0;
+    color: var(--text-primary);
 }
 
 .metric-label {
     font-size: 14px;
-    color: #cbd5e0;
+    color: var(--text-secondary);
     margin-left: 34px;
 }
 

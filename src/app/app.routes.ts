@@ -12,6 +12,8 @@ import { TermsOfService } from './legal/terms/terms';
 import { AuthCallbackComponent } from './auth-callback/auth-callback.component';
 import { AcceptInviteComponent } from './accept-invite/accept-invite.component';
 import { AcceptTransferComponent } from './accept-transfer/accept-transfer.component';
+import { DocsPage } from './docs/docs';
+import { PricingPage } from './pricing/pricing';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TelemetryDashboard } from './telemetry/telemetry-dashboard';
 import { authGuard } from './services/auth.guard';
@@ -23,6 +25,8 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: Homepage },
+      { path: 'docs', component: DocsPage },
+      { path: 'pricing', component: PricingPage },
       { path: 'privacy', component: PrivacyPolicy },
       { path: 'terms', component: TermsOfService },
       { path: 'auth/callback', component: AuthCallbackComponent },

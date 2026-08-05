@@ -1,27 +1,9 @@
 .insights-campaign-section {
   position: relative;
   padding: 5rem 2rem;
-  background: linear-gradient(180deg, rgba(15, 20, 30, 0.95) 0%, var(--bg-obsidian) 100%);
-  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
-  border-top: 1px solid rgba(0, 255, 136, 0.1);
-  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
-}
-
-.insights-ambient-glow {
-  position: absolute;
-  width: 50vw;
-  height: 50vw;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 229, 255, 0.08) 0%, transparent 70%);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 0;
 }
 
 .insights-campaign-header {
@@ -29,33 +11,6 @@
   margin-bottom: 2.5rem;
   position: relative;
   z-index: 10;
-}
-
-.eyebrow {
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--accent-teal);
-  margin-bottom: 1rem;
-}
-
-.insights-campaign-header h2 {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #FFFFFF;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.campaign-header-line {
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent-teal), var(--accent-emerald));
-  margin: 0 auto;
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
 }
 
 .insights-grid {

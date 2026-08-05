@@ -19,7 +19,7 @@
       </div>
 
       <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <input type="text" [(ngModel)]="newOrgName" placeholder="New organization name" class="settings-input-field" style="flex: 1; min-width: 200px; background-color: #2a2a2a; border-radius: 4px; padding: 8px 12px;" />
+        <input type="text" [(ngModel)]="newOrgName" placeholder="New organization name" class="settings-input-field" style="flex: 1; min-width: 200px; background-color: var(--bg-slate); border-radius: 4px; padding: 8px 12px;" />
         <button (click)="createOrganization()" [disabled]="!newOrgName.trim() || isCreatingOrg" class="save-button" style="background: var(--accent-teal); color: var(--bg-obsidian); padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer;">
           {{ isCreatingOrg ? 'Creating...' : 'Create Organization' }}
         </button>
@@ -29,7 +29,44 @@
         <p class="status-message" style="color: var(--accent-teal); margin-top: 12px; font-size: 14px;">{{ orgSwitcherMessage }}</p>
       }
       @if (orgSwitcherError) {
-        <p class="error-message" style="color: #ef4444; margin-top: 12px; font-size: 14px;">{{ orgSwitcherError }}</p>
+        <p class="error-message" style="color: var(--color-danger); margin-top: 12px; font-size: 14px;">{{ orgSwitcherError }}</p>
+      }
+
+      @if (currentOrg) {
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <span [style.background]="isPaidOrg ? 'var(--accent-emerald)' : 'var(--glass-bg)'"
+                [style.color]="isPaidOrg ? 'var(--bg-obsidian)' : 'var(--text-secondary)'"
+                style="padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid var(--glass-border);">
+            {{ isPaidOrg ? 'PAID' : 'FREE' }} PLAN
+          </span>
+          @if (orgUsage) {
+            <span style="font-size: 13px; color: var(--text-secondary);">
+              {{ orgUsage.repoCount }}{{ orgUsage.repoLimit === Infinity ? '' : ' / ' + orgUsage.repoLimit }} repos ·
+              {{ orgUsage.memberCount }}{{ orgUsage.memberLimit === Infinity ? '' : ' / ' + orgUsage.memberLimit }} members
+              <!-- ^ Infinity refers to Settings.Infinity above, not the global (Angular templates can't see globals) -->
+
+            </span>
+          }
+        </div>
+
+        @if (currentOrg.logoUrl) {
+          <img [src]="currentOrg.logoUrl" alt="Organization logo" style="max-height: 40px; margin-top: 12px;" />
+        }
+
+        @if (isPaidOrg) {
+          <div style="margin-top: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" (change)="onLogoFileSelected($event)" />
+            <button (click)="uploadLogo()" [disabled]="!logoFile || isUploadingLogo" class="save-button" style="background: var(--accent-teal); color: var(--bg-obsidian); padding: 6px 14px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer;">
+              {{ isUploadingLogo ? 'Uploading...' : 'Upload Logo' }}
+            </button>
+          </div>
+          @if (logoMessage) { <p style="color: var(--accent-teal); font-size: 13px; margin-top: 8px;">{{ logoMessage }}</p> }
+          @if (logoError) { <p style="color: var(--color-danger); font-size: 13px; margin-top: 8px;">{{ logoError }}</p> }
+        } @else {
+          <p style="margin-top: 12px; font-size: 13px; color: var(--text-secondary);">
+            Custom branding (logo on your dashboard and notification emails) is a paid feature.
+          </p>
+        }
       }
     </app-settings-card>
 
@@ -93,6 +130,13 @@
   </app-settings-card>
 
   <app-settings-card title="Organization Gatekeeper Policies" subtitle="Customize the strictness of the predictive risk engine for your entire organization.">
+    @if (!isPaidOrg) {
+      <p style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px 16px; font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+        Customizing these policies (and custom scoring weights below) is a paid feature. Your organization currently uses the same sensible defaults every FREE org starts with — read-only until you upgrade.
+      </p>
+    }
+
+    <fieldset [disabled]="!isPaidOrg" style="border: none; padding: 0; margin: 0;">
     <app-settings-item [title]="'Block Critical CVEs'"
       [subtitle]="'Automatically reject installation of packages harboring CRITICAL severity vulnerabilities.'"
       [(enabled)]="blockCriticalCves"></app-settings-item>
@@ -121,6 +165,34 @@
         </p>
       </app-settings-input>
     }
+
+    <app-settings-item [title]="'Custom Trust Score Weights'"
+      [subtitle]="'Override the default 45/20/20/15 (security/license/maintenance/popularity) split to match what your organization actually cares about.'"
+      [(enabled)]="useCustomWeights"></app-settings-item>
+
+    @if (useCustomWeights) {
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0;">
+        <label>Security (%)
+          <input type="number" [(ngModel)]="weightSecurity" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>License (%)
+          <input type="number" [(ngModel)]="weightLicense" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>Maintenance (%)
+          <input type="number" [(ngModel)]="weightMaintenance" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>Popularity (%)
+          <input type="number" [(ngModel)]="weightPopularity" class="settings-input-field" min="0" max="100" />
+        </label>
+      </div>
+      <p [style.color]="weightsSum === 100 ? 'var(--accent-teal)' : 'var(--color-danger)'" style="font-size: 13px;">
+        Sum: {{ weightsSum }} / 100 {{ weightsSum === 100 ? '' : '— must equal 100 to save' }}
+      </p>
+      @if (weightsError) {
+        <p style="color: var(--color-danger); font-size: 13px;">{{ weightsError }}</p>
+      }
+    }
+    </fieldset>
   </app-settings-card>
 
   <app-settings-card title="GitHub Authentication" 
@@ -135,30 +207,30 @@
     @if (hasCliToken) {
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
         <button (click)="copyCliToken()" class="save-button"
-          style="background: #10b981; color: white; padding: 8px 16px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer;">
+          style="background: var(--color-success); color: white; padding: 8px 16px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer;">
           {{ cliTokenCopied ? 'Copied!' : 'Copy CLI Token' }}
         </button>
-        <span style="font-size: 13px; color: #9ca3af;">
+        <span style="font-size: 13px; color: var(--text-secondary);">
           Run <code>depvault login &lt;token&gt;</code>, then <code>depvault upload</code> from your repo's local checkout.
         </span>
       </div>
     } @else {
-      <p style="font-size: 14px; color: #9ca3af;">Sign in above to get a CLI token.</p>
+      <p style="font-size: 14px; color: var(--text-secondary);">Sign in above to get a CLI token.</p>
     }
   </app-settings-card>
 
   <app-settings-card title="Synced Scans"
     subtitle="Repositories analyzed locally and uploaded via 'depvault upload'.">
     @if (isLoadingUploadedRepos) {
-      <p style="font-size: 14px; color: #9ca3af;">Loading...</p>
+      <p style="font-size: 14px; color: var(--text-secondary);">Loading...</p>
     } @else if (myUploadedRepos.length === 0) {
-      <p style="font-size: 14px; color: #9ca3af;">No synced scans yet. Run <code>depvault upload</code> from a local checkout to see it here.</p>
+      <p style="font-size: 14px; color: var(--text-secondary);">No synced scans yet. Run <code>depvault upload</code> from a local checkout to see it here.</p>
     } @else {
       <div style="display: flex; flex-direction: column; gap: 8px;">
         @for (repo of myUploadedRepos; track repo.repo_id) {
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 6px; flex-wrap: wrap; gap: 8px;">
-            <span style="font-size: 14px; color: #f1f5f9;">{{ repo.name || repo.repo }}</span>
-            <span style="font-size: 13px; color: #9ca3af;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(15,23,42,0.03); border-radius: 6px; flex-wrap: wrap; gap: 8px;">
+            <span style="font-size: 14px; color: var(--text-primary);">{{ repo.name || repo.repo }}</span>
+            <span style="font-size: 13px; color: var(--text-secondary);">
               Health: {{ repo.overall_health?.score ?? 'N/A' }}/100
             </span>
           </div>
@@ -191,12 +263,12 @@
         <p class="status-message" style="color: var(--accent-teal); margin-bottom: 16px; font-size: 14px;">{{ memberMessage }}</p>
       }
       @if (memberError) {
-        <p class="error-message" style="color: #ef4444; margin-bottom: 16px; font-size: 14px;">{{ memberError }}</p>
+        <p class="error-message" style="color: var(--color-danger); margin-bottom: 16px; font-size: 14px;">{{ memberError }}</p>
       }
 
       <div class="members-table-container">
         @if (isLoadingMembers) {
-          <p style="color: #9ca3af; font-size: 14px;">Loading members...</p>
+          <p style="color: var(--text-secondary); font-size: 14px;">Loading members...</p>
         } @else {
           <table class="members-table">
             <thead>
@@ -238,7 +310,7 @@
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="3" style="text-align: center; color: #9ca3af; padding: 24px;">No members found.</td>
+                  <td colspan="3" style="text-align: center; color: var(--text-secondary); padding: 24px;">No members found.</td>
                 </tr>
               }
             </tbody>
@@ -271,12 +343,12 @@
         <p class="status-message" style="color: var(--accent-teal); margin-bottom: 16px; font-size: 14px;">{{ inviteMessage }}</p>
       }
       @if (inviteError) {
-        <p class="error-message" style="color: #ef4444; margin-bottom: 16px; font-size: 14px;">{{ inviteError }}</p>
+        <p class="error-message" style="color: var(--color-danger); margin-bottom: 16px; font-size: 14px;">{{ inviteError }}</p>
       }
 
       <div class="members-table-container">
         @if (isLoadingInvitations) {
-          <p style="color: #9ca3af; font-size: 14px;">Loading invitations...</p>
+          <p style="color: var(--text-secondary); font-size: 14px;">Loading invitations...</p>
         } @else if (invitations.length > 0) {
           <table class="members-table">
             <thead>
@@ -323,8 +395,8 @@
             </svg>
           </span>
         </div>
-        <input type="url" [(ngModel)]="newWebhookUrl" placeholder="Webhook URL" class="settings-input-field" style="flex: 2; min-width: 220px; background-color: #2a2a2a; border-radius: 4px; padding: 8px 12px;" />
-        <input type="text" [(ngModel)]="newWebhookLabel" placeholder="Label (optional)" class="settings-input-field" style="flex: 1; min-width: 140px; background-color: #2a2a2a; border-radius: 4px; padding: 8px 12px;" />
+        <input type="url" [(ngModel)]="newWebhookUrl" placeholder="Webhook URL" class="settings-input-field" style="flex: 2; min-width: 220px; background-color: var(--bg-slate); border-radius: 4px; padding: 8px 12px;" />
+        <input type="text" [(ngModel)]="newWebhookLabel" placeholder="Label (optional)" class="settings-input-field" style="flex: 1; min-width: 140px; background-color: var(--bg-slate); border-radius: 4px; padding: 8px 12px;" />
         <button (click)="addWebhook()" [disabled]="!newWebhookUrl || isAddingWebhook" class="save-button" style="background: var(--accent-teal); color: var(--bg-obsidian); padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer;">
           {{ isAddingWebhook ? 'Adding...' : 'Add Webhook' }}
         </button>
@@ -334,12 +406,12 @@
         <p class="status-message" style="color: var(--accent-teal); margin-bottom: 16px; font-size: 14px;">{{ webhookMessage }}</p>
       }
       @if (webhookError) {
-        <p class="error-message" style="color: #ef4444; margin-bottom: 16px; font-size: 14px;">{{ webhookError }}</p>
+        <p class="error-message" style="color: var(--color-danger); margin-bottom: 16px; font-size: 14px;">{{ webhookError }}</p>
       }
 
       <div class="members-table-container">
         @if (isLoadingWebhooks) {
-          <p style="color: #9ca3af; font-size: 14px;">Loading webhooks...</p>
+          <p style="color: var(--text-secondary); font-size: 14px;">Loading webhooks...</p>
         } @else {
           <table class="members-table">
             <thead>
@@ -357,7 +429,7 @@
                   <td style="text-transform: capitalize;">{{ webhook.type }}</td>
                   <td>{{ webhook.label || '—' }}</td>
                   <td>
-                    <span [title]="webhook.url" style="display: inline-block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; font-family: monospace; font-size: 13px; color: #9ca3af;">
+                    <span [title]="webhook.url" style="display: inline-block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; font-family: monospace; font-size: 13px; color: var(--text-secondary);">
                       {{ webhook.url }}
                     </span>
                   </td>
@@ -379,7 +451,7 @@
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="5" style="text-align: center; color: #9ca3af; padding: 24px;">No webhooks configured.</td>
+                  <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 24px;">No webhooks configured.</td>
                 </tr>
               }
             </tbody>
@@ -392,7 +464,7 @@
   <app-settings-card title="Audit Log" subtitle="Who changed what in this organization, and when. Admin/owner only.">
     <div class="members-table-container">
       @if (isLoadingAuditLog) {
-        <p style="color: #9ca3af; font-size: 14px;">Loading audit log...</p>
+        <p style="color: var(--text-secondary); font-size: 14px;">Loading audit log...</p>
       } @else if (auditLog.length > 0) {
         <table class="members-table">
           <thead>
@@ -408,14 +480,14 @@
               <tr>
                 <td>{{ formatAuditAction(entry.action) }}</td>
                 <td><span class="member-email">{{ entry.actorEmail || entry.actorUserId }}</span></td>
-                <td style="color: #9ca3af; font-size: 13px;">{{ entry.target || '—' }}</td>
-                <td style="color: #9ca3af; font-size: 13px;">{{ entry.createdAt | date: 'medium' }}</td>
+                <td style="color: var(--text-secondary); font-size: 13px;">{{ entry.target || '—' }}</td>
+                <td style="color: var(--text-secondary); font-size: 13px;">{{ entry.createdAt | date: 'medium' }}</td>
               </tr>
             }
           </tbody>
         </table>
       } @else {
-        <p style="color: #9ca3af; font-size: 14px;">No audit entries yet — actions like adding members, changing policies, or updating webhooks will show up here. If you're not an owner/admin of this organization, this list will stay empty.</p>
+        <p style="color: var(--text-secondary); font-size: 14px;">No audit entries yet — actions like adding members, changing policies, or updating webhooks will show up here. If you're not an owner/admin of this organization, this list will stay empty.</p>
       }
     </div>
   </app-settings-card>
@@ -444,14 +516,14 @@
 
   <div class="save-actions" style="display: flex; justify-content: flex-end; align-items: center; margin-top: 24px; gap: 16px;">
     @if (message) {
-      <span class="status-message" style="color: #10b981; font-size: 14px;">{{ message }}</span>
+      <span class="status-message" style="color: var(--color-success); font-size: 14px;">{{ message }}</span>
     }
     <button class="save-button" (click)="resetPreferencesToDefaults()" [disabled]="isLoading || isSaving"
-      style="background: transparent; color: #9CA3AF; padding: 10px 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); font-weight: 500; cursor: pointer; transition: background 0.2s;">
+      style="background: transparent; color: var(--text-secondary); padding: 10px 20px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 500; cursor: pointer; transition: background 0.2s;">
       Reset to defaults
     </button>
     <button class="save-button" (click)="savePreferences()" [disabled]="isLoading || isSaving"
-      style="background: #10b981; color: white; padding: 10px 20px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer; transition: background 0.2s;">
+      style="background: var(--color-success); color: white; padding: 10px 20px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer; transition: background 0.2s;">
       {{ isSaving ? 'Saving...' : 'Save Preferences' }}
     </button>
   </div>

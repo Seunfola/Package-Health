@@ -61,7 +61,7 @@ export class RepoDetails implements OnInit {
       legend: {
         display: true,
         position: 'bottom',
-        labels: { boxWidth: 10, padding: 20, color: '#fff' },
+        labels: { boxWidth: 10, padding: 20, color: '#374151' },
       },
     },
   };

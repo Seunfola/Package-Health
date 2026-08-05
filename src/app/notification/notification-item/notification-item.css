@@ -1,9 +1,10 @@
 .notification-item {
-  background-color: #000000;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0 16px;
   margin-bottom: 12px;
-  color: #e0e0e0;
+  color: var(--text-primary);
   overflow: hidden;
 }
 
@@ -86,22 +87,22 @@
 
 .repository {
   font-size: 14px;
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .repo-name {
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 .right-section .action-icon {
   width: 20px;
   height: 20px;
-  color: #fff;
+  color: var(--text-secondary);
 }
 
 .divider {
   border: none;
-  border-top: 1px solid #fff;
+  border-top: 1px solid var(--border-color);
   margin: 0;
 }
 
@@ -111,7 +112,7 @@
   align-items: center;
   padding: 12px 0;
   font-size: 14px;
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .buttons {
@@ -122,12 +123,12 @@
 .view-details, .dismiss {
   background-color: transparent;
   border: none;
-  color: #007bff;
+  color: var(--accent-teal);
   font-size: 14px;
   cursor: pointer;
   transition: color 0.2s ease-in-out;
 }
 
 .dismiss {
-  color: #f44336;
+  color: var(--color-danger);
 }

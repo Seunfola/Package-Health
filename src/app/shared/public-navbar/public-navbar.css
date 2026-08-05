@@ -1,0 +1,137 @@
+.public-navbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-navbar);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.75rem 3.5rem;
+  color: var(--text-on-dark);
+  position: relative;
+  z-index: 10;
+}
+
+/* Same "this was designed" gradient seam used on the dashboard navbar. */
+.public-navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.6), rgba(34, 211, 238, 0.4), transparent);
+}
+
+.public-navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.public-navbar__logo img {
+  height: 32px;
+  width: auto;
+}
+
+.logo-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-on-dark);
+  letter-spacing: -0.01em;
+}
+
+.public-navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav-link {
+  color: rgba(249, 250, 251, 0.75);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-link:hover {
+  color: var(--text-on-dark);
+}
+
+.nav-link.active {
+  color: var(--text-on-dark);
+  border-bottom-color: var(--accent-emerald);
+}
+
+.public-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* "Sign In" — bordered outline button on the dark bar, matching the
+   reference mockups exactly (distinct from .btn-ghost's plain-text look
+   used elsewhere on light backgrounds). */
+.btn-outline-dark {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--text-on-dark);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.55rem 1.25rem;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+}
+
+.btn-outline-dark:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* "Get Started" — a solid white button on the dark bar (high contrast),
+   distinct from the blue .btn-primary used everywhere else on the page —
+   matches every reference mockup exactly. */
+.public-navbar__actions .btn-primary {
+  background: #FFFFFF;
+  color: var(--bg-navbar);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  box-shadow: none;
+}
+
+.public-navbar__actions .btn-primary:hover {
+  background: #F1F5F9;
+  transform: none;
+  box-shadow: none;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+@media (max-width: 768px) {
+  .public-navbar {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .public-navbar__links {
+    display: none;
+  }
+
+  .logo-text {
+    display: none;
+  }
+}

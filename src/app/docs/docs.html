@@ -1,0 +1,98 @@
+<div class="docs-page">
+  <div class="docs-header">
+    <div class="section-eyebrow">Documentation</div>
+    <h1 class="section-heading">How DepVault Works</h1>
+    <div class="section-divider"></div>
+  </div>
+
+  <section class="docs-section glass-panel" id="quick-start">
+    <h2>Quick Start</h2>
+    <p>
+      Submit a GitHub repository URL, paste a <code>package.json</code>, or upload a manifest file directly from the
+      <a routerLink="/home">homepage</a> — no login required for public repositories. DepVault reads only the
+      dependency manifest; your source code is never uploaded or stored.
+    </p>
+    <p>Every scan produces a single Trust Score (0–100), weighted across four dimensions:</p>
+    <ul class="docs-list">
+      <li><strong>Security — 45%</strong>: known vulnerabilities, weighted by a Poisson CDF and the package's structural criticality.</li>
+      <li><strong>License — 20%</strong>: penalizes non-permissive or toxic copyleft licenses (GPL, AGPL).</li>
+      <li><strong>Maintenance — 20%</strong>: commit frequency, release cadence, and general repository health.</li>
+      <li><strong>Popularity — 15%</strong>: weekly downloads and dependent count.</li>
+    </ul>
+  </section>
+
+  <section class="docs-section glass-panel" id="ecosystems">
+    <h2>Ecosystems Supported</h2>
+    <p>One scoring engine, the same mathematical pipeline, across four ecosystems:</p>
+    <table class="docs-table">
+      <thead>
+        <tr><th>Ecosystem</th><th>Manifest file(s)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>npm</td><td><code>package.json</code></td></tr>
+        <tr><td>PyPI</td><td><code>requirements.txt</code>, <code>pyproject.toml</code> (PEP 621 or Poetry)</td></tr>
+        <tr><td>Cargo</td><td><code>Cargo.toml</code>, including dotted <code>[dependencies.foo]</code> tables</td></tr>
+        <tr><td>Go</td><td><code>go.mod</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="docs-section glass-panel" id="mcp-server">
+    <h2>MCP Server — For AI Coding Agents</h2>
+    <p>
+      <code>&#64;deepvaultscan/mcp-server</code> is published to the public npm registry and lets any
+      <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">Model Context Protocol</a>-compatible agent
+      (Claude Code, Cursor, Windsurf) check a package's Trust Score on demand.
+    </p>
+    <pre class="docs-code">&#123;
+  "mcpServers": &#123;
+    "depvault": &#123;
+      "command": "npx",
+      "args": ["-y", "&#64;deepvaultscan/mcp-server"]
+    &#125;
+  &#125;
+&#125;</pre>
+    <table class="docs-table">
+      <thead>
+        <tr><th>Tool</th><th>Use it to</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>scan_package_health</code></td><td>Score a single package before adding it as a dependency.</td></tr>
+        <tr><td><code>scan_repository</code></td><td>Score every dependency in a project's manifest at once.</td></tr>
+      </tbody>
+    </table>
+    <p>
+      Optional auto-scan on install: <code>npx &#64;deepvaultscan/mcp-server --enable-auto-scan</code> persists an
+      opt-in flag so future <code>npm install</code>s scan automatically; add <code>--block-on-critical</code> to fail
+      an install that pulls in a known CRITICAL-severity vulnerability. Both are off by default and report-only unless
+      explicitly enabled — every tool call requires live internet access, there is no offline mode for the MCP server.
+    </p>
+  </section>
+
+  <section class="docs-section glass-panel" id="cli">
+    <h2>CLI — Shield &amp; Install Hooks</h2>
+    <p class="docs-caveat">
+      The CLI is not yet published to the public npm registry — it's built from this project's source today.
+    </p>
+    <pre class="docs-code">depvault shield express&#64;4.18.2   # pre-scan one package, then install if it passes
+depvault shield audit            # audit all currently installed packages
+depvault hooks install           # print shell wrappers that gate npm/pnpm/yarn/pip/cargo/go installs</pre>
+    <p>
+      <code>depvault shield &lt;pkg&gt;</code> only gates the exact command you run. <code>depvault hooks install</code>
+      is the real always-on gate — it prints shell functions that route every install through Shield first, blocking
+      on a <code>BLOCK</code> verdict unless overridden with <code>--force</code> (audited, not silent).
+    </p>
+    <p>
+      Offline use: <code>depvault shield sync</code> downloads a signed verdict cache while online; if the backend
+      later becomes unreachable, cached packages still get a real verdict — anything not already cached fails closed.
+    </p>
+  </section>
+
+  <section class="docs-section glass-panel" id="plans">
+    <h2>Organizations &amp; Plans</h2>
+    <p>
+      FREE covers solo use and small teams with real limits; PAID unlocks organization-wide customization.
+      See the full comparison on <a routerLink="/pricing">Pricing</a>.
+    </p>
+  </section>
+</div>

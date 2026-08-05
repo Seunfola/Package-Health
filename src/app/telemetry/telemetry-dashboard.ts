@@ -34,7 +34,7 @@ export class TelemetryDashboard implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { display: false } },
-    scales: { x: { ticks: { color: '#9CA3AF' } }, y: { ticks: { color: '#9CA3AF' }, beginAtZero: true } },
+    scales: { x: { ticks: { color: '#475569' } }, y: { ticks: { color: '#475569' }, beginAtZero: true } },
   };
 
   readonly barChartOptions: ChartOptions = {
@@ -79,8 +79,8 @@ export class TelemetryDashboard implements OnInit {
         {
           data: summary.dailyCounts.map((d) => d.count),
           label: 'Invocations',
-          borderColor: '#00E5FF',
-          backgroundColor: 'rgba(0, 229, 255, 0.15)',
+          borderColor: '#2563EB',
+          backgroundColor: 'rgba(37, 99, 235, 0.15)',
           fill: true,
           tension: 0.3,
         },
@@ -89,12 +89,12 @@ export class TelemetryDashboard implements OnInit {
 
     this.sourceChartData = {
       labels: summary.bySource.map((s) => s.source),
-      datasets: [{ data: summary.bySource.map((s) => s.count), label: 'Invocations', backgroundColor: '#00E5FF' }],
+      datasets: [{ data: summary.bySource.map((s) => s.count), label: 'Invocations', backgroundColor: '#2563EB' }],
     };
 
     this.toolChartData = {
       labels: summary.byTool.map((t) => t.tool),
-      datasets: [{ data: summary.byTool.map((t) => t.count), label: 'Invocations', backgroundColor: '#00FF88' }],
+      datasets: [{ data: summary.byTool.map((t) => t.count), label: 'Invocations', backgroundColor: '#22D3EE' }],
     };
   }
 }

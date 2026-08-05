@@ -38,6 +38,16 @@ export interface Organization {
   orgId: string;
   name: string;
   ownerId: string;
+  plan: 'FREE' | 'PAID';
+  logoUrl: string | null;
+}
+
+export interface OrgUsage {
+  plan: 'FREE' | 'PAID';
+  repoCount: number;
+  repoLimit: number;
+  memberCount: number;
+  memberLimit: number;
 }
 
 export interface CreateOrganizationRequest {
@@ -79,6 +89,21 @@ export class OrganizationService {
 
   listMyOrganizations(): Observable<Organization[]> {
     return this.http.get<Organization[]>(this.baseUrl);
+  }
+
+  getOrganization(orgId: string): Observable<Organization> {
+    return this.http.get<Organization>(`${this.baseUrl}/${orgId}`);
+  }
+
+  /** Lives under repo-health's API namespace on the backend (avoids a circular module dependency there — see repo-health.service.ts's getOrgUsage). */
+  getUsage(orgId: string): Observable<OrgUsage> {
+    return this.http.get<OrgUsage>(`${environment.apiBaseUrl}/repo-health/org-usage/${orgId}`);
+  }
+
+  setLogo(orgId: string, file: File): Observable<{ message: string; logoUrl: string }> {
+    const formData = new FormData();
+    formData.append('logo', file);
+    return this.http.post<{ message: string; logoUrl: string }>(`${this.baseUrl}/${orgId}/logo`, formData);
   }
 
   createOrganization(payload: CreateOrganizationRequest): Observable<Organization> {

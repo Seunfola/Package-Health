@@ -1,22 +1,23 @@
 .settings-card {
-  background-color: #1E2128FF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   padding: 24px;
   border-radius: 10px;
   margin: 25px auto;
   width: 100%;
   max-width: 1200px;
-  box-shadow: 0px 0px 1px #171a1f12, 0px 0px 2px #171a1f1F;
+  box-shadow: var(--glass-shadow);
 }
 
 .card-header h3 {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 .card-header p {
   font-size: 14px;
-  color: #aaa;
+  color: var(--text-secondary);
   margin-bottom: 16px;
 }

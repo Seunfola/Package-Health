@@ -2,30 +2,56 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Core Colors */
-  --bg-obsidian: #0B0F19;
-  --bg-slate: #111827;
-  --bg-surface: #1F2937;
-  
-  /* Accents */
-  --accent-teal: #00E5FF;
-  --accent-teal-hover: #00B3B3;
-  --accent-emerald: #00FF88;
-  
+  /* Core Colors — kept the historical variable names (referenced by ~100
+     files) but flipped from the old dark "Cyber-Secured Glassmorphism"
+     theme to a light theme, per reference mockups. --bg-obsidian is now
+     literally white; --bg-navbar is the one place the old dark navy value
+     survives, since every mockup keeps a dark top bar over a light page. */
+  --bg-obsidian: #FFFFFF;
+  --bg-slate: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-navbar: #0B0F19;
+
+  /* Accents — --accent-teal now holds a blue (was cyan); --accent-emerald
+     is repurposed as a small cyan accent (the active-nav-link underline
+     seen in every mockup), not a competing primary color. */
+  --accent-teal: #2563EB;
+  --accent-teal-hover: #1D4ED8;
+  --accent-emerald: #22D3EE;
+
   /* Text */
-  --text-primary: #F9FAFB;
-  --text-secondary: #9CA3AF;
-  --text-muted: #6B7280;
-  
-  /* Glassmorphism */
-  --glass-bg: rgba(17, 24, 39, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  
-  /* UI Glows */
-  --glow-teal: 0 0 15px rgba(0, 229, 255, 0.4);
-  --glow-emerald: 0 0 15px rgba(0, 255, 136, 0.4);
-  
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --text-on-dark: #F9FAFB;
+
+  /* Card surface — "glass" in name only now; the blur/translucency is
+     gone in favor of a flat bordered card (see .glass-card below). */
+  --glass-bg: #FFFFFF;
+  --glass-border: #E2E8F0;
+  --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --border-color: #E2E8F0;
+
+  /* Focus ring — repurposed from the old neon "glow" box-shadow. */
+  --glow-teal: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  --glow-emerald: 0 0 0 3px rgba(34, 211, 238, 0.15);
+
+  /* Semantic status colors — formalizes colors already used ad hoc
+     (repo-health.css, dependency-graph.ts) as real tokens. */
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+
+  /* Aliases for variable names referenced in a few files (dashboard.css,
+     legal/privacy.css, legal/terms.css, trend-chart.css) that were never
+     actually defined anywhere — pre-existing bug, fixed for free here. */
+  --card-bg: var(--glass-bg);
+  --bg-card: var(--glass-bg);
+  --text-color: var(--text-primary);
+  --primary-color: var(--accent-teal);
+  --primary-hover: var(--accent-teal-hover);
+
   /* Transitions */
   --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
@@ -38,32 +64,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  /* Ambient mesh — the glassmorphism cards need something with texture
-     behind them to actually read as "glass"; a flat single-color body
-     makes a backdrop-filter: blur() card look like a plain bordered box,
-     which was the biggest single reason the whole app read as flat. */
   background-color: var(--bg-obsidian);
-  background-image:
-    radial-gradient(ellipse 900px 600px at 15% -10%, rgba(0, 229, 255, 0.16), transparent 60%),
-    radial-gradient(ellipse 800px 700px at 110% 15%, rgba(0, 255, 136, 0.10), transparent 55%),
-    radial-gradient(ellipse 700px 900px at 50% 120%, rgba(0, 229, 255, 0.08), transparent 60%),
-    linear-gradient(180deg, var(--bg-obsidian), var(--bg-slate) 60%, var(--bg-obsidian));
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-}
-
-/* Faint grid — the classic "cyber" texture cue, kept subtle enough to sit behind content without competing with it. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 100% 60% at 50% 0%, black 40%, transparent 80%);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -84,7 +85,6 @@ a {
 
 a:hover {
   color: var(--accent-teal-hover);
-  text-shadow: var(--glow-teal);
 }
 
 * {
@@ -96,4 +96,153 @@ a:hover {
   position: relative;
   min-height: calc(100vh - 60px);
   width: 100%;
+}
+
+/* ==========================================================================
+   Shared marketing-page primitives — canonical versions of patterns that
+   were previously copy-pasted (with small drifting inconsistencies) across
+   insight-card.css, package-health-card.css, updates.css, about-section.css,
+   feature-section.css, and auth-login.css. Consumers keep only what's
+   genuinely unique to them (min-height, padding, one-off layout) as local
+   overrides on top of these.
+   ========================================================================== */
+
+/* Small tile card shell — was independently defined as .glass-card
+   (updates.css), .glass-insight-card (insight-card.css), and
+   .glass-feature-card (package-health-card.css). Grouped here as one
+   ruleset so all three names still work with zero template changes.
+   Flat card treatment (white bg, thin border, minimal shadow) replaces
+   the old gradient/blur "glass" look — kept the class names, not the
+   glassmorphism, since ~a dozen templates already reference them. */
+.glass-card,
+.glass-insight-card,
+.glass-feature-card {
+  position: relative;
+  border-radius: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+}
+
+.glass-card:hover,
+.glass-insight-card:hover,
+.glass-feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+/* Large single-panel surface — distinct from the small tile cards above
+   (prose/step content, not a grid tile). Currently about-section's only. */
+.glass-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 3rem 4rem;
+  box-shadow: var(--glass-shadow);
+}
+
+/* card-glow-border (the old rotating conic-gradient border) and its
+   @keyframes spin are removed — no reference mockup has this effect on a
+   flat card. Any template still rendering a <div class="card-glow-border">
+   just renders an empty, harmless div until each is cleaned up. */
+
+/* Inner content panel shared by every small tile card — now just a plain
+   flex container (no separate blurred backdrop; the outer card IS the
+   surface now). Padding/alignment differences stay as local overrides. */
+.card-content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Section header trio — was 3 near-duplicate copies with 2 drifted
+   inconsistencies (updates.css had an emerald eyebrow and a reversed
+   divider gradient where every other section used teal). Standardized. */
+.section-eyebrow {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent-teal);
+  margin-bottom: 1rem;
+}
+
+.section-heading {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+/* Gradient-text variant, currently about-section's own h2 treatment. */
+.section-heading--gradient {
+  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+}
+
+.section-divider {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-teal), var(--accent-emerald));
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* Ambient section glows are dropped entirely — no reference mockup has
+   any glow effect; flat cards on a white background don't need one. */
+
+/* Canonical CTA buttons, promoted from the hero's .analyze-button. Reused
+   by the public navbar, pricing cards, and the final CTA section. */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--accent-teal);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary:hover {
+  background: var(--accent-teal-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  background: rgba(37, 99, 235, 0.05);
 }

@@ -9,7 +9,7 @@ import { PrivateRepoAnalysisComponent } from '@/app/services/private-repo-analys
 import { PreferencesService, UpdatePreferencesDto } from '@/app/services/preferences.service';
 import { AuthService } from '@/app/services/auth.service';
 import { GatekeeperService, GatekeeperPolicyConfig } from '@/app/services/gatekeeper.service';
-import { OrganizationService, OrganizationMember, Organization, OrgInvitation, OrgAuditLogEntry } from '@/app/services/organization.service';
+import { OrganizationService, OrganizationMember, Organization, OrgInvitation, OrgAuditLogEntry, OrgUsage } from '@/app/services/organization.service';
 import { NotificationWebhookService, NotificationWebhook, NotificationWebhookType } from '@/app/services/notification-webhook.service';
 import { RepoService, RepoListItem } from '@/app/services/RepoService';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
@@ -31,6 +31,9 @@ import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthori
   styleUrl: './settings.css',
 })
 export class Settings implements OnInit {
+  /** Angular templates can't reference the global `Infinity` directly — exposed here for the PAID-plan "unlimited" usage display. */
+  readonly Infinity = Infinity;
+
   codeQualityScore = true;
   testCoverage = true;
   dependencyVulnerabilities = true;
@@ -55,6 +58,22 @@ export class Settings implements OnInit {
   ghostTownThreshold = '30';
   blockGplLicenses = false;
   warnEcosystemConflicts = true;
+
+  // Custom scoring weights (PAID only) — unset by default, falling back to
+  // @depvault/core's own 45/20/20/15 split.
+  useCustomWeights = false;
+  weightSecurity = 45;
+  weightLicense = 20;
+  weightMaintenance = 20;
+  weightPopularity = 15;
+  weightsError = '';
+
+  // Plan / usage / branding state
+  orgUsage: OrgUsage | null = null;
+  logoFile: File | null = null;
+  isUploadingLogo = false;
+  logoMessage = '';
+  logoError = '';
 
   // Organization State
   newOwnerEmail = '';
@@ -187,6 +206,49 @@ export class Settings implements OnInit {
     this.loadWebhooks();
     this.loadInvitations();
     this.loadAuditLog();
+    this.loadOrgUsage();
+  }
+
+  /** The currently-active org's full record (plan, logo, etc.) — myOrgs already carries everything, no separate fetch needed. */
+  get currentOrg(): Organization | undefined {
+    return this.myOrgs.find((o) => o.orgId === this.activeOrgId);
+  }
+
+  get isPaidOrg(): boolean {
+    return this.currentOrg?.plan === 'PAID';
+  }
+
+  loadOrgUsage(): void {
+    this.organizationService.getUsage(this.activeOrgId).subscribe({
+      next: (usage) => (this.orgUsage = usage),
+      error: (err) => console.error('Failed to load org usage', err),
+    });
+  }
+
+  onLogoFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.logoFile = input.files?.[0] ?? null;
+  }
+
+  uploadLogo(): void {
+    if (!this.logoFile) return;
+    this.isUploadingLogo = true;
+    this.logoMessage = '';
+    this.logoError = '';
+
+    this.organizationService.setLogo(this.activeOrgId, this.logoFile).subscribe({
+      next: () => {
+        this.isUploadingLogo = false;
+        this.logoMessage = 'Logo updated.';
+        this.logoFile = null;
+        this.loadMyOrganizations();
+        setTimeout(() => (this.logoMessage = ''), 3000);
+      },
+      error: (err) => {
+        this.isUploadingLogo = false;
+        this.logoError = err.error?.message || 'Failed to upload logo.';
+      },
+    });
   }
 
   loadAuditLog(): void {
@@ -467,9 +529,22 @@ export class Settings implements OnInit {
         this.ghostTownThreshold = (config.block_ghost_towns.threshold ?? 30).toString();
         this.blockGplLicenses = config.block_gpl_licenses.enabled;
         this.warnEcosystemConflicts = config.warn_ecosystem_conflicts.enabled;
+
+        this.useCustomWeights = !!config.scoringWeights;
+        if (config.scoringWeights) {
+          this.weightSecurity = Math.round(config.scoringWeights.security * 100);
+          this.weightLicense = Math.round(config.scoringWeights.license * 100);
+          this.weightMaintenance = Math.round(config.scoringWeights.maintenance * 100);
+          this.weightPopularity = Math.round(config.scoringWeights.popularity * 100);
+        }
       },
       error: (err) => console.error('Failed to load gatekeeper policies', err)
     });
+  }
+
+  /** Live sum shown next to the weight sliders — must read 100 before saving. */
+  get weightsSum(): number {
+    return this.weightSecurity + this.weightLicense + this.weightMaintenance + this.weightPopularity;
   }
 
   loadPreferences(): void {
@@ -548,14 +623,32 @@ export class Settings implements OnInit {
   }
 
   saveGatekeeperPolicies(): void {
+    this.weightsError = '';
+
+    if (this.useCustomWeights && this.weightsSum !== 100) {
+      this.isSaving = false;
+      this.weightsError = `Weights must sum to 100 (currently ${this.weightsSum}).`;
+      return;
+    }
+
     const gatekeeperPayload: GatekeeperPolicyConfig = {
       block_critical_cves: { enabled: this.blockCriticalCves },
-      block_ghost_towns: { 
-        enabled: this.blockGhostTowns, 
-        threshold: parseInt(this.ghostTownThreshold, 10) || 30 
+      block_ghost_towns: {
+        enabled: this.blockGhostTowns,
+        threshold: parseInt(this.ghostTownThreshold, 10) || 30
       },
       block_gpl_licenses: { enabled: this.blockGplLicenses },
       warn_ecosystem_conflicts: { enabled: this.warnEcosystemConflicts },
+      ...(this.useCustomWeights
+        ? {
+            scoringWeights: {
+              security: this.weightSecurity / 100,
+              license: this.weightLicense / 100,
+              maintenance: this.weightMaintenance / 100,
+              popularity: this.weightPopularity / 100,
+            },
+          }
+        : {}),
     };
 
     this.gatekeeperService.updatePolicies(this.activeOrgId, gatekeeperPayload).subscribe({

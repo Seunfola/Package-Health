@@ -1,11 +1,12 @@
 .chart-card {
-    background-color: #212121;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    color: #ffffff;
+    color: var(--text-primary);
     padding: 28px;
     height: auto;
     width: 100%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--glass-shadow);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -18,19 +19,19 @@
 /* Hover animation */
 .chart-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
 
 .card-header h3 {
     font-size: 20px;
     font-weight: 700;
     margin: 0 0 4px 0;
-    color: #f3f4f6;
+    color: var(--text-primary);
 }
 
 .card-header p {
     font-size: 14px;
-    color: #bdc1ca;
+    color: var(--text-secondary);
     margin: 0;
 }
 
@@ -43,7 +44,7 @@
     padding-bottom: 8px;
     /* spacing for scrollbar */
     scrollbar-width: thin;
-    scrollbar-color: #3b9191 #2c2c2c;
+    scrollbar-color: #2563EB #F1F5F9;
 }
 
 /* Optional: scrollbar styling for Chrome/Safari */
@@ -52,12 +53,12 @@
 }
 
 .card-content::-webkit-scrollbar-thumb {
-    background: #3b9191;
+    background: #2563EB;
     border-radius: 4px;
 }
 
 .card-content::-webkit-scrollbar-track {
-    background: #2c2c2c;
+    background: #F1F5F9;
 }
 
 /* Tablet (≤992px) */

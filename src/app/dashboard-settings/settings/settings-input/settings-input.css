@@ -4,7 +4,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 0;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border-color);
 }
 
 .settings-item:first-of-type {
@@ -19,13 +19,13 @@
 .settings-title {
   font-size: 16px;
   font-weight: 500;
-  color: #e0e0e0;
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .settings-subtitle {
   font-size: 14px;
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .settings-input {

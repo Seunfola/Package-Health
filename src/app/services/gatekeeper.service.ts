@@ -8,11 +8,20 @@ export interface GatekeeperPolicy {
   threshold?: number;
 }
 
+export interface ScoringWeightsOverride {
+  security: number;
+  license: number;
+  maintenance: number;
+  popularity: number;
+}
+
 export interface GatekeeperPolicyConfig {
   block_critical_cves: GatekeeperPolicy;
   block_ghost_towns: GatekeeperPolicy;
   block_gpl_licenses: GatekeeperPolicy;
   warn_ecosystem_conflicts: GatekeeperPolicy;
+  /** PAID-only — omit entirely to fall back to @depvault/core's defaults (45/20/20/15). */
+  scoringWeights?: ScoringWeightsOverride;
 }
 
 @Injectable({

@@ -12,28 +12,35 @@ import { Component, } from '@angular/core';
 export class Updates {
   features = [
     {
-      title: 'Automated Code Analysis',
-      description:
-        'Automatically scan your repositories for code quality, security vulnerabilities, and adherence to best practices.',
+      title: 'Multi-Ecosystem Coverage',
+      description: 'One scan covers npm, PyPI, Cargo, and Go dependency graphs — the same mathematical pipeline for all four.',
+      icon: 'assets/icons/package.svg',
+    },
+    {
+      title: 'AI Agent Integration (MCP)',
+      description: 'Ship the same risk engine into Claude Code, Cursor, and Windsurf via the published @deepvaultscan/mcp-server package.',
       icon: 'assets/icons/code.svg',
     },
     {
-      title: 'Dependency Insights',
-      description:
-        "Understand your project's dependency tree, identify outdated packages, and manage risks with clear visualizations.",
-      icon: 'assets/icons/gitfork.svg',
+      title: 'Gatekeeper Policy Engine',
+      description: 'Enforce org-wide merge and release gates — the shared default policy, or custom scoring weights on PAID.',
+      icon: 'assets/icons/shield.svg',
     },
     {
-      title: 'Performance Monitoring',
-      description:
-        'Track key performance metrics over time to ensure your projects remain efficient and scalable.',
-      icon: 'assets/icons/activity.svg',
+      title: 'Predictive Math Engine',
+      description: 'Monte Carlo simulation, Shannon Entropy, AHP, and Poisson CDF replace guesswork with an explainable score.',
+      icon: 'assets/icons/gauge.svg',
+    },
+  ];
+
+  smallFeatures = [
+    {
+      title: 'Zero-Trust Analysis',
+      description: 'Only manifest metadata is analyzed — your source code is never uploaded or stored.',
     },
     {
-      title: 'Actionable Reports',
-      description:
-        'Generate comprehensive reports with actionable recommendations to improve repository health.',
-      icon: 'assets/icons/file.svg',
+      title: 'Built for Teams',
+      description: 'Role-based access and org-wide policy inheritance keep every repository accountable to one standard.',
     },
   ];
 }

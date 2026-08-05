@@ -2,8 +2,8 @@
   display: block;
   min-height: 100vh;
   padding: 20px;
-  color: #e0e0e0;
-  font-family: 'Arial', sans-serif;
+  color: var(--text-primary);
+  font-family: 'Inter', 'Arial', sans-serif;
 }
 
 .profile-container {
@@ -14,7 +14,7 @@
 
 .page-title {
   font-size: 2.5em;
-  color: #f0f0f0;
+  color: var(--text-primary);
   margin-bottom: 30px;
   font-weight: 700;
 }
@@ -42,22 +42,23 @@
 }
 
 .profile-card {
-  background-color: #2a2a2a;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--glass-shadow);
 }
 
 .card-title {
   font-size: 1.4em;
-  color: #f0f0f0;
+  color: var(--text-primary);
   margin-bottom: 10px;
   font-weight: 600;
 }
 
 .card-description {
   font-size: 0.95em;
-  color: #b0b0b0;
+  color: var(--text-secondary);
   margin-bottom: 20px;
   line-height: 1.5;
 }
@@ -72,19 +73,19 @@
   border-radius: 50%;
   object-fit: cover;
   margin: 15px auto;
-  border: 3px solid #00bcd4;
+  border: 3px solid var(--accent-teal);
 }
 
 .user-name {
   font-size: 1.8em;
-  color: #f0f0f0;
+  color: var(--text-primary);
   margin-bottom: 5px;
   font-weight: 600;
 }
 
 .user-email {
   font-size: 1em;
-  color: #b0b0b0;
+  color: var(--text-secondary);
 }
 
 /* Connected Social Accounts Card */
@@ -93,7 +94,7 @@
   align-items: center;
   margin-bottom: 15px;
   padding: 10px 15px;
-  background-color: #333;
+  background-color: var(--bg-slate);
   border-radius: 8px;
 }
 
@@ -101,16 +102,15 @@
   width: 24px;
   height: 24px;
   margin-right: 15px;
-  filter: brightness(0) invert(1);
 }
 
 .social-accounts-connected .social-username {
   font-size: 1em;
-  color: #f0f0f0;
+  color: var(--text-primary);
 }
 
 .add-social-btn {
-  background-color: #00bcd4;
+  background-color: var(--accent-teal);
   color: #fff;
   border: none;
   padding: 12px 20px;
@@ -127,7 +127,7 @@
 }
 
 .add-social-btn:hover {
-  background-color: #00a8bb;
+  background-color: var(--accent-teal-hover);
 }
 
 .add-social-btn img {
@@ -142,9 +142,9 @@
 }
 
 .upload-button {
-  background-color: #3a3a3a;
-  color: #00bcd4;
-  border: 1px dashed #00bcd4;
+  background-color: var(--bg-slate);
+  color: var(--accent-teal);
+  border: 1px dashed var(--accent-teal);
   padding: 15px 20px;
   border-radius: 8px;
   cursor: pointer;
@@ -158,19 +158,18 @@
 }
 
 .upload-button:hover {
-  background-color: #444;
-  border-color: #00a8bb;
+  background-color: rgba(37, 99, 235, 0.06);
+  border-color: var(--accent-teal-hover);
 }
 
 .upload-button img {
   width: 22px;
   height: 22px;
-  filter: brightness(0) invert(1);
 }
 
 .file-status {
   font-size: 0.9em;
-  color: #b0b0b0;
+  color: var(--text-secondary);
   text-align: center;
 }
 
@@ -178,7 +177,7 @@
 .social-link-form {
   margin-bottom: 25px;
   padding-bottom: 25px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .social-link-form:last-child {
@@ -189,7 +188,7 @@
 
 .social-platform {
   font-size: 1.1em;
-  color: #f0f0f0;
+  color: var(--text-primary);
   margin-bottom: 10px;
   font-weight: 600;
 }
@@ -197,7 +196,8 @@
 .input-group {
   display: flex;
   align-items: center;
-  background-color: #333;
+  background-color: var(--bg-slate);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px 15px;
   margin-bottom: 15px;
@@ -206,7 +206,6 @@
 .input-group img {
   width: 20px;
   height: 20px;
-  filter: brightness(0) invert(1);
   margin-right: 10px;
 }
 
@@ -214,18 +213,18 @@
   flex-grow: 1;
   background: none;
   border: none;
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-size: 1em;
   padding: 5px 0;
   outline: none;
 }
 
 .input-group input::placeholder {
-  color: #888;
+  color: var(--text-muted);
 }
 
 .link-btn {
-  background-color: #00bcd4;
+  background-color: var(--accent-teal);
   color: #fff;
   border: none;
   padding: 12px 20px;
@@ -237,7 +236,7 @@
 }
 
 .link-btn:hover {
-  background-color: #00a8bb;
+  background-color: var(--accent-teal-hover);
 }
 
 /* Responsive Adjustments */

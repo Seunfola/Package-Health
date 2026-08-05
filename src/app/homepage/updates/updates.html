@@ -1,18 +1,17 @@
-<section class="updates-campaign-section">
+<section class="updates-campaign-section" id="features">
   <div class="updates-campaign-header">
-    <div class="eyebrow">Advantage</div>
-    <h2>Why Choose DepVault?</h2>
-    <div class="campaign-header-line"></div>
+    <div class="section-eyebrow">Why DepVault</div>
+    <h2 class="section-heading">Built for Real Dependency Risk</h2>
+    <div class="section-divider"></div>
   </div>
 
   <div class="updates-grid">
     <div class="updates-col left">
       <app-package-health-card [feature]="features[0]"></app-package-health-card>
-      <div class="updates-card small glass-card">
-        <div class="card-glow-border"></div>
+      <div class="glass-card small">
         <div class="card-content">
-          <h3>Automated Health Monitoring</h3>
-          <p>Seamlessly integrate continuous monitoring into your workflow, ensuring your repository remains secure without manual intervention.</p>
+          <h3>{{ smallFeatures[0].title }}</h3>
+          <p>{{ smallFeatures[0].description }}</p>
         </div>
       </div>
     </div>
@@ -24,11 +23,10 @@
 
     <div class="updates-col right">
       <app-package-health-card [feature]="features[3]"></app-package-health-card>
-      <div class="updates-card small glass-card">
-        <div class="card-glow-border"></div>
+      <div class="glass-card small">
         <div class="card-content">
-          <h3>Developer-Centric Tools</h3>
-          <p>Equip your team with intuitive tools designed to streamline the debugging process and enforce best practices effortlessly.</p>
+          <h3>{{ smallFeatures[1].title }}</h3>
+          <p>{{ smallFeatures[1].description }}</p>
         </div>
       </div>
     </div>

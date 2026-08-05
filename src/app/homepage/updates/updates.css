@@ -1,44 +1,14 @@
 .updates-campaign-section {
   position: relative;
   padding: 5rem 2rem;
-  background: var(--bg-obsidian);
-  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
 }
 
 .updates-campaign-header {
   text-align: center;
   margin-bottom: 2.5rem;
-}
-
-.eyebrow {
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--accent-emerald);
-  margin-bottom: 1rem;
-}
-
-.updates-campaign-header h2 {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #FFFFFF;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.campaign-header-line {
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent-emerald), var(--accent-teal));
-  margin: 0 auto;
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
 }
 
 .updates-grid {
@@ -58,61 +28,16 @@
   gap: 20px;
 }
 
-/* Glass Card styles for the small stat cards */
-.glass-card {
-  position: relative;
-  border-radius: 16px;
-  background: linear-gradient(145deg, rgba(25, 33, 48, 0.6) 0%, rgba(15, 20, 30, 0.4) 100%);
-  padding: 1px; /* Border space */
-  overflow: hidden;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 24px 48px rgba(0, 229, 255, 0.15);
-}
-
-.card-glow-border {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(
-    transparent 0deg,
-    rgba(0, 229, 255, 0.2) 90deg,
-    transparent 180deg,
-    rgba(0, 255, 136, 0.2) 270deg,
-    transparent 360deg
-  );
-  animation: spin 10s linear infinite;
-  z-index: 1;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.card-content {
-  position: relative;
-  z-index: 2;
-  background: rgba(11, 15, 25, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 15px;
+/* .glass-card / .card-content base styling now lives in styles.css — this
+   is just the small-card variant's unique padding/alignment. */
+.glass-card.small .card-content {
   padding: 2.5rem 2rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
 }
 
-.card-content h3 {
+.glass-card.small .card-content h3 {
   color: var(--accent-teal);
   margin-bottom: 1rem;
   font-size: 1.4rem;
@@ -120,8 +45,8 @@
   letter-spacing: -0.01em;
 }
 
-.card-content p {
-  color: #9CA3AF;
+.glass-card.small .card-content p {
+  color: var(--text-secondary);
   line-height: 1.6;
   font-size: 1rem;
   margin: 0;

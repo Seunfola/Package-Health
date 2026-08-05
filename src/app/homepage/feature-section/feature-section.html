@@ -1,12 +1,13 @@
 <section class="insights-campaign-section">
-  <div class="insights-ambient-glow"></div>
   <div class="insights-campaign-header">
-    <div class="eyebrow">Intelligence</div>
-    <h2>Featured Insights</h2>
-    <div class="campaign-header-line"></div>
+    <div class="section-eyebrow">At a Glance</div>
+    <h2 class="section-heading">DepVault, Concretely</h2>
+    <div class="section-divider"></div>
   </div>
 
   <div class="insights-grid">
-    <app-insight-card *ngFor="let insight of insights" [insight]="insight"></app-insight-card>
+    @for (insight of insights; track insight.title) {
+      <app-insight-card [insight]="insight" (viewDetails)="onInsightNavigate(insight)"></app-insight-card>
+    }
   </div>
 </section>

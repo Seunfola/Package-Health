@@ -1,0 +1,23 @@
+<header class="public-navbar">
+  <a routerLink="/home" class="public-navbar__logo">
+    <img ngSrc="assets/icons/logo.svg" alt="DepVault logo" width="40" height="31" priority />
+    <span class="logo-text">DepVault</span>
+  </a>
+
+  <nav class="public-navbar__links">
+    <a routerLink="/home" fragment="features" class="nav-link">Features</a>
+    <a routerLink="/pricing" class="nav-link">Pricing</a>
+    <a routerLink="/docs" class="nav-link">Docs</a>
+  </nav>
+
+  <div class="public-navbar__actions">
+    <button type="button" class="btn-outline-dark" (click)="openLoginModal()">Sign In</button>
+    <button type="button" class="btn-primary" (click)="openLoginModal()">Get Started</button>
+  </div>
+</header>
+
+@if (showLoginModal) {
+<div class="modal-overlay" (click)="closeLoginModal()" (keydown.escape)="closeLoginModal()" role="dialog" aria-modal="true" aria-label="Login modal">
+  <app-auth-login (click)="$event.stopPropagation()" role="document" aria-label="Login card"></app-auth-login>
+</div>
+}

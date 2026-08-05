@@ -15,7 +15,6 @@
   border-radius: 20px;
   padding: 40px 32px;
   text-align: center;
-  backdrop-filter: blur(12px);
 }
 
 .accept-transfer-card h2 {
@@ -72,21 +71,21 @@
 }
 
 .btn-github {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.04);
   color: var(--text-primary);
 }
 
 .btn-github:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.08);
 }
 
 .btn-google {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.04);
   color: var(--text-primary);
 }
 
 .btn-google:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.08);
 }
 
 .btn-primary {
