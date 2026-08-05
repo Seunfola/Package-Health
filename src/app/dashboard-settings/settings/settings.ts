@@ -102,7 +102,7 @@ export class Settings implements OnInit {
   isAddingWebhook = false;
   webhookMessage = '';
   webhookError = '';
-  webhookTypes: NotificationWebhookType[] = ['slack', 'discord', 'pagerduty', 'custom'];
+  webhookTypes: NotificationWebhookType[] = ['slack', 'discord', 'xmatters', 'custom'];
 
   myUploadedRepos: RepoListItem[] = [];
   isLoadingUploadedRepos = false;
