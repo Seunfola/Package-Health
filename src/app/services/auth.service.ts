@@ -7,6 +7,9 @@ export interface AuthState {
   isAuthenticated: boolean;
   username?: string;
   lastAuthTime?: number;
+  // UX-only (e.g. whether to show the telemetry dashboard nav link) — the
+  // real enforcement is the backend's PlatformAdminGuard, not this flag.
+  isPlatformAdmin?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +21,11 @@ export class AuthService {
 
   private readonly authStateSubject = new BehaviorSubject<AuthState>(this.loadAuthState());
   public authState$ = this.authStateSubject.asObservable();
+
+  /** Synchronous snapshot of the current auth state (e.g. for the sidebar's one-off admin-link check). */
+  get currentState(): AuthState {
+    return this.authStateSubject.value;
+  }
 
   constructor(private readonly http: HttpClient) {
     this.cleanupExpiredToken();
@@ -47,6 +55,7 @@ export class AuthService {
         isAuthenticated: true,
         username: profile?.username || 'OAuth User',
         lastAuthTime: Date.now(),
+        isPlatformAdmin: profile?.isPlatformAdmin === true,
       };
       
       localStorage.setItem(this.AUTH_STATE_LOCAL_KEY, JSON.stringify(authState));

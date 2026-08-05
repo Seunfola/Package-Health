@@ -13,6 +13,7 @@ import { AuthCallbackComponent } from './auth-callback/auth-callback.component';
 import { AcceptInviteComponent } from './accept-invite/accept-invite.component';
 import { AcceptTransferComponent } from './accept-transfer/accept-transfer.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { TelemetryDashboard } from './telemetry/telemetry-dashboard';
 import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -46,6 +47,7 @@ export const routes: Routes = [
       { path: 'dashboard-settings', component: DashboardSettings },
       { path: 'notifications', component: Notification },
       { path: 'user-profile', component: UserProfile },
+      { path: 'telemetry', component: TelemetryDashboard },
     ],
   },
   { path: '**', redirectTo: '' }

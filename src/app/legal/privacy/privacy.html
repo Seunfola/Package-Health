@@ -101,7 +101,21 @@
   </section>
 
   <section>
-    <h2>10. Your Rights</h2>
+    <h2>10. CLI, MCP Server, and LSP Server Usage Telemetry</h2>
+    <p>
+      The DepVault CLI, MCP server, and LSP server send an anonymous usage ping by default whenever a scan
+      tool is invoked — the tool name (e.g. <code>scan_package_health</code>), the ecosystem (e.g.
+      <code>npm</code>), and a random identifier generated once per machine and cached locally. This
+      identifier is never derived from your username, hostname, IP address, or any package or project name.
+      We do not receive or store package names, file paths, or project identifiers from these pings — the
+      same guarantee already made for Historical Trending Data in Section 2. This data is used only in
+      aggregate, to understand how the tools are used and roughly how many distinct installs are active.
+      Disable it entirely by setting <code>DEPVAULT_TELEMETRY=0</code> in your environment.
+    </p>
+  </section>
+
+  <section>
+    <h2>11. Your Rights</h2>
     <p>
       Wherever you're located, you can ask us (at the contact above) to: tell you what personal data we
       hold about you, correct inaccurate data, delete your account and personal data, or export a copy of
