@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@/environments/environment';
 
-export type NotificationWebhookType = 'slack' | 'discord' | 'pagerduty' | 'custom';
+export type NotificationWebhookType = 'slack' | 'discord' | 'xmatters' | 'custom';
 
 export interface NotificationWebhook {
   _id: string;
