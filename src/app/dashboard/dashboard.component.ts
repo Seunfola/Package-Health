@@ -6,6 +6,7 @@ import { RepoService, RepoListItem, RepoStats } from '../services/RepoService';
 import { StatusCard } from '../reusable/status-card/status-card';
 import { Observable } from 'rxjs';
 import { UnauthorizedWarning } from '../shared/unauthorized-warning/unauthorized-warning';
+import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
 
 interface StatTile {
   title: string;
@@ -25,7 +26,7 @@ interface StatTile {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, StatusCard, UnauthorizedWarning],
+  imports: [CommonModule, StatusCard, UnauthorizedWarning, EmptyStateCard],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -127,7 +128,7 @@ export class DashboardComponent implements OnInit {
         value: `${stats.totalRepos}`,
         icon: 'assets/icons/shield.svg',
         iconContainerBg: 'rgba(99, 102, 241, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
       {
@@ -135,7 +136,7 @@ export class DashboardComponent implements OnInit {
         value: `${stats.averageHealth}`,
         icon: 'assets/icons/gauge.svg',
         iconContainerBg: 'rgba(59, 130, 246, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
       {
@@ -143,7 +144,7 @@ export class DashboardComponent implements OnInit {
         value: `${stats.healthDistribution.excellent}`,
         icon: 'assets/icons/check.svg',
         iconContainerBg: 'rgba(34, 197, 94, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
       {
@@ -151,7 +152,7 @@ export class DashboardComponent implements OnInit {
         value: `${stats.healthDistribution.poor}`,
         icon: 'assets/icons/alert.svg',
         iconContainerBg: 'rgba(239, 68, 68, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
     ];

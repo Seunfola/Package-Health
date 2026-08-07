@@ -1,20 +1,53 @@
 <header class="public-navbar">
-  <a routerLink="/home" class="public-navbar__logo">
+  <a routerLink="/home" class="public-navbar__logo" (click)="closeMobileMenu()">
     <img ngSrc="assets/icons/logo.svg" alt="DepVault logo" width="40" height="31" priority />
     <span class="logo-text">DepVault</span>
   </a>
 
   <nav class="public-navbar__links">
-    <a routerLink="/home" fragment="features" class="nav-link">Features</a>
+    <a routerLink="/features" class="nav-link">Features</a>
     <a routerLink="/pricing" class="nav-link">Pricing</a>
     <a routerLink="/docs" class="nav-link">Docs</a>
   </nav>
 
   <div class="public-navbar__actions">
     <button type="button" class="btn-outline-dark" (click)="openLoginModal()">Sign In</button>
-    <button type="button" class="btn-primary" (click)="openLoginModal()">Get Started</button>
+    <a routerLink="/get-started" class="btn-primary">Get Started</a>
   </div>
+
+  <button
+    type="button"
+    class="menu-toggle"
+    (click)="toggleMobileMenu()"
+    [attr.aria-expanded]="showMobileMenu"
+    aria-label="Toggle navigation menu"
+  >
+    @if (!showMobileMenu) {
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    } @else {
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    }
+  </button>
 </header>
+
+@if (showMobileMenu) {
+<nav class="mobile-menu">
+  <a routerLink="/features" class="mobile-menu__link" (click)="closeMobileMenu()">Features</a>
+  <a routerLink="/pricing" class="mobile-menu__link" (click)="closeMobileMenu()">Pricing</a>
+  <a routerLink="/docs" class="mobile-menu__link" (click)="closeMobileMenu()">Docs</a>
+  <div class="mobile-menu__actions">
+    <button type="button" class="btn-outline-dark" (click)="openLoginModal()">Sign In</button>
+    <a routerLink="/get-started" class="btn-primary" (click)="closeMobileMenu()">Get Started</a>
+  </div>
+</nav>
+}
 
 @if (showLoginModal) {
 <div class="modal-overlay" (click)="closeLoginModal()" (keydown.escape)="closeLoginModal()" role="dialog" aria-modal="true" aria-label="Login modal">

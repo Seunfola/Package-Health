@@ -1,95 +1,42 @@
 <div class="hero-container" id="analyze">
-  <div class="hero-bg"></div>
   <div class="hero-glow hero-glow-teal"></div>
 
   <div class="hero-content">
-    <div class="hero-eyebrow">
-      <span class="hero-eyebrow-dot"></span>
-      Predictive Risk Engine — npm · PyPI · Cargo · Go
-    </div>
-
-    <div class="hero-text">
-      <h1>Unlock Your Repository's True Potential</h1>
-      <p>
-        Standard scanners only look for known vulnerabilities (CVEs). 
-        <strong>DepVault</strong> is a <em>Predictive Risk Engine</em> that catches unmaintained packages, toxic licenses, and pre-release instability <strong>before</strong> they become a threat. 
-      </p>
-      <p class="hero-subtext">
-        Powered by a predictive math engine — Monte Carlo simulation, Shannon Entropy, and Analytic
-        Hierarchy Process — running across <strong>npm, PyPI, Cargo, and Go</strong>.
-      </p>
-    </div>
-
-    <div class="hero-actions">
-      <div class="tab-buttons">
-        <button class="{{ activeTab === 'github' ? 'active' : '' }}" (click)="setActiveTab('github')">
-          <img src="assets/icons/git.svg" alt="GitHub" />
-          <span>GitHub URL</span>
-        </button>
-        <button class="{{ activeTab === 'paste' ? 'active' : '' }}" (click)="setActiveTab('paste')">
-          <img src="assets/icons/json.svg" alt="JSON" />
-          <span>Paste JSON</span>
-        </button>
-        <button class="{{ activeTab === 'upload' ? 'active' : '' }}" (click)="setActiveTab('upload')">
-          <img src="assets/icons/upload.svg" alt="Upload" />
-          <span>Upload JSON</span>
-        </button>
+    <div class="hero-story">
+      <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span> Predictive Risk Engine</div>
+      <div class="hero-text">
+        <p class="hero-kicker">Dependency intelligence for engineering teams</p>
+        <h1>Know the risk <em>before</em> you install.</h1>
+        <p>Standard scanners report known vulnerabilities. <strong>DepVault</strong> surfaces the signals that make a dependency risky before it becomes an incident.</p>
+        <p class="hero-subtext">Security, maintenance, license and popularity are evaluated together across <strong>npm, PyPI, Cargo, and Go</strong>.</p>
       </div>
+      <div class="hero-proof"><span>4 ecosystems</span><span>Predictive policy checks</span><span>Private repos supported</span></div>
+    </div>
+
+    <div class="hero-actions glass-card">
+      <div class="analyzer-heading"><span class="analyzer-heading__icon">⌁</span><div><p>Start an analysis</p><span>Get a Trust Score in seconds</span></div></div>
+      <div class="tab-buttons" role="tablist" aria-label="Analysis input type">
+        <button [class.active]="activeTab === 'github'" (click)="setActiveTab('github')" role="tab" [attr.aria-selected]="activeTab === 'github'"><img src="assets/icons/git.svg" alt="" /><span>GitHub URL</span></button>
+        <button [class.active]="activeTab === 'paste'" (click)="setActiveTab('paste')" role="tab" [attr.aria-selected]="activeTab === 'paste'"><img src="assets/icons/json.svg" alt="" /><span>Paste JSON</span></button>
+        <button [class.active]="activeTab === 'upload'" (click)="setActiveTab('upload')" role="tab" [attr.aria-selected]="activeTab === 'upload'"><img src="assets/icons/upload.svg" alt="" /><span>Upload JSON</span></button>
+      </div>
+
       <div class="input-group">
         @if (activeTab === 'github') {
-        <div class="input-wrapper">
-          <input type="text" [(ngModel)]="repository" placeholder="Enter GitHub repository (e.g., org/repo)" />
-          <small>
-            Public repositories can be analyzed without login. Private repositories require a GitHub token from
-            Dashboard Settings.
-          </small>
-        </div>
+          <div class="input-wrapper"><label for="repository">Repository URL</label><input id="repository" type="text" [(ngModel)]="repository" placeholder="github.com/owner/repository" /><small>Public repositories can be analyzed without login. Private repositories require a GitHub token.</small></div>
         }
-
         @if (activeTab === 'paste') {
-        <div class="input-wrapper">
-          <textarea rows="4" [(ngModel)]="jsonContent" placeholder="Paste your JSON content here..."></textarea>
-        </div>
+          <div class="input-wrapper"><label for="package-json">package.json contents</label><textarea id="package-json" rows="4" [(ngModel)]="jsonContent" placeholder="Paste your package.json here..."></textarea></div>
         }
-
         @if (activeTab === 'upload') {
-        <div class="upload-json-section">
-          <div class="upload-input-wrapper">
-            <img src="assets/icons/upload.svg" alt="Upload Icon" class="upload-input-icon" />
-            <input type="file" id="fileInput" (change)="onFileSelected($event)" accept=".json" />
-            <label for="fileInput" class="upload-placeholder">
-              Choose a JSON file to analyze…
-            </label>
-          </div>
-          @if (selectedFileName !== 'No file chosen') {
-          <p class="file-name">{{ selectedFileName }}</p>
-          }
-        </div>
+          <div class="upload-json-section"><div class="upload-input-wrapper"><img src="assets/icons/upload.svg" alt="" class="upload-input-icon" /><input #fileInput type="file" id="fileInput" (change)="onFileSelected($event)" accept=".json" /><label for="fileInput" class="upload-placeholder">Choose a package.json file</label></div>@if (selectedFileName !== 'No file chosen') { <p class="file-name">{{ selectedFileName }}</p> }</div>
         }
       </div>
 
-      @if (analysisWarnings.length > 0) {
-      <div class="input-wrapper">
-        <p>Package security warnings:</p>
-        <ul>
-          @for (warning of analysisWarnings; track warning) {
-          <li>{{ warning }}</li>
-          }
-        </ul>
-      </div>
-      }
+      @if (analysisWarnings.length > 0) { <div class="input-wrapper warnings"><p>Package security warnings:</p><ul>@for (warning of analysisWarnings; track warning) { <li>{{ warning }}</li> }</ul></div> }
 
-      <button type="button" class="analyze-button btn-primary" (click)="analyzeData()" [disabled]="isAnalyzing">
-        {{ isAnalyzing ? 'Analyzing...' : 'Analyze' }}
-      </button>
-
-      <div class="hero-trust-row">
-        <span class="hero-trust-stat"><strong>4</strong> ecosystems</span>
-        <span class="hero-trust-divider"></span>
-        <span class="hero-trust-stat"><strong>7</strong> mathematical risk models</span>
-        <span class="hero-trust-divider"></span>
-        <span class="hero-trust-stat">Zero-trust · no code ever uploaded</span>
-      </div>
+      <button type="button" class="analyze-button btn-primary" (click)="analyzeData()" [disabled]="isAnalyzing">{{ isAnalyzing ? 'Analyzing...' : 'Analyze repository' }} <span aria-hidden="true">→</span></button>
+      <div class="hero-trust-row"><span class="hero-trust-stat">No source code is uploaded</span><span class="hero-trust-divider"></span><span class="hero-trust-stat">Public scans need no login</span></div>
     </div>
   </div>
 </div>

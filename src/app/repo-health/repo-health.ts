@@ -15,6 +15,15 @@ interface MetricCard {
   cardBorderRadius: string;
 }
 
+type Severity = 'critical' | 'high' | 'medium' | 'low' | 'unknown';
+
+interface ScanFinding {
+  id: string;
+  severity: Severity;
+  summary: string;
+  range: string;
+}
+
 const ECOSYSTEMS = ['npm', 'pypi', 'cargo'] as const;
 type Ecosystem = (typeof ECOSYSTEMS)[number];
 
@@ -183,6 +192,58 @@ export class RepoHealth implements OnInit {
     return this.scanResult?.trustScore.finalScore ?? 0;
   }
 
+  get findings(): ScanFinding[] {
+    const vulnerabilities = this.scanResult?.details?.vulnerabilities ?? [];
+    return vulnerabilities.map((finding, index) => this.normalizeFinding(finding, index));
+  }
+
+  get severityCounts(): Record<Severity, number> {
+    const counts: Record<Severity, number> = {
+      critical: 0, high: 0, medium: 0, low: 0, unknown: 0,
+    };
+    for (const finding of this.findings) counts[finding.severity] += 1;
+    return counts;
+  }
+
+  getSeverityCount(severity: string): number {
+    return this.severityCounts[severity as Severity] ?? 0;
+  }
+
+  get scanPassed(): boolean {
+    return !this.scanResult?.hasCriticalVulnerabilities && this.finalScore >= 80;
+  }
+
+  get scanStatusLabel(): string {
+    return this.scanPassed ? 'Passed' : 'Needs attention';
+  }
+
+  get scanSummary(): string {
+    if (!this.scanResult) return '';
+    if (this.findings.length === 0) return 'No known vulnerabilities were returned for this package version.';
+    return `${this.findings.length} known ${this.findings.length === 1 ? 'vulnerability' : 'vulnerabilities'} need review before adoption.`;
+  }
+
+  async copyCiSummary(): Promise<void> {
+    if (!this.scanResult) return;
+    const { ecosystem, package: packageName, version } = this.scanResult;
+    const ci = this.scanResult.trustScore.ci;
+    const lines = [
+      '## DepVault package scan',
+      '',
+      `**${this.scanStatusLabel.toUpperCase()}** — ${packageName}@${version} scored ${Math.round(this.finalScore)}/100.`,
+      '',
+      `- Ecosystem: ${ecosystem}`,
+      `- Security score: ${Math.round(this.scanResult.trustScore.securityScore)}/100`,
+      `- Vulnerabilities: ${this.findings.length || 'None found'}`,
+      ...(ci ? [`- 95% confidence interval: ${Math.round(ci.p2_5)}–${Math.round(ci.p97_5)}`] : []),
+    ];
+    try {
+      await navigator.clipboard.writeText(lines.join('\n'));
+    } catch {
+      this.reportError = 'Could not copy the CI summary. Your browser may block clipboard access.';
+    }
+  }
+
   get strokeDashoffset(): number {
     const circumference = 2 * Math.PI * 45; // r=45
     return circumference - (this.finalScore / 100) * circumference;
@@ -211,7 +272,7 @@ export class RepoHealth implements OnInit {
         value: `${Math.round(s.securityScore)}/100`,
         icon: 'assets/icons/shield.svg',
         iconContainerBg: 'rgba(239, 68, 68, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
       {
@@ -219,7 +280,7 @@ export class RepoHealth implements OnInit {
         value: `${Math.round(s.subscores.license)}/100`,
         icon: 'assets/icons/scale.svg',
         iconContainerBg: 'rgba(59, 130, 246, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
       {
@@ -227,7 +288,7 @@ export class RepoHealth implements OnInit {
         value: `${Math.round(s.subscores.adjustedMaintenance)}/100`,
         icon: 'assets/icons/activity.svg',
         iconContainerBg: 'rgba(34, 197, 94, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
       {
@@ -235,7 +296,7 @@ export class RepoHealth implements OnInit {
         value: `${Math.round(s.subscores.popularity)}/100`,
         icon: 'assets/icons/star.svg',
         iconContainerBg: 'rgba(234, 179, 8, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
       {
@@ -243,10 +304,25 @@ export class RepoHealth implements OnInit {
         value: `${Math.round(s.freshness * 100)}%`,
         icon: 'assets/icons/clock.svg',
         iconContainerBg: 'rgba(168, 85, 247, 0.15)',
-        iconFillColor: 'invert(100%)',
+        iconFillColor: '',
         cardBorderRadius: '12px',
       },
     ];
+  }
+
+  private normalizeFinding(finding: Record<string, unknown>, index: number): ScanFinding {
+    const databaseSpecific = finding['database_specific'] as Record<string, unknown> | undefined;
+    const aliases = finding['aliases'] as unknown[] | undefined;
+    const rawSeverity = String(finding['severity'] ?? databaseSpecific?.['severity'] ?? 'unknown').toLowerCase();
+    const severity: Severity = ['critical', 'high', 'medium', 'low'].includes(rawSeverity)
+      ? rawSeverity as Severity
+      : 'unknown';
+    return {
+      id: String(finding['id'] ?? finding['ghsa_id'] ?? aliases?.[0] ?? `Finding ${index + 1}`),
+      severity,
+      summary: String(finding['summary'] ?? finding['details'] ?? finding['description'] ?? 'Known vulnerability'),
+      range: String(finding['vulnerable_version_range'] ?? finding['affected_range'] ?? finding['range'] ?? 'Version range unavailable'),
+    };
   }
 
   private triggerDownload(filename: string, content: string, mimeType: string): void {

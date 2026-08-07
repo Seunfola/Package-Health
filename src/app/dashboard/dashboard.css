@@ -252,13 +252,14 @@
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
   border: 1px solid #e2e8f0;
   overflow: hidden;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .clean-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  table-layout: fixed;
 }
 
 .clean-table th {
@@ -279,6 +280,7 @@
   color: #1e293b;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
+  overflow-wrap: anywhere;
 }
 
 .clean-table tr:last-child td {
@@ -347,4 +349,7 @@
   .table-card {
     display: block;
   }
+
+  .clean-table th,
+  .clean-table td { padding: 11px 8px; font-size: 12px; white-space: normal; }
 }

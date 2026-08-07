@@ -40,10 +40,11 @@
   </app-chart-card>
 </div>
 
-<div *ngIf="!analysisData">
-  <div class="no-data-section">
-    <p *ngIf="loadError">{{ loadError }}</p>
-    <p *ngIf="!loadError">No repository data available. Please analyze a repository first.</p>
-    <button routerLink="/">Home</button>
-  </div>
+<div *ngIf="!analysisData" class="no-data-section">
+  <app-empty-state-card
+    [title]="loadError ? 'Repository analysis is unavailable' : 'Choose a repository to inspect'"
+    [message]="loadError || 'Open a repository from the Dashboard to see its health metrics, dependency graph, and remediation guidance.'"
+    actionLabel="Open dashboard"
+    (action)="returnToDashboard()">
+  </app-empty-state-card>
 </div>

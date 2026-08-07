@@ -1,13 +1,13 @@
 <section class="insights-campaign-section">
   <div class="insights-campaign-header">
-    <div class="section-eyebrow">At a Glance</div>
-    <h2 class="section-heading">DepVault, Concretely</h2>
+    <div class="section-eyebrow">Intelligence</div>
+    <h2 class="section-heading">Latest Insights</h2>
     <div class="section-divider"></div>
   </div>
 
   <div class="insights-grid">
     @for (insight of insights; track insight.title) {
-      <app-insight-card [insight]="insight" (viewDetails)="onInsightNavigate(insight)"></app-insight-card>
+      <app-package-health-card [feature]="insight"></app-package-health-card>
     }
   </div>
 </section>

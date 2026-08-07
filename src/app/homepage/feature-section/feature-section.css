@@ -1,6 +1,6 @@
 .insights-campaign-section {
   position: relative;
-  padding: 5rem 2rem;
+  padding: 2.5rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,7 +8,7 @@
 
 .insights-campaign-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   position: relative;
   z-index: 10;
 }
@@ -32,7 +32,7 @@
 
 @media (max-width: 768px) {
   .insights-campaign-section {
-    padding: 3rem 1rem;
+    padding: 2rem 0;
   }
   .insights-grid {
     grid-template-columns: 1fr;

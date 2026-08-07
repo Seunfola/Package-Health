@@ -1,50 +1,129 @@
-<div class="docs-page">
-  <div class="docs-header">
-    <div class="section-eyebrow">Documentation</div>
-    <h1 class="section-heading">How DepVault Works</h1>
-    <div class="section-divider"></div>
-  </div>
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <h2 class="docs-sidebar__title">Documentation</h2>
+    @for (category of categories; track category) {
+      <div class="docs-sidebar__group">
+        <h3 class="docs-sidebar__category">{{ category }}</h3>
+        @for (section of sectionsIn(category); track section.id) {
+          <a [routerLink]="[]" [fragment]="section.id" class="docs-sidebar__link">{{ section.title }}</a>
+        }
+      </div>
+    }
+  </aside>
 
-  <section class="docs-section glass-panel" id="quick-start">
-    <h2>Quick Start</h2>
-    <p>
-      Submit a GitHub repository URL, paste a <code>package.json</code>, or upload a manifest file directly from the
-      <a routerLink="/home">homepage</a> — no login required for public repositories. DepVault reads only the
-      dependency manifest; your source code is never uploaded or stored.
+  <main class="docs-main">
+    <div class="docs-search-wrapper">
+      <svg class="docs-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input
+        type="text"
+        class="docs-search-input"
+        placeholder="Search documentation..."
+        [(ngModel)]="searchTerm"
+        aria-label="Search documentation"
+      />
+    </div>
+
+    <h1 class="docs-title">DepVault Documentation</h1>
+    <p class="docs-intro">
+      Everything you need to score dependencies, wire up the MCP server for AI agents, gate installs with the CLI, and
+      manage your organization's plan.
     </p>
-    <p>Every scan produces a single Trust Score (0–100), weighted across four dimensions:</p>
-    <ul class="docs-list">
-      <li><strong>Security — 45%</strong>: known vulnerabilities, weighted by a Poisson CDF and the package's structural criticality.</li>
-      <li><strong>License — 20%</strong>: penalizes non-permissive or toxic copyleft licenses (GPL, AGPL).</li>
-      <li><strong>Maintenance — 20%</strong>: commit frequency, release cadence, and general repository health.</li>
-      <li><strong>Popularity — 15%</strong>: weekly downloads and dependent count.</li>
-    </ul>
-  </section>
 
-  <section class="docs-section glass-panel" id="ecosystems">
-    <h2>Ecosystems Supported</h2>
-    <p>One scoring engine, the same mathematical pipeline, across four ecosystems:</p>
-    <table class="docs-table">
-      <thead>
-        <tr><th>Ecosystem</th><th>Manifest file(s)</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>npm</td><td><code>package.json</code></td></tr>
-        <tr><td>PyPI</td><td><code>requirements.txt</code>, <code>pyproject.toml</code> (PEP 621 or Poetry)</td></tr>
-        <tr><td>Cargo</td><td><code>Cargo.toml</code>, including dotted <code>[dependencies.foo]</code> tables</td></tr>
-        <tr><td>Go</td><td><code>go.mod</code></td></tr>
-      </tbody>
-    </table>
-  </section>
+    <div class="docs-action-cards">
+      <a routerLink="/home" fragment="analyze" class="docs-action-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 22V18a4 4 0 0 0-1-3.75c2.75-.41 5.5-1.35 5.5-6a4.12 4.12 0 0 0-1.58-3.26 4.07 4.07 0 0 0-.06-3.23s-1.12-.33-3.53 1.25a12 12 0 0 0-6 0c-2.41-1.58-3.53-1.25-3.53-1.25a4.07 4.07 0 0 0-.06 3.23A4.12 4.12 0 0 0 4 8c0 4.65 2.75 5.59 5.5 6a4 4 0 0 0-1 3.75v4"></path>
+        </svg>
+        <div>
+          <h3>Analyze a Repository</h3>
+          <p>Submit a GitHub URL or manifest file to get a Trust Score — no login required for public repos.</p>
+        </div>
+      </a>
+      <a [routerLink]="[]" fragment="mcp-server" class="docs-action-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+        <div>
+          <h3>Set Up the MCP Server</h3>
+          <p>Connect DepVault to Claude Code, Cursor, or Windsurf so your AI agent can check Trust Scores directly.</p>
+        </div>
+      </a>
+    </div>
 
-  <section class="docs-section glass-panel" id="mcp-server">
-    <h2>MCP Server — For AI Coding Agents</h2>
-    <p>
-      <code>&#64;deepvaultscan/mcp-server</code> is published to the public npm registry and lets any
-      <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">Model Context Protocol</a>-compatible agent
-      (Claude Code, Cursor, Windsurf) check a package's Trust Score on demand.
-    </p>
-    <pre class="docs-code">&#123;
+    @if (noResults) {
+      <p class="docs-no-results">No sections match "{{ searchTerm }}".</p>
+    }
+
+    <section class="docs-section glass-panel" id="quick-start" [hidden]="!isVisible('quick-start')">
+      <h2>Quick Start</h2>
+      <p>
+        Submit a GitHub repository URL, paste a <code>package.json</code>, or upload a manifest file directly from the
+        <a routerLink="/home">homepage</a> — no login required for public repositories. DepVault reads only the
+        dependency manifest; your source code is never uploaded or stored.
+      </p>
+      <p>Every scan produces a single Trust Score (0–100), weighted across four dimensions:</p>
+      <ul class="docs-list">
+        <li><strong>Security — 45%</strong>: known vulnerabilities, weighted by a Poisson CDF and the package's structural criticality.</li>
+        <li><strong>License — 20%</strong>: penalizes non-permissive or toxic copyleft licenses (GPL, AGPL).</li>
+        <li><strong>Maintenance — 20%</strong>: commit frequency, release cadence, and general repository health.</li>
+        <li><strong>Popularity — 15%</strong>: weekly downloads and dependent count.</li>
+      </ul>
+    </section>
+
+    <section class="docs-section glass-panel" id="analyzer" [hidden]="!isVisible('analyzer')">
+      <h2>Dashboard &amp; Analyzer</h2>
+      <p>The browser is the best place to investigate a decision. The homepage accepts a public GitHub URL, pasted manifest, or manifest upload. Package Health looks up a single npm, PyPI, or Cargo package and exposes its Trust Score, confidence interval, severity distribution, findings, and historical trend.</p>
+      <table class="docs-table"><thead><tr><th>Surface</th><th>Use it for</th><th>Available actions</th></tr></thead><tbody><tr><td>Project analyzer</td><td>Review a dependency set before a merge, migration, or onboarding.</td><td>Inspect package-level scores, reasons, and vulnerabilities.</td></tr><tr><td>Package Health</td><td>Evaluate one package and an optional version.</td><td>Download a report or CycloneDX SBOM, request fix suggestions, retrieve a badge, and copy a CI-ready summary.</td></tr><tr><td>Synced Scans</td><td>Review a private project analyzed from a local checkout.</td><td>Use <code>depvault upload</code> after authenticating with a personal API token.</td></tr></tbody></table>
+      <div class="docs-note"><strong>Decision model:</strong> a Trust Score is a signal, not a security guarantee. Treat CRITICAL findings and compatibility testing as independent requirements before a production upgrade.</div>
+    </section>
+
+    <section class="docs-section glass-panel" id="ecosystems" [hidden]="!isVisible('ecosystems')">
+      <h2>Ecosystems Supported</h2>
+      <p>One scoring engine, the same mathematical pipeline, across four ecosystems:</p>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Ecosystem</th><th>Manifest file(s)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>npm</td><td><code>package.json</code></td></tr>
+          <tr><td>PyPI</td><td><code>requirements.txt</code>, <code>pyproject.toml</code> (PEP 621 or Poetry)</td></tr>
+          <tr><td>Cargo</td><td><code>Cargo.toml</code>, including dotted <code>[dependencies.foo]</code> tables</td></tr>
+          <tr><td>Go</td><td><code>go.mod</code></td></tr>
+        </tbody>
+      </table>
+      <h3>How scoring works</h3>
+      <p>DepVault combines known vulnerability exposure, package criticality, maintainer diversity, freshness, maintenance, popularity, and license signals. Security contributes 45% of the Trust Score; license and maintenance 20% each; popularity 15%. Freshness adjusts maintenance, and Monte Carlo sampling can provide the displayed 95% confidence interval. The score helps compare choices; the finding list identifies urgent remediation work.</p>
+    </section>
+
+    <section class="docs-section glass-panel" id="analysis-method" [hidden]="!isVisible('analysis-method')">
+      <h2>Analysis, accuracy &amp; mathematics</h2>
+      <p>DepVault is a multi-signal decision aid. It obtains registry metadata, download data, maintainer metadata, release timestamps, license information, and known-vulnerability data; normalizes those signals across ecosystems; then produces a score, a vulnerability list, and—when enabled—a deterministic uncertainty interval. It does not inspect your application code or prove a dependency is safe.</p>
+      <h3>The score model</h3>
+      <p>The base score is bounded to 0–100 and combines four normalized sub-scores:</p>
+      <div class="docs-formula" role="img" aria-label="Final score formula">Score = 0.45 × Security + 0.20 × License + 0.20 × (Maintenance × Freshness) + 0.15 × Popularity + Diversity adjustment</div>
+      <ul class="docs-list"><li><strong>Security:</strong> CVSS base scores are summed into vulnerability burden <em>B</em>. A category prior <em>w</em> adjusts the Poisson rate: <code>λ = B × (1 + w)</code>. The security score is <code>100 × P(X ≤ t | λ)</code>, where <em>t</em> is the configured risk tolerance. High attack-surface categories use <em>w = 0.30</em>, medium <em>0.15</em>, and low <em>0.05</em>.</li><li><strong>Freshness:</strong> uses a true half-life: <code>freshness = 2^(−days / halfLife)</code>. The default half-life is 365 days, so the factor is 0.5 at one year and 0.25 at two years.</li><li><strong>Maintenance and popularity:</strong> are mapped to bounded scores from maintainer count and download volume. Maintenance is then multiplied by freshness, so stale packages cannot retain the full maintenance contribution.</li><li><strong>License:</strong> permissive licenses score 100, weak copyleft is reduced, and configured restrictive/toxic licenses score 0.</li><li><strong>Diversity:</strong> measures maintainer concentration with normalized Shannon entropy, <code>H = −Σ pᵢ log₂(pᵢ)</code>. A normalized diversity value below 30 receives a 15-point penalty. Public email providers are treated as individual maintainers, not one shared organization.</li></ul>
+      <h3>Hard-stop conditions</h3>
+      <p>The final score becomes 0 when vulnerability burden exceeds 20, freshness falls below 0.15, or no maintainers are present. These safeguards ensure a high score in unrelated dimensions cannot mask an extreme risk signal.</p>
+      <h3>Confidence interval and accuracy</h3>
+      <p>When Monte Carlo confidence is enabled, DepVault runs 1,000 reproducible simulations seeded from the lockfile hash. Each simulation perturbs severity by ±20% and downloads by ±10%, then recomputes the score. The displayed 95% interval is the 2.5th to 97.5th percentile of those results. It expresses sensitivity to this defined input-uncertainty model—not a statistical guarantee that a package is secure, and not a probability that an exploit will occur.</p>
+      <div class="docs-note"><strong>Accuracy principles:</strong> known vulnerability data is shown as findings rather than hidden inside a score; unknown or unreachable registry data is reported as unverified rather than turned into a fabricated low score; and the seeded simulation gives identical inputs identical confidence bounds in CI. Registry freshness, advisory coverage, metadata quality, and the qualitative category prior remain real limitations.</div>
+      <h3>Where DepVault adds value</h3>
+      <p>A conventional vulnerability audit answers whether its advisory database currently knows about a vulnerable version. DepVault retains that answer, then adds maintenance, freshness, license, popularity, diversity, category criticality, confidence bounds, and workflow enforcement across browser, CLI, editor, MCP, and CI. This makes it useful for prioritizing otherwise clean-looking packages and for applying a consistent policy before install or merge.</p>
+      <div class="docs-caveat"><strong>No unsupported superiority claim:</strong> DepVault is not documented as universally more accurate than every scanner. Its advantage is broader decision context and consistent enforcement surfaces. Use advisory IDs, package compatibility tests, and your security process alongside every Trust Score.</div>
+    </section>
+
+    <section class="docs-section glass-panel" id="mcp-server" [hidden]="!isVisible('mcp-server')">
+      <h2>MCP Server — For AI Coding Agents</h2>
+      <p>
+        <code>&#64;deepvaultscan/mcp-server</code> is published to the public npm registry and lets any
+        <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">Model Context Protocol</a>-compatible agent
+        (Claude Code, Cursor, Windsurf) check a package's Trust Score on demand.
+      </p>
+      <pre class="docs-code">&#123;
   "mcpServers": &#123;
     "depvault": &#123;
       "command": "npx",
@@ -52,47 +131,155 @@
     &#125;
   &#125;
 &#125;</pre>
-    <table class="docs-table">
-      <thead>
-        <tr><th>Tool</th><th>Use it to</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><code>scan_package_health</code></td><td>Score a single package before adding it as a dependency.</td></tr>
-        <tr><td><code>scan_repository</code></td><td>Score every dependency in a project's manifest at once.</td></tr>
-      </tbody>
-    </table>
-    <p>
-      Optional auto-scan on install: <code>npx &#64;deepvaultscan/mcp-server --enable-auto-scan</code> persists an
-      opt-in flag so future <code>npm install</code>s scan automatically; add <code>--block-on-critical</code> to fail
-      an install that pulls in a known CRITICAL-severity vulnerability. Both are off by default and report-only unless
-      explicitly enabled — every tool call requires live internet access, there is no offline mode for the MCP server.
-    </p>
-  </section>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Use it to</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>scan_package_health</code></td><td>Score a single package before adding it as a dependency.</td></tr>
+          <tr><td><code>scan_repository</code></td><td>Score every dependency in a project's manifest at once.</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Optional auto-scan on install: <code>npx &#64;deepvaultscan/mcp-server --enable-auto-scan</code> persists an
+        opt-in flag so future <code>npm install</code>s scan automatically; add <code>--block-on-critical</code> to fail
+        an install that pulls in a known CRITICAL-severity vulnerability. Both are off by default and report-only unless
+        explicitly enabled — every tool call requires live internet access, there is no offline mode for the MCP server.
+      </p>
+    </section>
 
-  <section class="docs-section glass-panel" id="cli">
-    <h2>CLI — Shield &amp; Install Hooks</h2>
-    <p class="docs-caveat">
-      The CLI is not yet published to the public npm registry — it's built from this project's source today.
-    </p>
-    <pre class="docs-code">depvault shield express&#64;4.18.2   # pre-scan one package, then install if it passes
+    <div class="docs-caveat"><strong>Important:</strong> MCP auto-scan is a convenience feature, not an all-install interceptor. It runs when this package's own install lifecycle runs and cannot protect unrelated future <code>npm install</code> commands. Use CLI Shield hooks or GitHub Actions for an actual install or merge gate.</div>
+
+    <section class="docs-section glass-panel" id="cli" [hidden]="!isVisible('cli')">
+      <h2>CLI — Shield &amp; Install Hooks</h2>
+      <p class="docs-caveat">
+        The CLI is not yet published to the public npm registry — it's built from this project's source today.
+      </p>
+      <pre class="docs-code">depvault shield express&#64;4.18.2   # pre-scan one package, then install if it passes
 depvault shield audit            # audit all currently installed packages
 depvault hooks install           # print shell wrappers that gate npm/pnpm/yarn/pip/cargo/go installs</pre>
-    <p>
-      <code>depvault shield &lt;pkg&gt;</code> only gates the exact command you run. <code>depvault hooks install</code>
-      is the real always-on gate — it prints shell functions that route every install through Shield first, blocking
-      on a <code>BLOCK</code> verdict unless overridden with <code>--force</code> (audited, not silent).
-    </p>
-    <p>
-      Offline use: <code>depvault shield sync</code> downloads a signed verdict cache while online; if the backend
-      later becomes unreachable, cached packages still get a real verdict — anything not already cached fails closed.
-    </p>
-  </section>
+      <pre class="docs-terminal"><span class="terminal-dim"># Build the CLI from this repository, then scan a project</span>
+pnpm install
+pnpm --filter cli build
+<span class="terminal-prompt">$</span> pnpm --filter cli exec depvault scan --path .</pre>
+      <p>
+        <code>depvault shield &lt;pkg&gt;</code> only gates the exact command you run. <code>depvault hooks install</code>
+        is the real always-on gate — it prints shell functions that route every install through Shield first, blocking
+        on a <code>BLOCK</code> verdict unless overridden with <code>--force</code> (audited, not silent).
+      </p>
+      <p>
+        Offline use: <code>depvault shield sync</code> downloads a signed verdict cache while online; if the backend
+        later becomes unreachable, cached packages still get a real verdict — anything not already cached fails closed.
+      </p>
+    </section>
 
-  <section class="docs-section glass-panel" id="plans">
-    <h2>Organizations &amp; Plans</h2>
-    <p>
-      FREE covers solo use and small teams with real limits; PAID unlocks organization-wide customization.
-      See the full comparison on <a routerLink="/pricing">Pricing</a>.
-    </p>
-  </section>
+    <section class="docs-section glass-panel" id="github-actions" [hidden]="!isVisible('github-actions')">
+      <h2>GitHub Actions</h2>
+      <p>The composite action scores the checked-out manifest, writes a job summary, can update one pull-request comment, and fails the job when the average Trust Score is below your threshold. It runs on your GitHub runner and needs no account, backend, or API key.</p>
+      <pre class="docs-terminal"><span class="terminal-dim"># .github/workflows/depvault.yml</span>
+name: DepVault Scan
+on: [pull_request]
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write <span class="terminal-dim"># required only for PR comments</span>
+    steps:
+      - uses: actions/checkout&#64;v4
+      - uses: Seunfola/package-health-backup/apps/github-action&#64;v1
+        id: depvault
+        with:
+          fail-below: '80'
+          ignore-dev: 'false'</pre>
+      <table class="docs-table"><thead><tr><th>Input</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td><code>path</code></td><td><code>.</code></td><td>Directory relative to repository root.</td></tr><tr><td><code>fail-below</code></td><td>config value</td><td>Minimum average score; falls back to <code>depvault.json</code>.</td></tr><tr><td><code>risk-level</code></td><td>config / medium</td><td><code>low</code>, <code>medium</code>, or <code>high</code>.</td></tr><tr><td><code>comment-pr</code></td><td><code>true</code></td><td>Post or update one PR comment.</td></tr><tr><td><code>job-summary</code></td><td><code>true</code></td><td>Write the Actions job summary.</td></tr></tbody></table>
+      <p>The action exposes <code>score</code>, <code>passed</code>, and <code>critical-count</code> outputs. Pin to a release tag or commit SHA rather than a moving branch. Reporting runs before the final failure, so reviewers see package-level results even on a blocked pull request.</p>
+    </section>
+
+    <section class="docs-section glass-panel" id="ide-lsp" [hidden]="!isVisible('ide-lsp')">
+      <h2>IDE extension &amp; LSP intelligence</h2>
+      <p>Every editor integration runs the same editor-agnostic <code>@depvault/lsp-server</code> over standard input/output. It analyzes <code>package.json</code>, <code>requirements.txt</code>, <code>pyproject.toml</code>, and <code>Cargo.toml</code>. Go manifests are supported by the CLI and GitHub Action, but are not currently an LSP manifest target.</p>
+      <h3>What the language server does</h3>
+      <ul class="docs-list"><li><strong>CodeLens:</strong> where the client supports it, each dependency line shows <code>[OK] DepVault Trust: 94/100</code>, a warning, or a CRITICAL marker.</li><li><strong>Hover:</strong> place the cursor on a dependency to see the full Trust Score report and suggested remediation.</li><li><strong>Diagnostics:</strong> a score below the configured threshold becomes a warning; a CRITICAL known vulnerability becomes an error.</li><li><strong>Quick fix:</strong> use the editor's code-actions menu to replace a vulnerable version with the recommended fixed version when one is available.</li><li><strong>Update timing:</strong> the server re-analyzes after opening and saving a manifest, and debounces edits for 500 ms.</li></ul>
+      <div class="docs-note"><strong>Network requirement:</strong> editor scoring needs package-registry data. If a registry is unreachable or rate-limited, DepVault reports that it could not verify the dependency; it does not fabricate a score of zero.</div>
+
+      <h3>VS Code extension</h3>
+      <p>Install the DepVault extension in VS Code, open a supported manifest, then adjust its settings under <strong>Settings → Extensions → DepVault</strong> or in <code>settings.json</code>. The extension requires VS Code 1.85 or later and bundles the language server with it.</p>
+      <pre class="docs-code">&#123;
+  "depvault.scoreThreshold": 50,
+  "depvault.enabledEcosystems": ["npm", "pypi", "cargo"]
+&#125;</pre>
+      <p><code>scoreThreshold</code> accepts 0–100 and defaults to 50. <code>enabledEcosystems</code> defaults to npm, PyPI, and Cargo. If you are building from this repository instead of installing a packaged extension, run:</p>
+      <pre class="docs-terminal"><span class="terminal-prompt">$</span> pnpm --filter @depvault/lsp-server build
+<span class="terminal-prompt">$</span> pnpm --filter depvault-vscode build
+<span class="terminal-prompt">$</span> pnpm --filter depvault-vscode package
+<span class="terminal-dim"># In VS Code: Extensions → … → Install from VSIX</span></pre>
+
+      <h3>Neovim</h3>
+      <p>Install the server globally, confirm that <code>depvault-lsp-server</code> is on your <code>PATH</code>, then add this configuration to <code>init.lua</code> for Neovim 0.11 or later:</p>
+      <pre class="docs-code">vim.lsp.config('depvault', &#123;
+  cmd = &#123; 'depvault-lsp-server', '--stdio' &#125;,
+  filetypes = &#123; 'json', 'toml', 'requirements' &#125;,
+  root_markers = &#123; 'package.json', 'requirements.txt', 'pyproject.toml', 'Cargo.toml', '.git' &#125;,
+  init_options = &#123;
+    scoreThreshold = 50,
+    enabledEcosystems = &#123; 'npm', 'pypi', 'cargo' &#125;,
+  &#125;,
+&#125;)
+vim.lsp.enable('depvault')</pre>
+      <pre class="docs-terminal"><span class="terminal-prompt">$</span> npm install -g &#64;depvault/lsp-server
+<span class="terminal-dim"># In Neovim: K for hover; :lua vim.lsp.buf.code_action() for fixes</span></pre>
+      <p>Neovim's built-in client does not render CodeLens text by default. Hover, diagnostics, and code actions work normally. Neovim 0.8–0.10 and <code>nvim-lspconfig</code> require a custom client registration; use the project’s Neovim integration README as the exact configuration source for those versions.</p>
+
+      <h3>Sublime Text</h3>
+      <p>Install the <strong>LSP</strong> package through Package Control, install the language server, then open <strong>Preferences → Package Settings → LSP → Settings</strong>. Add the following under <code>clients</code>:</p>
+      <pre class="docs-code">&#123;
+  "clients": &#123;
+    "depvault": &#123;
+      "enabled": true,
+      "command": ["depvault-lsp-server", "--stdio"],
+      "selector": "source.json | source.toml | text.plain.requirements",
+      "initializationOptions": &#123;
+        "scoreThreshold": 50,
+        "enabledEcosystems": ["npm", "pypi", "cargo"]
+      &#125;
+    &#125;
+  &#125;
+&#125;</pre>
+      <p>If your syntax package assigns a different scope to <code>requirements.txt</code>, change the selector accordingly. Sublime renders hover, diagnostics, and code actions; its LSP client does not render CodeLens.</p>
+
+      <h3>JetBrains IDEs: IntelliJ, PyCharm, WebStorm, GoLand, and more</h3>
+      <p>The JetBrains client is a Kotlin/Gradle plugin at <code>apps/jetbrains-plugin</code>. It uses the free LSP4IJ plugin to launch the same language server, rather than duplicating scoring and inspection logic. This integration is currently a <strong>scaffold</strong>: its source follows LSP4IJ's integration model, but it has not been build-verified against a live IntelliJ Platform SDK. Validate it in your target IDE before distributing it to a team.</p>
+      <ol class="docs-list"><li>Install <strong>LSP4IJ</strong> from the JetBrains Marketplace: <strong>Settings → Plugins → Marketplace</strong>.</li><li>Install the language server globally: <code>npm install -g @depvault/lsp-server</code>.</li><li>From this repository, build the plugin: <code>cd apps/jetbrains-plugin &amp;&amp; ./gradlew buildPlugin</code>.</li><li>Install the generated <code>build/distributions/depvault-jetbrains-*.zip</code> via <strong>Settings → Plugins → Install Plugin from Disk…</strong>.</li><li>Open a supported dependency manifest and verify hover, Problems diagnostics, and quick-fixes.</li></ol>
+      <div class="docs-caveat"><strong>JetBrains rollout checklist:</strong> first verify the pinned LSP4IJ and IntelliJ Platform versions with your installed IDE, confirm the server binary is discoverable on <code>PATH</code>, and test diagnostics and upgrade actions against a non-production project.</div>
+    </section>
+
+    <section class="docs-section glass-panel" id="organizations" [hidden]="!isVisible('organizations')">
+      <h2>Organizations &amp; custom settings</h2>
+      <p>Dashboard Settings centralizes members, notifications, webhooks, personal upload tokens, and Gatekeeper policies. FREE uses the safe default policy; PAID unlocks organization-wide customization. See <a routerLink="/pricing">Pricing</a> for limits.</p>
+      <table class="docs-table"><thead><tr><th>Policy</th><th>Effect</th></tr></thead><tbody><tr><td>Block Critical CVEs</td><td>Reject packages with critical known vulnerability exposure.</td></tr><tr><td>Block Ghost Towns</td><td>Apply policy to packages with abandonment risk.</td></tr><tr><td>Block GPL / toxic licenses</td><td>Apply license-policy enforcement.</td></tr><tr><td>Warn ecosystem conflicts</td><td>Show compatibility concerns without necessarily blocking.</td></tr><tr><td>Custom scoring weights</td><td>Paid organizations can tune security, license, maintenance, and popularity influence.</td></tr></tbody></table>
+      <p>Use a personal API token only for <code>depvault login</code> and local <code>depvault upload</code>; do not add it to a repository or client-side source code.</p>
+    </section>
+
+    <section class="docs-section glass-panel" id="privacy" [hidden]="!isVisible('privacy')">
+      <h2>Data, privacy &amp; limits</h2>
+      <ul class="docs-list"><li>Live package scans use registry and OSV data. Shield's pre-synced verdict cache is the only offline fallback; uncached packages fail closed.</li><li>GitHub Action evaluation happens on your runner. PR comments need <code>pull-requests: write</code>, but a comment outage does not decide the gate result.</li><li>CLI, MCP, and LSP send anonymous aggregate usage telemetry. See the <a routerLink="/privacy">Privacy Policy</a> for current data handling.</li><li>Scores, waivers, and explicit bypasses do not replace compatibility testing or your incident-response process.</li></ul>
+    </section>
+
+    <section class="docs-related">
+      <h2 class="docs-related__title">Related Topics</h2>
+      <div class="docs-related__grid">
+        <a [routerLink]="[]" fragment="quick-start" class="docs-related__link">Understanding Trust Scores</a>
+        <a [routerLink]="[]" fragment="ecosystems" class="docs-related__link">Ecosystem Support</a>
+        <a [routerLink]="[]" fragment="mcp-server" class="docs-related__link">MCP Server Setup</a>
+        <a [routerLink]="[]" fragment="cli" class="docs-related__link">CLI Shield &amp; Hooks</a>
+      </div>
+    </section>
+
+    <footer class="docs-footer">
+      <span>© {{ currentYear }} DepVault. All rights reserved.</span>
+      <a routerLink="/terms">Terms of Service</a>
+      <a routerLink="/privacy">Privacy Policy</a>
+    </footer>
+  </main>
 </div>

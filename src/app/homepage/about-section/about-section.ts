@@ -9,29 +9,26 @@ import { CommonModule } from '@angular/common';
   styleUrl: './about-section.css',
 })
 export class AboutSection {
+  /** Matches the "How It Works" labels from the reference mockup, kept honest to what's real underneath each one. */
   steps = [
     {
-      number: '01',
-      title: 'Submit',
-      description: 'A GitHub URL, a pasted package.json, or an uploaded manifest file — no source code ever leaves your browser.',
-      icon: 'assets/icons/upload.svg',
-    },
-    {
-      number: '02',
-      title: 'Analyze',
-      description: 'We cross-reference your dependency graph against live npm, PyPI, Cargo, and Go registry data.',
+      title: 'Scan',
+      description: 'Scan your projects for all dependencies across npm, PyPI, Cargo, and Go.',
       icon: 'assets/icons/search.svg',
     },
     {
-      number: '03',
-      title: 'Score',
-      description: 'Monte Carlo simulation, Shannon Entropy, AHP, and Poisson CDF turn that data into one defensible Trust Score — not just a raw CVE count.',
-      icon: 'assets/icons/chart.svg',
+      title: 'Analyze',
+      description: 'Analyze risk, license, and maintenance health deep within your dependency tree.',
+      icon: 'assets/icons/gauge.svg',
     },
     {
-      number: '04',
-      title: 'Decide',
-      description: 'The Gatekeeper policy engine applies your organization\'s thresholds — the shared default, or custom weights on PAID — to gate what ships.',
+      title: 'Re-scan',
+      description: "Re-run a scan anytime to catch vulnerabilities disclosed since your last check — there's no background monitoring job today.",
+      icon: 'assets/icons/refresh.svg',
+    },
+    {
+      title: 'Secure',
+      description: "The Gatekeeper policy engine enforces your org's thresholds before a risky dependency ships.",
       icon: 'assets/icons/shield.svg',
     },
   ];

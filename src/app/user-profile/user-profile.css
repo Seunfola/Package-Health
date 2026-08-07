@@ -27,7 +27,7 @@
 
 .profile-sidebar {
   flex: 1;
-  min-width: 300px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -35,7 +35,7 @@
 
 .profile-main {
   flex: 2;
-  min-width: 500px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -211,6 +211,7 @@
 
 .input-group input {
   flex-grow: 1;
+  min-width: 0;
   background: none;
   border: none;
   color: var(--text-primary);
@@ -241,6 +242,8 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
+  :host { padding: 12px; }
+  .profile-container { padding: 8px 0; }
   .profile-content {
     flex-direction: column;
   }

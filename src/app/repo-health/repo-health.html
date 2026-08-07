@@ -64,6 +64,41 @@
       <span class="scanned-badge">v{{ scanResult.version }}</span>
     </p>
 
+    <!-- CI-style digest keeps the important decision visible before the score detail. -->
+    <section class="scan-digest" [class.scan-digest--passed]="scanPassed" aria-labelledby="scan-summary-heading">
+      <div class="scan-digest__verdict">
+        <span class="verdict-dot" aria-hidden="true"></span>
+        <div>
+          <p class="eyebrow">Package scan result</p>
+          <h2 id="scan-summary-heading">{{ scanStatusLabel }}</h2>
+          <p>{{ scanSummary }}</p>
+        </div>
+      </div>
+      <div class="scan-digest__score">
+        <span>Trust score</span>
+        <strong>{{ finalScore | number: '1.0-0' }}<small>/100</small></strong>
+        @if (scanResult.trustScore.ci) {
+          <small>95% CI {{ scanResult.trustScore.ci.p2_5 | number: '1.0-0' }}–{{ scanResult.trustScore.ci.p97_5 | number: '1.0-0' }}</small>
+        }
+      </div>
+      <button type="button" class="btn-ci" (click)="copyCiSummary()">Copy CI summary</button>
+    </section>
+
+    <section class="severity-overview" aria-label="Vulnerability severity breakdown">
+      <div class="severity-overview__heading">
+        <h2>Vulnerabilities by severity</h2>
+        <span>{{ findings.length ? findings.length + ' findings' : 'No findings' }}</span>
+      </div>
+      <div class="severity-pills">
+        @for (severity of ['critical', 'high', 'medium', 'low', 'unknown']; track severity) {
+          <div class="severity-pill severity-pill--{{ severity }}">
+            <span>{{ severity }}</span>
+            <strong>{{ getSeverityCount(severity) }}</strong>
+          </div>
+        }
+      </div>
+    </section>
+
     <!-- Hero Section -->
     <div class="hero-section">
       <div class="gauge-card">
@@ -145,6 +180,37 @@
     @if (badgeSvg) {
       <div class="badge-preview" [innerHTML]="badgeSvg"></div>
     }
+
+    <section class="findings-section" aria-labelledby="findings-heading">
+      <div class="section-title-row">
+        <div>
+          <h2 id="findings-heading">Findings to review</h2>
+          <p>Prioritized from critical to low severity, with the affected version range where available.</p>
+        </div>
+        <button type="button" class="btn-outline" (click)="getFixSuggestions()" [disabled]="isFetchingFixes">
+          {{ isFetchingFixes ? 'Checking fixes...' : 'Find recommended fixes' }}
+        </button>
+      </div>
+      @if (findings.length === 0) {
+        <div class="findings-empty">
+          <span aria-hidden="true">✓</span>
+          <div><strong>No known vulnerabilities found</strong><p>This package version has no findings in the scan response.</p></div>
+        </div>
+      } @else {
+        <div class="findings-list">
+          @for (finding of findings; track finding.id) {
+            <article class="finding-row">
+              <span class="severity-badge {{ finding.severity }}">{{ finding.severity }}</span>
+              <div class="finding-copy">
+                <strong>{{ finding.id }}</strong>
+                <p>{{ finding.summary }}</p>
+              </div>
+              <code>{{ finding.range }}</code>
+            </article>
+          }
+        </div>
+      }
+    </section>
 
     <!-- Fix Suggestions -->
     @if (fixSuggestions) {

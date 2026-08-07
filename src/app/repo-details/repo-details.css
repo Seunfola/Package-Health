@@ -53,7 +53,7 @@ app-repo-details-dash {
 .chart-wrapper-container app-chart-card,
 .chart-wrapper-container app-other-chart {
     flex: 1 1 48%;
-    min-width: 320px;
+    min-width: 0;
     box-sizing: border-box;
 }
 .additional-components-wrapper {
@@ -68,7 +68,7 @@ app-repo-details-dash {
 .additional-components-wrapper app-code-quality-metrics,
 .additional-components-wrapper app-security-alerts {
   flex: 1 1 48%;
-  min-width: 320px;
+  min-width: 0;
   box-sizing: border-box;
 }
 

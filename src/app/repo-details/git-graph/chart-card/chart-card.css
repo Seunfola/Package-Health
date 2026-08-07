@@ -39,9 +39,9 @@
 .card-content {
     flex-grow: 1;
     margin-top: 24px;
-    overflow-x: auto;
+    overflow-x: hidden;
     overflow-y: hidden;
-    padding-bottom: 8px;
+    padding-bottom: 0;
     /* spacing for scrollbar */
     scrollbar-width: thin;
     scrollbar-color: #2563EB #F1F5F9;
@@ -102,6 +102,6 @@
 
     .card-content {
         margin-top: 12px;
-        overflow-x: auto;
+        overflow-x: hidden;
     }
 }
