@@ -9,6 +9,7 @@
   <div class="pricing-grid">
     <div class="glass-card pricing-card">
       <div class="card-content">
+        <div class="plan-badge plan-badge--placeholder" aria-hidden="true">For individuals</div>
         <div class="plan-name">Free</div>
         <div class="plan-price">$0<span>/month</span></div>
         <p class="plan-tagline">For individuals and small teams getting started.</p>
@@ -17,7 +18,7 @@
             <li>{{ feature }}</li>
           }
         </ul>
-        <button type="button" class="btn-primary plan-cta" (click)="openLoginModal()">Get Started Free</button>
+        <a routerLink="/get-started" class="btn-primary plan-cta">Start free analysis <span aria-hidden="true">→</span></a>
       </div>
     </div>
 
@@ -40,6 +41,32 @@
   <p class="pricing-note">
     No self-serve checkout yet — PAID organizations are provisioned manually. Questions? Reach out at the link above.
   </p>
+
+  <section class="pricing-compare">
+    <h2 class="pricing-compare__title">Compare Plans</h2>
+    <table class="pricing-compare__table">
+      <thead>
+        <tr><th>Feature</th><th>Free</th><th>Paid</th></tr>
+      </thead>
+      <tbody>
+        @for (row of comparisonRows; track row.feature) {
+          <tr>
+            <td data-label="Feature">{{ row.feature }}</td>
+            <td data-label="Free">
+              @if (row.free === true) { <span class="compare-check">✓</span> }
+              @else if (row.free === false) { <span class="compare-dash">—</span> }
+              @else { {{ row.free }} }
+            </td>
+            <td data-label="Paid">
+              @if (row.paid === true) { <span class="compare-check">✓</span> }
+              @else if (row.paid === false) { <span class="compare-dash">—</span> }
+              @else { {{ row.paid }} }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
 </div>
 
 @if (showLoginModal) {

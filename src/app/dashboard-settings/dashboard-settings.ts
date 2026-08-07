@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Settings } from './settings/settings';
 
@@ -11,4 +11,13 @@ import { Settings } from './settings/settings';
   styleUrl: './dashboard-settings.css',
 })
 export class DashboardSettings {
+  @ViewChild(Settings) private settings?: Settings;
+
+  save(): void {
+    this.settings?.savePreferences();
+  }
+
+  reset(): void {
+    this.settings?.resetPreferencesToDefaults();
+  }
 }

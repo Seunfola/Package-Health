@@ -1,59 +1,42 @@
-import { InsightCard } from '@/app/reusable/insight-card/insight-card';
+import { PackageHealthCard } from '@/app/reusable/package-health-card/package-health-card';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-feature-section',
   standalone: true,
-  imports: [CommonModule, InsightCard],
+  imports: [CommonModule, PackageHealthCard],
   templateUrl: './feature-section.html',
   styleUrl: './feature-section.css',
 })
 export class FeatureSection {
   /**
-   * Real, static facts about the product — not growth metrics. No public
-   * stats endpoint exists yet, so anything framed as a live counter here
-   * would have to be fabricated (the exact problem this replaced). These
-   * are true today regardless of usage, and each links somewhere real.
+   * Matches the reference mockup's "Latest Insights" 4-card section. Titles
+   * follow the mockup closely; descriptions stay honest to what's actually
+   * shipped — "Automated Remediation" in the mockup became "Auto-Fix
+   * Suggestions" here since the real engine suggests fix strategies, it
+   * doesn't autonomously patch and merge code.
    */
   insights = [
     {
-      title: 'Ecosystems',
-      value: '4',
-      description: 'npm, PyPI, Cargo, and Go — one scoring engine, one Trust Score.',
-      icon: 'assets/icons/package.svg',
-      route: '/docs',
-      fragment: 'ecosystems',
-    },
-    {
-      title: 'Analysis',
-      value: 'Zero-Trust',
-      description: 'Only manifest metadata is analyzed — your source code is never uploaded or stored.',
-      icon: 'assets/icons/shield.svg',
-      route: '/docs',
-      fragment: 'quick-start',
-    },
-    {
-      title: 'AI Agents',
-      value: 'Ready',
-      description: 'A published MCP server lets Claude Code, Cursor, and Windsurf query Trust Scores directly.',
+      title: 'Advanced MCP Support',
+      description: 'Seamless integration with the Model Context Protocol lets AI coding agents check Trust Scores directly.',
       icon: 'assets/icons/code.svg',
-      route: '/docs',
-      fragment: 'mcp-server',
     },
     {
-      title: 'Plans',
-      value: 'Free + Paid',
-      description: 'Start free with real limits, no card required; upgrade for custom policies and branding.',
-      icon: 'assets/icons/scale.svg',
-      route: '/pricing',
+      title: 'Ecosystem-Wide Coverage',
+      description: 'One scan, one mathematical pipeline, across npm, PyPI, Cargo, and Go.',
+      icon: 'assets/icons/package.svg',
+    },
+    {
+      title: 'Auto-Fix Suggestions',
+      description: 'The core engine suggests autonomous fix strategies for resolving vulnerable dependency graphs.',
+      icon: 'assets/icons/gitfork.svg',
+    },
+    {
+      title: 'CI/CD & Git Hooks',
+      description: 'Run depvault scan in any CI pipeline, or gate commits locally with a pre-commit hook.',
+      icon: 'assets/icons/gitpull.svg',
     },
   ];
-
-  constructor(private readonly router: Router) {}
-
-  onInsightNavigate(insight: (typeof this.insights)[number]): void {
-    void this.router.navigate([insight.route], insight.fragment ? { fragment: insight.fragment } : {});
-  }
 }

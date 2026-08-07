@@ -1,6 +1,6 @@
 .about-campaign-section {
   position: relative;
-  padding: 5rem 2rem;
+  padding: 2.5rem 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,7 +13,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 2rem;
 }
 
 .about-campaign-header {
@@ -23,27 +23,25 @@
 .process-steps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-}
-
-.process-step {
+  gap: 1rem;
   position: relative;
-  text-align: center;
-  padding: 1.5rem 1rem;
 }
 
-.process-step-number {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--accent-teal);
-  letter-spacing: 0.1em;
-  margin-bottom: 0.75rem;
+.process-steps::before { content: ''; position: absolute; top: 39px; left: 12.5%; right: 12.5%; height: 1px; background: var(--glass-border); }
+
+.process-step .card-content {
+  min-height: 242px;
+  padding: 1.5rem;
+  text-align: left;
+  align-items: flex-start;
 }
+
+.process-step { overflow: visible; }.process-step:hover { border-color: rgba(37,99,235,.35); }.process-step__top { width: 100%; display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px; }.process-step__number { color:var(--text-muted); font-size:.75rem; font-weight:800; letter-spacing:.12em; }.process-step-icon { background:rgba(37,99,235,.09); border-radius:10px; padding:9px; }
 
 .process-step-icon {
-  width: 32px;
-  height: 32px;
-  margin: 0 auto 1rem;
+  width: 28px;
+  height: 28px;
+  margin: 0;
   display: block;
 }
 
@@ -51,12 +49,12 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
 }
 
 .process-step p {
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.55;
   color: var(--text-secondary);
 }
 
@@ -64,15 +62,17 @@
   .process-steps {
     grid-template-columns: repeat(2, 1fr);
   }
+  .process-steps::before { display:none; }
 }
 
 @media (max-width: 768px) {
   .about-campaign-section {
-    padding: 3rem 1rem;
+    padding: 2rem 0;
   }
 
   .process-steps {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: .75rem;
   }
+  .process-step .card-content { min-height: 0; padding: 1.25rem; }.process-step__top { margin-bottom:18px; }
 }

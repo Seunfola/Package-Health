@@ -29,7 +29,7 @@ export class Footer {
     {
       title: 'Product',
       links: [
-        { label: 'Features', routerLink: '/home', fragment: 'features' },
+        { label: 'Features', routerLink: '/features' },
         { label: 'Pricing', routerLink: '/pricing' },
         { label: 'Docs', routerLink: '/docs' },
       ],

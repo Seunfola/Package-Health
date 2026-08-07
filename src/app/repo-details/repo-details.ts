@@ -10,6 +10,7 @@ import { SecurityAlerts } from './security-alerts/security-alerts';
 import { AnalysisData, RepoService } from '../services/RepoService';
 import { ContributionGraph } from './git-graph/contribution-graph/contribution-graph';
 import { DependencyGraph } from './dependency-graph/dependency-graph';
+import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
 
 @Component({
   selector: 'app-repo-details',
@@ -23,6 +24,7 @@ import { DependencyGraph } from './dependency-graph/dependency-graph';
     SecurityAlerts,
     ContributionGraph,
     DependencyGraph,
+    EmptyStateCard,
   ],
   templateUrl: './repo-details.html',
   styleUrls: ['./repo-details.css'],
@@ -93,6 +95,10 @@ export class RepoDetails implements OnInit {
     }
     // No owner/name in the route: analysisData stays null and the template's
     // "No repository data available" empty state renders — no fake data.
+  }
+
+  returnToDashboard(): void {
+    void this.router.navigate(['/dashboard']);
   }
 
   initializeChartData() {

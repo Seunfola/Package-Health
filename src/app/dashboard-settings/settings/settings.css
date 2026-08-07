@@ -212,7 +212,7 @@ input:checked+.slider:before {
 
 .members-table-container {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;
   border-radius: 8px;
   border: 1px solid var(--border-color);
   background: var(--bg-surface);
@@ -222,6 +222,7 @@ input:checked+.slider:before {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  table-layout: fixed;
 }
 
 .members-table th {
@@ -232,12 +233,14 @@ input:checked+.slider:before {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border-color);
+  overflow-wrap: anywhere;
 }
 
 .members-table td {
   padding: 14px 16px;
   border-bottom: 1px solid #F1F5F9;
   vertical-align: middle;
+  overflow-wrap: anywhere;
 }
 
 .members-table tr:last-child td {
@@ -262,6 +265,12 @@ input:checked+.slider:before {
   font-size: 14px;
   color: var(--text-primary);
   font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .members-table th, .members-table td { padding: 10px 7px; font-size: 12px; }
+  .member-info { gap: 7px; }.role-select-container { width: 86px; }
 }
 
 .role-select-container {

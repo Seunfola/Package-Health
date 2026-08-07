@@ -1,22 +1,21 @@
 <section class="about-campaign-section">
   <div class="about-campaign-container">
     <div class="about-campaign-header">
-      <div class="section-eyebrow">How It Works</div>
-      <h2 class="section-heading section-heading--gradient">From Manifest to Trust Score</h2>
+      <div class="section-eyebrow">Process</div>
+      <h2 class="section-heading">How It Works</h2>
       <div class="section-divider"></div>
     </div>
 
-    <div class="glass-panel">
-      <div class="process-steps">
-        @for (step of steps; track step.number) {
-          <div class="process-step">
-            <div class="process-step-number">{{ step.number }}</div>
-            <img [src]="step.icon" [alt]="step.title" class="process-step-icon" />
+    <div class="process-steps">
+      @for (step of steps; track step.title; let index = $index) {
+        <div class="glass-card process-step">
+          <div class="card-content">
+            <div class="process-step__top"><span class="process-step__number">0{{ index + 1 }}</span><img [src]="step.icon" [alt]="" class="process-step-icon" /></div>
             <h3>{{ step.title }}</h3>
             <p>{{ step.description }}</p>
           </div>
-        }
-      </div>
+        </div>
+      }
     </div>
   </div>
 </section>

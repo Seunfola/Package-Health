@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthLogin } from '@/app/services/auth-login.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-pricing',
   standalone: true,
-  imports: [CommonModule, AuthLogin],
+  imports: [CommonModule, AuthLogin, RouterLink],
   templateUrl: './pricing.html',
   styleUrl: './pricing.css',
 })
@@ -26,6 +27,15 @@ export class PricingPage {
     'Custom Gatekeeper scoring weights & thresholds',
     'Notification webhooks (Slack, Discord, xMatters, custom)',
     'Organization logo branding',
+  ];
+
+  readonly comparisonRows = [
+    { feature: 'Tracked repositories', free: '3', paid: 'Unlimited' },
+    { feature: 'Organization members', free: '5', paid: 'Unlimited' },
+    { feature: 'Trust Score engine (npm, PyPI, Cargo, Go)', free: true, paid: true },
+    { feature: 'Gatekeeper policy', free: 'Default (read-only)', paid: 'Custom weights & thresholds' },
+    { feature: 'Notification webhooks', free: false, paid: 'Slack, Discord, xMatters, custom' },
+    { feature: 'Organization logo branding', free: false, paid: true },
   ];
 
   openLoginModal(): void {

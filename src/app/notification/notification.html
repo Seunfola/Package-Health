@@ -7,27 +7,33 @@
       </div>
       <div class="header-actions">
         <div class="filter-buttons">
-          <button class="filter-button active">All (7)</button>
-          <button class="filter-button">Unread (3)</button>
-          <button class="filter-button">Archived (4)</button>
-          <button class="filter-button">Security</button>
+          <button class="filter-button" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">All ({{ notifications.length }})</button>
+          <button class="filter-button" [class.active]="activeFilter === 'unread'" (click)="setFilter('unread')">Unread ({{ unreadCount }})</button>
+          <button class="filter-button" [class.active]="activeFilter === 'security'" (click)="setFilter('security')">Security</button>
         </div>
 
         <div class="action-buttons">
-          <a href="#" class="settings-link">Go to Notification Settings</a>
-          <button class="updates-button">Updates</button>
+          <a routerLink="/dashboard-settings" class="settings-link">Notification settings</a>
           <button class="mark-as-read-button" (click)="markAllAsRead()">Mark all as read</button>
         </div>
       </div>
     </div>
 
+    @if (isLoading) {
+      <div class="notifications-list"><div class="notification-skeleton"></div><div class="notification-skeleton"></div></div>
+    } @else if (error) {
+      <app-empty-state-card title="Notifications are unavailable" [message]="error" actionLabel="Try again" (action)="fetchNotifications()"></app-empty-state-card>
+    } @else if (filteredNotifications.length === 0) {
+      <app-empty-state-card title="You're all caught up!" [message]="activeFilter === 'all' ? 'No new alerts across your monitored repositories.' : 'No notifications match this filter.'" [actionLabel]="activeFilter === 'all' ? undefined : 'Show all'" (action)="setFilter('all')"></app-empty-state-card>
+    } @else {
     <div class="notifications-list">
-      @for (notification of notifications; track notification.title) {
+      @for (notification of filteredNotifications; track notification.id) {
       <app-notification-item [type]="notification.type" [title]="notification.title"
         [repository]="notification.repository" [time]="notification.time" [iconType]="notification.iconType"
         [isRead]="notification.isRead" (click)="!notification.isRead && markAsRead(notification.id)"></app-notification-item>
       }
     </div>
+    }
   </div>
 
   <ng-template #unauthorized>

@@ -4,11 +4,13 @@ import { NotificationService, NotificationResponse } from '@/app/services/notifi
 import { AuthService } from '@/app/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
+import { EmptyStateCard } from '@/app/reusable/empty-state-card/empty-state-card';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [CommonModule, NotificationItemComponent, UnauthorizedWarning],
+  imports: [CommonModule, NotificationItemComponent, UnauthorizedWarning, EmptyStateCard, RouterLink],
   templateUrl: './notification.html',
   styleUrl: './notification.css',
 })
@@ -16,6 +18,7 @@ export class Notification implements OnInit {
   notifications: any[] = [];
   isLoading = true;
   error = '';
+  activeFilter: 'all' | 'unread' | 'security' = 'all';
 
   constructor(
     private readonly notificationService: NotificationService,
@@ -25,6 +28,16 @@ export class Notification implements OnInit {
   get authState$() {
     return this.authService.authState$;
   }
+
+  get filteredNotifications(): any[] {
+    if (this.activeFilter === 'unread') return this.notifications.filter(notification => !notification.isRead);
+    if (this.activeFilter === 'security') return this.notifications.filter(notification => notification.iconType === 'alert');
+    return this.notifications;
+  }
+
+  get unreadCount(): number { return this.notifications.filter(notification => !notification.isRead).length; }
+
+  setFilter(filter: 'all' | 'unread' | 'security'): void { this.activeFilter = filter; }
 
   ngOnInit(): void {
     this.fetchNotifications();

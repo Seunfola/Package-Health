@@ -1,12 +1,12 @@
 .pricing-page {
-  max-width: 1000px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 4rem 2rem;
 }
 
 .pricing-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 .pricing-subtitle {
@@ -18,15 +18,16 @@
 .pricing-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
+  gap: 1.25rem;
   align-items: stretch;
 }
 
 .pricing-card .card-content {
-  padding: 2.5rem 2rem;
+  padding: 2rem;
   text-align: left;
   align-items: flex-start;
   height: 100%;
+  min-height: 486px;
 }
 
 .pricing-card--featured {
@@ -44,8 +45,11 @@
   letter-spacing: 0.05em;
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  min-height: 25px;
 }
+
+.plan-badge--placeholder { visibility: hidden; }
 
 .plan-name {
   font-size: 1.5rem;
@@ -54,7 +58,7 @@
 }
 
 .plan-price {
-  font-size: 2.5rem;
+  font-size: clamp(2.5rem, 4vw, 3.2rem);
   font-weight: 800;
   color: var(--text-primary);
   margin: 0.5rem 0;
@@ -68,23 +72,26 @@
 
 .plan-tagline {
   color: var(--text-secondary);
+  min-height: 50px;
   margin-bottom: 1.5rem;
 }
 
 .plan-features {
   list-style: none;
   padding: 0;
-  margin: 0 0 2rem;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: .82rem;
+  flex: 1;
   width: 100%;
 }
 
 .plan-features li {
   color: var(--text-primary);
   font-size: 0.95rem;
-  padding-left: 1.5rem;
+  padding-left: 1.65rem;
+  line-height: 1.38;
   position: relative;
 }
 
@@ -99,14 +106,18 @@
 .plan-cta {
   width: 100%;
   text-align: center;
+  margin-top: 2rem;
+  min-height: 48px;
 }
 
-.pricing-note {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  margin-top: 2rem;
-}
+.pricing-note { text-align:center; color:var(--text-muted); font-size:.85rem; margin:1.5rem 0 2.5rem; }
+
+.pricing-compare { border:1px solid var(--glass-border); border-radius:16px; overflow:hidden; background:var(--bg-surface); box-shadow:var(--glass-shadow); }
+.pricing-compare__title { padding:24px 28px 18px; font-size:1.35rem; letter-spacing:-.025em; }
+.pricing-compare__table { width:100%; border-collapse:collapse; table-layout:fixed; }
+.pricing-compare__table th,.pricing-compare__table td { padding:15px 28px; border-top:1px solid var(--glass-border); text-align:left; vertical-align:middle; line-height:1.4; }
+.pricing-compare__table th { color:var(--text-secondary); background:var(--bg-slate); font-size:.78rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+.pricing-compare__table th:first-child,.pricing-compare__table td:first-child { width:38%; color:var(--text-primary); font-weight:600; }.pricing-compare__table td { color:var(--text-secondary); font-size:.92rem; }.pricing-compare__table tr:hover td { background:rgba(37,99,235,.025); }.compare-check { color:var(--color-success); font-weight:800; }.compare-dash { color:var(--text-muted); }
 
 .modal-overlay {
   position: fixed;
@@ -130,4 +141,20 @@
   .pricing-grid {
     grid-template-columns: 1fr;
   }
+  .pricing-card .card-content { min-height:0; }
+  .pricing-compare__table th,.pricing-compare__table td { padding:13px 16px; }
+}
+
+@media (max-width: 580px) {
+  .pricing-page { padding:2.25rem 1rem; }
+  .pricing-card .card-content { padding:1.5rem; }
+  .plan-tagline { min-height:0; }
+  .pricing-compare { border-radius:12px; overflow:visible; box-shadow:none; border:0; background:transparent; }
+  .pricing-compare__title { padding:20px 0 14px; }
+  .pricing-compare__table,.pricing-compare__table tbody,.pricing-compare__table tr,.pricing-compare__table td { display:block; width:100%; }
+  .pricing-compare__table thead { display:none; }
+  .pricing-compare__table tr { margin-bottom:10px; border:1px solid var(--glass-border); border-radius:10px; overflow:hidden; background:var(--bg-surface); }
+  .pricing-compare__table td { display:grid; grid-template-columns:42% 1fr; gap:12px; padding:11px 14px; border-top:1px solid var(--glass-border); font-size:.86rem; }
+  .pricing-compare__table td:first-child { width:auto; border-top:0; background:var(--bg-slate); }
+  .pricing-compare__table td::before { content:attr(data-label); color:var(--text-muted); font-size:.72rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
 }

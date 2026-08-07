@@ -12,8 +12,18 @@ import { AuthLogin } from '@/app/services/auth-login.component';
 })
 export class PublicNavbar {
   showLoginModal = false;
+  showMobileMenu = false;
+
+  toggleMobileMenu(): void {
+    this.showMobileMenu = !this.showMobileMenu;
+  }
+
+  closeMobileMenu(): void {
+    this.showMobileMenu = false;
+  }
 
   openLoginModal(): void {
+    this.showMobileMenu = false;
     this.showLoginModal = true;
   }
 

@@ -15,10 +15,8 @@ export class Sidebar {
   activeIndex: number | null = 0;
 
   private readonly baseMenuItems = [
-    { icon: 'home', label: 'Homepage', path: '/home', separator: false },
     { icon: 'activity', label: 'Dashboard', path: '/dashboard', separator: false },
-    { icon: 'chart', label: 'Repository Health', path: '/repo-health', separator: true },
-    { icon: 'info', label: 'Repository Details', path: '/repository-details', separator: true },
+    { icon: 'chart', label: 'Package Health', path: '/repo-health', separator: true },
     { icon: 'user', label: 'User Profile', path: '/user-profile', separator: false },
     { icon: 'settings', label: 'Dashboard Settings', path: '/dashboard-settings', separator: true },
     { icon: 'notification', label: 'Notifications', path: '/notifications', separator: false },

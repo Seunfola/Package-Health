@@ -1,7 +1,26 @@
 <div class="page-container">
     <app-hero-section></app-hero-section>
+    <app-terminal-mockup></app-terminal-mockup>
+    <section class="problem-section" aria-labelledby="problem-heading">
+      <div class="problem-intro">
+        <p class="section-eyebrow">Beyond vulnerability scanning</p>
+        <h2 id="problem-heading">Security is more than a list of known CVEs.</h2>
+        <p>Dependency risk builds quietly: an unmaintained package, a restrictive license, or a fragile release can become the incident your scanner could not predict.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="comparison-card comparison-card--muted">
+          <p class="comparison-card__eyebrow">Traditional scanner</p>
+          <h3>What is already known?</h3>
+          <ul><li>Matches published vulnerabilities</li><li>Reports after exposure is documented</li><li>Leaves structural risk to manual review</li></ul>
+        </article>
+        <article class="comparison-card comparison-card--primary">
+          <p class="comparison-card__eyebrow">DepVault predictive engine</p>
+          <h3>What is likely to fail next?</h3>
+          <ul><li>Measures security, upkeep, and license signals</li><li>Flags abandonment before it becomes an incident</li><li>Suggests safer paths for blocked packages</li></ul>
+        </article>
+      </div>
+    </section>
     <app-about-section></app-about-section>
-    <app-updates></app-updates>
     <app-feature-section></app-feature-section>
     <app-cta-section></app-cta-section>
 </div>

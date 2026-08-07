@@ -1,0 +1,23 @@
+<section class="terminal-section" aria-labelledby="terminal-heading">
+  <div class="terminal-copy">
+    <p class="section-eyebrow">The core engine</p>
+    <h2 id="terminal-heading">Stop toxic packages before they reach your machine.</h2>
+    <p>
+      DepVault Shield adds a predictive policy check to the install flow your team already uses.
+      It evaluates known vulnerabilities alongside abandonment, licensing, and ecosystem signals.
+    </p>
+    <a class="btn-secondary" href="#analyze">Analyze a repository <span aria-hidden="true">→</span></a>
+  </div>
+
+  <div class="terminal" aria-label="Example DepVault Shield command output">
+    <div class="terminal__bar"><span></span><span></span><span></span><span class="terminal__title">depvault shield</span></div>
+    <div class="terminal__body">
+      <p><span class="prompt">$</span> depvault shield express@4.18.2</p>
+      <p class="muted">Scanning dependency signals…</p>
+      <p><span class="label">security</span> Known vulnerability exposure detected</p>
+      <p><span class="label">maintenance</span> Low recent maintainer activity</p>
+      <p class="blocked">✕ BLOCKED: Predictive Risk High</p>
+      <p class="recommendation">Recommended: upgrade to an actively maintained patched release.</p>
+    </div>
+  </div>
+</section>

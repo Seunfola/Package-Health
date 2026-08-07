@@ -1,0 +1,38 @@
+<main class="onboarding">
+  <section class="onboarding__hero">
+    <p class="eyebrow"><span></span> Your first secure dependency decision</p>
+    <h1>Start with the workflow your team already has.</h1>
+    <p class="onboarding__intro">No generic product tour. Choose how you want DepVault to protect your software supply chain, then take the next concrete step.</p>
+  </section>
+
+  <section class="paths" aria-label="Get started options">
+    <article class="path path--featured">
+      <div class="path__number">01</div><span class="path__icon">⌁</span>
+      <p class="path__eyebrow">Recommended for first-time users</p>
+      <h2>Analyze a repository</h2>
+      <p>Paste a public GitHub repository or upload a manifest. See its Trust Score, dependency signals, and remediation paths immediately.</p>
+      <a routerLink="/home" fragment="analyze" class="btn-primary">Run your first analysis <span aria-hidden="true">→</span></a>
+      <small>No account required for public repositories.</small>
+    </article>
+
+    <article class="path">
+      <div class="path__number">02</div><span class="path__icon">⌘</span>
+      <p class="path__eyebrow">For developer workflows</p>
+      <h2>Protect installs with Shield</h2>
+      <p>Put predictive policy checks directly in your install flow and block high-risk dependencies before they enter your project.</p>
+      <a routerLink="/docs" fragment="cli" class="btn-secondary">Explore Shield and hooks <span aria-hidden="true">→</span></a>
+      <small>Works with npm, pnpm, yarn, pip, Cargo, and Go.</small>
+    </article>
+
+    <article class="path">
+      <div class="path__number">03</div><span class="path__icon">✦</span>
+      <p class="path__eyebrow">For AI-assisted teams</p>
+      <h2>Connect the MCP server</h2>
+      <p>Give your coding agent a dependency-risk signal before it recommends or adds a package to your codebase.</p>
+      <a routerLink="/docs" fragment="mcp-server" class="btn-secondary">Set up MCP <span aria-hidden="true">→</span></a>
+      <small>Use with compatible coding agents and tools.</small>
+    </article>
+  </section>
+
+  <p class="onboarding__signin">Already have an account? <a routerLink="/home">Return home and select <strong>Sign in</strong> from the navigation.</a></p>
+</main>
