@@ -35,6 +35,8 @@
     <app-code-quality-metrics [healthMetrics]="analysisData.healthMetrics"></app-code-quality-metrics>
   </div>
 
+  <app-leak-findings [scan]="leakScan" [loading]="leakScanLoading"></app-leak-findings>
+
   <app-chart-card title="Dependency Graph" subtitle="Direct dependencies, colored by risk tier.">
     <app-dependency-graph [data]="analysisData.dependencyData"></app-dependency-graph>
   </app-chart-card>

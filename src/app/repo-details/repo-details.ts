@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { catchError, of } from 'rxjs';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
 import { ChartCard } from './git-graph/chart-card/chart-card';
 import { LineChart } from './line-chart/line-chart';
 import { CodeQualityMetrics } from './code-quality-metrics/code-quality-metrics';
 import { SecurityAlerts } from './security-alerts/security-alerts';
+import { LeakFindings } from './leak-findings/leak-findings';
 import { AnalysisData, RepoService } from '../services/RepoService';
+import { LeakGuardScanResult, LeakGuardService } from '../services/leak-guard.service';
 import { ContributionGraph } from './git-graph/contribution-graph/contribution-graph';
 import { DependencyGraph } from './dependency-graph/dependency-graph';
 import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
@@ -22,6 +25,7 @@ import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
     LineChart,
     CodeQualityMetrics,
     SecurityAlerts,
+    LeakFindings,
     ContributionGraph,
     DependencyGraph,
     EmptyStateCard,
@@ -33,6 +37,10 @@ export class RepoDetails implements OnInit {
   analysisData: AnalysisData | null = null;
   /** Set on a failed fetch (as opposed to "no repo selected") so the empty state can say what actually happened. */
   loadError: string | null = null;
+
+  /** Null while loading AND when no LeakGuard scan has ever been uploaded for this repo — the 404 case is expected, not an error, since syncing is opt-in. */
+  leakScan: LeakGuardScanResult | null = null;
+  leakScanLoading = true;
 
   public commitData: ChartConfiguration<'line'>['data'] = {
     datasets: [
@@ -74,6 +82,7 @@ export class RepoDetails implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly repoService: RepoService,
+    private readonly leakGuardService: LeakGuardService,
   ) {}
 
   ngOnInit() {
@@ -92,6 +101,14 @@ export class RepoDetails implements OnInit {
           this.loadError = 'Failed to load repository analysis. Please try again.';
         },
       });
+
+      this.leakGuardService
+        .getLeakScan(owner, name)
+        .pipe(catchError(() => of(null)))
+        .subscribe((scan) => {
+          this.leakScan = scan;
+          this.leakScanLoading = false;
+        });
     }
     // No owner/name in the route: analysisData stays null and the template's
     // "No repository data available" empty state renders — no fake data.
