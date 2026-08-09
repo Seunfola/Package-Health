@@ -90,11 +90,28 @@
         </thead>
         <tbody>
           <tr><td>npm</td><td><code>package.json</code></td></tr>
-          <tr><td>PyPI</td><td><code>requirements.txt</code>, <code>pyproject.toml</code> (PEP 621 or Poetry)</td></tr>
+          <tr><td>PyPI</td><td><code>requirements.txt</code>, <code>pyproject.toml</code> (PEP 621, Poetry or PDM), <code>Pipfile</code> (pipenv)</td></tr>
           <tr><td>Cargo</td><td><code>Cargo.toml</code>, including dotted <code>[dependencies.foo]</code> tables</td></tr>
           <tr><td>Go</td><td><code>go.mod</code></td></tr>
         </tbody>
       </table>
+      <div class="docs-note"><strong>Package managers are not ecosystems.</strong> npm, yarn, pnpm and bun all resolve from the one npm registry and share <code>package.json</code>, so they are a single ecosystem to the scoring engine. What differs is the lockfile and the remediation command — DepVault detects the manager (Corepack's <code>packageManager</code> field first, then lockfiles including <code>bun.lockb</code>) and prints a command you can actually run, rather than assuming one tool.</div>
+
+      <h3>Internal and workspace packages</h3>
+      <p>A <code>workspace:</code>, <code>file:</code> or <code>link:</code> dependency is code you wrote. It has no registry entry, but it is not unverifiable: it inherits every advisory it pulls in. DepVault scores these from local source and tags them <code>[INTERNAL]</code> in every report, so you can tell at a glance which model produced a number before comparing it with the row above.</p>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Signal</th><th>Registry package</th><th>Internal package</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Security</td><td>Advisories for the resolved version</td><td>Advisories of its own dependencies</td></tr>
+          <tr><td>Popularity</td><td>Download volume</td><td>Structurally excluded — weight redistributed</td></tr>
+          <tr><td>Maintenance</td><td>Registry maintainer count</td><td>Git bus factor (distinct authors, 90 days)</td></tr>
+          <tr><td>Freshness</td><td>Registry publish date</td><td>Last commit date</td></tr>
+          <tr><td>License</td><td>SPDX from registry metadata</td><td>Local manifest</td></tr>
+        </tbody>
+      </table>
+      <div class="docs-caveat"><strong>No source-level analysis.</strong> DepVault has no static-analysis engine, so an internal package's score reflects its dependency surface and maintenance health — not the risk of its own code. A hand-written crypto helper with no dependencies will score well; that is a statement about its supply chain, not about its implementation.</div>
       <h3>How scoring works</h3>
       <p>DepVault combines known vulnerability exposure, package criticality, maintainer diversity, freshness, maintenance, popularity, and license signals. Security contributes 45% of the Trust Score; license and maintenance 20% each; popularity 15%. Freshness adjusts maintenance, and Monte Carlo sampling can provide the displayed 95% confidence interval. The score helps compare choices; the finding list identifies urgent remediation work.</p>
     </section>
@@ -105,9 +122,17 @@
       <h3>The score model</h3>
       <p>The base score is bounded to 0–100 and combines four normalized sub-scores:</p>
       <div class="docs-formula" role="img" aria-label="Final score formula">Score = 0.45 × Security + 0.20 × License + 0.20 × (Maintenance × Freshness) + 0.15 × Popularity + Diversity adjustment</div>
-      <ul class="docs-list"><li><strong>Security:</strong> CVSS base scores are summed into vulnerability burden <em>B</em>. A category prior <em>w</em> adjusts the Poisson rate: <code>λ = B × (1 + w)</code>. The security score is <code>100 × P(X ≤ t | λ)</code>, where <em>t</em> is the configured risk tolerance. High attack-surface categories use <em>w = 0.30</em>, medium <em>0.15</em>, and low <em>0.05</em>.</li><li><strong>Freshness:</strong> uses a true half-life: <code>freshness = 2^(−days / halfLife)</code>. The default half-life is 365 days, so the factor is 0.5 at one year and 0.25 at two years.</li><li><strong>Maintenance and popularity:</strong> are mapped to bounded scores from maintainer count and download volume. Maintenance is then multiplied by freshness, so stale packages cannot retain the full maintenance contribution.</li><li><strong>License:</strong> permissive licenses score 100, weak copyleft is reduced, and configured restrictive/toxic licenses score 0.</li><li><strong>Diversity:</strong> measures maintainer concentration with normalized Shannon entropy, <code>H = −Σ pᵢ log₂(pᵢ)</code>. A normalized diversity value below 30 receives a 15-point penalty. Public email providers are treated as individual maintainers, not one shared organization.</li></ul>
+      <ul class="docs-list"><li><strong>Security:</strong> CVSS base scores are summed into vulnerability burden <em>B</em>. A category prior <em>w</em> adjusts the Poisson rate: <code>λ = B × (1 + w)</code>. The security score is <code>100 × P(X ≤ t | λ)</code>, where <em>t</em> is the configured risk tolerance. High attack-surface categories use <em>w = 0.30</em>, medium <em>0.15</em>, and low <em>0.05</em>.</li><li><strong>Freshness:</strong> uses a true half-life: <code>freshness = 2^(−days / halfLife)</code>. The default half-life is 365 days, so the factor is 0.5 at one year and 0.25 at two years.</li><li><strong>Maintenance and popularity:</strong> are mapped to bounded scores from maintainer count and download volume. Maintenance is then multiplied by freshness, so stale packages cannot retain the full maintenance contribution.</li><li><strong>License:</strong> evaluated as an SPDX expression, not a string match. Permissive scores 100, weak copyleft 60, strong copyleft and commercially restrictive terms 0, and a missing licence is treated as unknown rather than permissive. The "or later" suffix (<code>GPL-3.0+</code>, <code>AGPL-3.0+</code>) and compound expressions are handled properly: a disjunction such as <code>MIT OR GPL-3.0</code> takes its safest operand because you may choose it, while a conjunction such as <code>MIT AND GPL-3.0</code> takes its worst because you are bound by both.</li><li><strong>Diversity:</strong> measures maintainer concentration with normalized Shannon entropy, <code>H = −Σ pᵢ log₂(pᵢ)</code>. A normalized diversity value below 30 receives a 15-point penalty. Public email providers are treated as individual maintainers, not one shared organization.</li></ul>
+      <h3>Unavailable signals are excluded, never invented</h3>
+      <p>When a signal cannot be obtained, its weight is redistributed across the signals that <em>are</em> known, and the gap is reported through data quality and confidence — it is never substituted with a constant. Two distinct cases exist:</p>
+      <ul class="docs-list">
+        <li><strong>Transient</strong> — a rate-limited or unreachable registry. Counted against the score's confidence.</li>
+        <li><strong>Structural</strong> — the ecosystem has no such concept. Go module proxies expose no owners, download counts or licence, so those terms are excluded rather than scored as zero, and they do not count toward the "too many unknowns" cap that would otherwise pin every Go module below a passing grade.</li>
+      </ul>
+      <p>This is why a report distinguishes <em>scored low</em> from <em>could not be verified</em>. A dependency nobody could check is a finding, not an absence — the summary counts it separately rather than dropping it.</p>
+
       <h3>Hard-stop conditions</h3>
-      <p>The final score becomes 0 when vulnerability burden exceeds 20, freshness falls below 0.15, or no maintainers are present. These safeguards ensure a high score in unrelated dimensions cannot mask an extreme risk signal.</p>
+      <p>The final score becomes 0 when vulnerability burden exceeds 20, or when a package is demonstrably abandoned — freshness below 0.15 <em>where a real publish date exists</em>, or zero maintainers <em>where the ecosystem actually reports maintainers</em>. The qualifiers matter: a missing date is not evidence of abandonment, and an ecosystem that has no maintainer concept must not be failed for it. These safeguards stop a high score in unrelated dimensions masking an extreme risk signal, without punishing a package for metadata its registry never publishes.</p>
       <h3>Confidence interval and accuracy</h3>
       <p>When Monte Carlo confidence is enabled, DepVault runs 1,000 reproducible simulations seeded from the lockfile hash. Each simulation perturbs severity by ±20% and downloads by ±10%, then recomputes the score. The displayed 95% interval is the 2.5th to 97.5th percentile of those results. It expresses sensitivity to this defined input-uncertainty model—not a statistical guarantee that a package is secure, and not a probability that an exploit will occur.</p>
       <div class="docs-note"><strong>Accuracy principles:</strong> known vulnerability data is shown as findings rather than hidden inside a score; unknown or unreachable registry data is reported as unverified rather than turned into a fabricated low score; and the seeded simulation gives identical inputs identical confidence bounds in CI. Registry freshness, advisory coverage, metadata quality, and the qualitative category prior remain real limitations.</div>
@@ -157,7 +182,9 @@
       </p>
       <pre class="docs-code">depvault shield express&#64;4.18.2   # pre-scan one package, then install if it passes
 depvault shield audit            # audit all currently installed packages
-depvault hooks install           # print shell wrappers that gate npm/pnpm/yarn/pip/cargo/go installs</pre>
+depvault hooks install           # print shell wrappers that gate npm/pnpm/yarn/pip/cargo/go installs
+depvault scan --untrusted        # audit code you don't control — see below</pre>
+      <div class="docs-caveat"><strong>Auditing code you don't control.</strong> <code>depvault.json</code> lives <em>inside</em> the repository being scanned, so a project can waive its own findings or mark its own dependencies trusted. That is the point of the feature for your own repo. When you are reviewing someone else's code, pass <code>--untrusted</code>: the policy is still parsed and every suppression it attempted is <em>reported</em>, but none are applied, and the threshold can only be raised — never lowered by the thing being audited.</div>
       <pre class="docs-terminal"><span class="terminal-dim"># Build the CLI from this repository, then scan a project</span>
 pnpm install
 pnpm --filter cli build
