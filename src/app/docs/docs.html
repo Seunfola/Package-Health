@@ -98,7 +98,17 @@
       <div class="docs-note"><strong>Package managers are not ecosystems.</strong> npm, yarn, pnpm and bun all resolve from the one npm registry and share <code>package.json</code>, so they are a single ecosystem to the scoring engine. What differs is the lockfile and the remediation command — DepVault detects the manager (Corepack's <code>packageManager</code> field first, then lockfiles including <code>bun.lockb</code>) and prints a command you can actually run, rather than assuming one tool.</div>
 
       <h3>Internal and workspace packages</h3>
-      <p>A <code>workspace:</code>, <code>file:</code> or <code>link:</code> dependency is code you wrote. It has no registry entry, but it is not unverifiable: it inherits every advisory it pulls in. DepVault scores these from local source and tags them <code>[INTERNAL]</code> in every report, so you can tell at a glance which model produced a number before comparing it with the row above.</p>
+      <p>A <code>workspace:</code>, <code>file:</code> or <code>link:</code> dependency is code you wrote. It has no registry entry, but it is not unverifiable: it inherits every advisory it pulls in. DepVault scores these from local source and marks them <span class="docs-badge-internal">internal</span> in every report — terminal, PR comment and dashboard — so you can tell at a glance which model produced a number before comparing it with the row above.</p>
+      <p>The marker is deliberately not colour alone: it carries a filled background, bold monospace weight and an uppercase label, so it survives a greyscale print, a colour-blind reader and a fast skim of a long table.</p>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Package</th><th>Score</th><th>Scored from</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="docs-badge-internal">internal</span><code>&#64;acme/auth-helpers</code></td><td>47/100</td><td>Git history + its own dependencies</td></tr>
+          <tr><td><code>express</code></td><td>99/100</td><td>Registry metadata + advisories</td></tr>
+        </tbody>
+      </table>
       <table class="docs-table">
         <thead>
           <tr><th>Signal</th><th>Registry package</th><th>Internal package</th></tr>
