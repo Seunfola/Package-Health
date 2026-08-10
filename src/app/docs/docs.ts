@@ -62,7 +62,7 @@ export class DocsPage {
       id: 'leakguard',
       title: 'LeakGuard — Secret Detection',
       category: 'CLI Usage',
-      keywords: 'leakguard secret detection api key token credential leak scan staged diff verify live blast radius playbook rotation script pre-commit hook allowlist severity liveness sarif dashboard sync upload',
+      keywords: 'leakguard secret detection api key token credential leak scan staged diff verify live blast radius playbook rotation script pre-commit pre-push hook allowlist severity liveness sarif dashboard sync upload',
     },
     {
       id: 'github-actions',
