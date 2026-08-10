@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
@@ -41,6 +42,8 @@ export class RepoDetails implements OnInit {
   /** Null while loading AND when no LeakGuard scan has ever been uploaded for this repo — the 404 case is expected, not an error, since syncing is opt-in. */
   leakScan: LeakGuardScanResult | null = null;
   leakScanLoading = true;
+  /** Set only on a genuine fetch failure (network/5xx) — a 404 is the expected "never synced" case and must not set this, or a real outage would misreport as "no scan uploaded yet". */
+  leakScanError: string | null = null;
 
   public commitData: ChartConfiguration<'line'>['data'] = {
     datasets: [
@@ -104,7 +107,15 @@ export class RepoDetails implements OnInit {
 
       this.leakGuardService
         .getLeakScan(owner, name)
-        .pipe(catchError(() => of(null)))
+        .pipe(
+          catchError((err: HttpErrorResponse) => {
+            if (err.status !== 404) {
+              console.error('Error fetching LeakGuard scan:', err);
+              this.leakScanError = 'Failed to load LeakGuard scan results.';
+            }
+            return of(null);
+          }),
+        )
         .subscribe((scan) => {
           this.leakScan = scan;
           this.leakScanLoading = false;

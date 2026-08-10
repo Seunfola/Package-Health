@@ -59,6 +59,12 @@ export class DocsPage {
       keywords: 'cli install build scan shield audit status init hooks install gate block force sync offline verdict cache upload login sbom',
     },
     {
+      id: 'leakguard',
+      title: 'LeakGuard — Secret Detection',
+      category: 'CLI Usage',
+      keywords: 'leakguard secret detection api key token credential leak scan staged diff verify live blast radius playbook rotation script pre-commit hook allowlist severity liveness sarif dashboard sync upload',
+    },
+    {
       id: 'github-actions',
       title: 'GitHub Actions',
       category: 'Automation',

@@ -336,6 +336,16 @@
   color: var(--text-muted, #64748b);
 }
 
+.leak-scans-summary {
+  font-size: 13px;
+  color: var(--text-muted, #64748b);
+  font-weight: 500;
+}
+
+.leak-scans-section {
+  margin-top: 2.5rem;
+}
+
 .repos-error {
   color: #991b1b;
   background: #fef2f2;

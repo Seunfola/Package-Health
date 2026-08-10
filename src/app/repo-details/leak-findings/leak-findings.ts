@@ -14,6 +14,8 @@ export class LeakFindings {
   /** Null means "no LeakGuard scan has ever been uploaded for this repo" — distinct from a scan that ran and found nothing. */
   @Input() scan: LeakGuardScanResult | null = null;
   @Input() loading = false;
+  /** Set only on a genuine fetch failure — must render as an error, not silently fall through to the "never synced" empty state. */
+  @Input() error: string | null = null;
 
   get findings(): LeakFinding[] {
     return this.scan?.findings ?? [];

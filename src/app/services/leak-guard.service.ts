@@ -65,4 +65,9 @@ export class LeakGuardService {
       `${environment.apiBaseUrl}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/leak-scan`,
     );
   }
+
+  /** `GET /api/repos/leak-scans/mine` — every LeakGuard scan the signed-in user has uploaded, for the dashboard's summary section. */
+  getMyLeakScans(): Observable<LeakGuardScanResult[]> {
+    return this.http.get<LeakGuardScanResult[]>(`${environment.apiBaseUrl}/repos/leak-scans/mine`);
+  }
 }

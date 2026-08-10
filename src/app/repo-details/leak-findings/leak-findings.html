@@ -37,6 +37,11 @@
     <div class="empty-state">
       <p>Loading secret scan results&hellip;</p>
     </div>
+  } @else if (error) {
+    <div class="empty-state error">
+      <p class="empty-title">Couldn't load LeakGuard scan results</p>
+      <p class="empty-hint">{{ error }}</p>
+    </div>
   } @else if (!hasScan) {
     <div class="empty-state no-scan">
       <p class="empty-title">No LeakGuard scan uploaded yet</p>
