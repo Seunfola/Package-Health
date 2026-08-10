@@ -38,7 +38,7 @@ export class DocsPage {
       id: 'analyzer',
       title: 'Dashboard & Analyzer',
       category: 'Getting Started',
-      keywords: 'dashboard analyzer repository github url manifest package health trust score report sbom badge history',
+      keywords: 'dashboard analyzer repository github url manifest package health trust score report sbom badge history private repo repository github app installation connect installationid personal access token',
     },
     {
       id: 'ecosystems',
@@ -86,7 +86,7 @@ export class DocsPage {
       id: 'organizations',
       title: 'Organizations & Settings',
       category: 'Organizations',
-      keywords: 'organizations free paid members settings gatekeeper policies webhooks api token private repository upload notifications',
+      keywords: 'organizations free paid members settings gatekeeper policies webhooks api token private repository upload notifications search bulk delete unread mark read cleanup',
     },
     {
       id: 'privacy',
