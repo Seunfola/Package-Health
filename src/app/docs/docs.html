@@ -77,8 +77,19 @@
     <section class="docs-section glass-panel" id="analyzer" [hidden]="!isVisible('analyzer')">
       <h2>Dashboard &amp; Analyzer</h2>
       <p>The browser is the best place to investigate a decision. The homepage accepts a public GitHub URL, pasted manifest, or manifest upload. Package Health looks up a single npm, PyPI, or Cargo package and exposes its Trust Score, confidence interval, severity distribution, findings, and historical trend.</p>
-      <table class="docs-table"><thead><tr><th>Surface</th><th>Use it for</th><th>Available actions</th></tr></thead><tbody><tr><td>Project analyzer</td><td>Review a dependency set before a merge, migration, or onboarding.</td><td>Inspect package-level scores, reasons, and vulnerabilities.</td></tr><tr><td>Package Health</td><td>Evaluate one package and an optional version.</td><td>Download a report or CycloneDX SBOM, request fix suggestions, retrieve a badge, and copy a CI-ready summary.</td></tr><tr><td>Synced Scans</td><td>Review a private project analyzed from a local checkout.</td><td>Use <code>depvault upload</code> after authenticating with a personal API token.</td></tr></tbody></table>
+      <table class="docs-table"><thead><tr><th>Surface</th><th>Use it for</th><th>Available actions</th></tr></thead><tbody><tr><td>Project analyzer</td><td>Review a dependency set before a merge, migration, or onboarding.</td><td>Inspect package-level scores, reasons, and vulnerabilities.</td></tr><tr><td>Package Health</td><td>Evaluate one package and an optional version.</td><td>Download a report or CycloneDX SBOM, request fix suggestions, retrieve a badge, and copy a CI-ready summary.</td></tr><tr><td>Private repository analysis</td><td>Analyze a private GitHub repo without granting it any standing access.</td><td>Connect the DepVault GitHub App, pick an installation, analyze.</td></tr><tr><td>Synced Scans</td><td>Review a private project analyzed from a local checkout.</td><td>Use <code>depvault upload</code> after authenticating with a personal API token.</td></tr></tbody></table>
       <div class="docs-note"><strong>Decision model:</strong> a Trust Score is a signal, not a security guarantee. Treat CRITICAL findings and compatibility testing as independent requirements before a production upgrade.</div>
+
+      <h3>Analyzing a private repository</h3>
+      <p>DepVault never asks for a personal access token to reach a private repo. Instead it uses a GitHub App: you install/configure the app on the account or organization that owns the repo, GitHub hands DepVault a short-lived, narrowly-scoped installation token behind the scenes, and nothing longer-lived than that is ever stored.</p>
+      <ol class="docs-list">
+        <li>Sign in, then open the <strong>Analyze Private Repository</strong> form on the homepage.</li>
+        <li>Click <strong>Connect GitHub App</strong>. You're redirected to GitHub to choose which account/organization and which repositories to grant access to — the same flow as installing any other GitHub App.</li>
+        <li>GitHub redirects you back automatically once you confirm. The form now shows a dropdown of every installation you've connected.</li>
+        <li>Pick the installation that owns the repo, paste the repo URL, and analyze.</li>
+      </ol>
+      <div class="docs-note"><strong>Ownership is verified server-side.</strong> DepVault only ever uses an installation you've personally connected through this flow — it never accepts an arbitrary installation id from a request, even from a signed-in user.</div>
+      <div class="docs-caveat">If <strong>Connect GitHub App</strong> reports the app isn't configured, the DepVault deployment you're using hasn't set up its GitHub App yet — this is an operator-side setup step, not something fixable from the browser.</div>
     </section>
 
     <section class="docs-section glass-panel" id="ecosystems" [hidden]="!isVisible('ecosystems')">
@@ -90,11 +101,38 @@
         </thead>
         <tbody>
           <tr><td>npm</td><td><code>package.json</code></td></tr>
-          <tr><td>PyPI</td><td><code>requirements.txt</code>, <code>pyproject.toml</code> (PEP 621 or Poetry)</td></tr>
+          <tr><td>PyPI</td><td><code>requirements.txt</code>, <code>pyproject.toml</code> (PEP 621, Poetry or PDM), <code>Pipfile</code> (pipenv)</td></tr>
           <tr><td>Cargo</td><td><code>Cargo.toml</code>, including dotted <code>[dependencies.foo]</code> tables</td></tr>
           <tr><td>Go</td><td><code>go.mod</code></td></tr>
         </tbody>
       </table>
+      <div class="docs-note"><strong>Package managers are not ecosystems.</strong> npm, yarn, pnpm and bun all resolve from the one npm registry and share <code>package.json</code>, so they are a single ecosystem to the scoring engine. What differs is the lockfile and the remediation command — DepVault detects the manager (Corepack's <code>packageManager</code> field first, then lockfiles including <code>bun.lockb</code>) and prints a command you can actually run, rather than assuming one tool.</div>
+
+      <h3>Internal and workspace packages</h3>
+      <p>A <code>workspace:</code>, <code>file:</code> or <code>link:</code> dependency is code you wrote. It has no registry entry, but it is not unverifiable: it inherits every advisory it pulls in. DepVault scores these from local source and marks them <span class="docs-badge-internal">internal</span> in every report — terminal, PR comment and dashboard — so you can tell at a glance which model produced a number before comparing it with the row above.</p>
+      <p>The marker is deliberately not colour alone: it carries a filled background, bold monospace weight and an uppercase label, so it survives a greyscale print, a colour-blind reader and a fast skim of a long table.</p>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Package</th><th>Score</th><th>Scored from</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="docs-badge-internal">internal</span><code>&#64;acme/auth-helpers</code></td><td>47/100</td><td>Git history + its own dependencies</td></tr>
+          <tr><td><code>express</code></td><td>99/100</td><td>Registry metadata + advisories</td></tr>
+        </tbody>
+      </table>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Signal</th><th>Registry package</th><th>Internal package</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Security</td><td>Advisories for the resolved version</td><td>Advisories of its own dependencies</td></tr>
+          <tr><td>Popularity</td><td>Download volume</td><td>Structurally excluded — weight redistributed</td></tr>
+          <tr><td>Maintenance</td><td>Registry maintainer count</td><td>Git bus factor (distinct authors, 90 days)</td></tr>
+          <tr><td>Freshness</td><td>Registry publish date</td><td>Last commit date</td></tr>
+          <tr><td>License</td><td>SPDX from registry metadata</td><td>Local manifest</td></tr>
+        </tbody>
+      </table>
+      <div class="docs-caveat"><strong>No source-level analysis.</strong> DepVault has no static-analysis engine, so an internal package's score reflects its dependency surface and maintenance health — not the risk of its own code. A hand-written crypto helper with no dependencies will score well; that is a statement about its supply chain, not about its implementation.</div>
       <h3>How scoring works</h3>
       <p>DepVault combines known vulnerability exposure, package criticality, maintainer diversity, freshness, maintenance, popularity, and license signals. Security contributes 45% of the Trust Score; license and maintenance 20% each; popularity 15%. Freshness adjusts maintenance, and Monte Carlo sampling can provide the displayed 95% confidence interval. The score helps compare choices; the finding list identifies urgent remediation work.</p>
     </section>
@@ -105,9 +143,17 @@
       <h3>The score model</h3>
       <p>The base score is bounded to 0–100 and combines four normalized sub-scores:</p>
       <div class="docs-formula" role="img" aria-label="Final score formula">Score = 0.45 × Security + 0.20 × License + 0.20 × (Maintenance × Freshness) + 0.15 × Popularity + Diversity adjustment</div>
-      <ul class="docs-list"><li><strong>Security:</strong> CVSS base scores are summed into vulnerability burden <em>B</em>. A category prior <em>w</em> adjusts the Poisson rate: <code>λ = B × (1 + w)</code>. The security score is <code>100 × P(X ≤ t | λ)</code>, where <em>t</em> is the configured risk tolerance. High attack-surface categories use <em>w = 0.30</em>, medium <em>0.15</em>, and low <em>0.05</em>.</li><li><strong>Freshness:</strong> uses a true half-life: <code>freshness = 2^(−days / halfLife)</code>. The default half-life is 365 days, so the factor is 0.5 at one year and 0.25 at two years.</li><li><strong>Maintenance and popularity:</strong> are mapped to bounded scores from maintainer count and download volume. Maintenance is then multiplied by freshness, so stale packages cannot retain the full maintenance contribution.</li><li><strong>License:</strong> permissive licenses score 100, weak copyleft is reduced, and configured restrictive/toxic licenses score 0.</li><li><strong>Diversity:</strong> measures maintainer concentration with normalized Shannon entropy, <code>H = −Σ pᵢ log₂(pᵢ)</code>. A normalized diversity value below 30 receives a 15-point penalty. Public email providers are treated as individual maintainers, not one shared organization.</li></ul>
+      <ul class="docs-list"><li><strong>Security:</strong> CVSS base scores are summed into vulnerability burden <em>B</em>. A category prior <em>w</em> adjusts the Poisson rate: <code>λ = B × (1 + w)</code>. The security score is <code>100 × P(X ≤ t | λ)</code>, where <em>t</em> is the configured risk tolerance. High attack-surface categories use <em>w = 0.30</em>, medium <em>0.15</em>, and low <em>0.05</em>.</li><li><strong>Freshness:</strong> uses a true half-life: <code>freshness = 2^(−days / halfLife)</code>. The default half-life is 365 days, so the factor is 0.5 at one year and 0.25 at two years.</li><li><strong>Maintenance and popularity:</strong> are mapped to bounded scores from maintainer count and download volume. Maintenance is then multiplied by freshness, so stale packages cannot retain the full maintenance contribution.</li><li><strong>License:</strong> evaluated as an SPDX expression, not a string match. Permissive scores 100, weak copyleft 60, strong copyleft and commercially restrictive terms 0, and a missing licence is treated as unknown rather than permissive. The "or later" suffix (<code>GPL-3.0+</code>, <code>AGPL-3.0+</code>) and compound expressions are handled properly: a disjunction such as <code>MIT OR GPL-3.0</code> takes its safest operand because you may choose it, while a conjunction such as <code>MIT AND GPL-3.0</code> takes its worst because you are bound by both.</li><li><strong>Diversity:</strong> measures maintainer concentration with normalized Shannon entropy, <code>H = −Σ pᵢ log₂(pᵢ)</code>. A normalized diversity value below 30 receives a 15-point penalty. Public email providers are treated as individual maintainers, not one shared organization.</li></ul>
+      <h3>Unavailable signals are excluded, never invented</h3>
+      <p>When a signal cannot be obtained, its weight is redistributed across the signals that <em>are</em> known, and the gap is reported through data quality and confidence — it is never substituted with a constant. Two distinct cases exist:</p>
+      <ul class="docs-list">
+        <li><strong>Transient</strong> — a rate-limited or unreachable registry. Counted against the score's confidence.</li>
+        <li><strong>Structural</strong> — the ecosystem has no such concept. Go module proxies expose no owners, download counts or licence, so those terms are excluded rather than scored as zero, and they do not count toward the "too many unknowns" cap that would otherwise pin every Go module below a passing grade.</li>
+      </ul>
+      <p>This is why a report distinguishes <em>scored low</em> from <em>could not be verified</em>. A dependency nobody could check is a finding, not an absence — the summary counts it separately rather than dropping it.</p>
+
       <h3>Hard-stop conditions</h3>
-      <p>The final score becomes 0 when vulnerability burden exceeds 20, freshness falls below 0.15, or no maintainers are present. These safeguards ensure a high score in unrelated dimensions cannot mask an extreme risk signal.</p>
+      <p>The final score becomes 0 when vulnerability burden exceeds 20, or when a package is demonstrably abandoned — freshness below 0.15 <em>where a real publish date exists</em>, or zero maintainers <em>where the ecosystem actually reports maintainers</em>. The qualifiers matter: a missing date is not evidence of abandonment, and an ecosystem that has no maintainer concept must not be failed for it. These safeguards stop a high score in unrelated dimensions masking an extreme risk signal, without punishing a package for metadata its registry never publishes.</p>
       <h3>Confidence interval and accuracy</h3>
       <p>When Monte Carlo confidence is enabled, DepVault runs 1,000 reproducible simulations seeded from the lockfile hash. Each simulation perturbs severity by ±20% and downloads by ±10%, then recomputes the score. The displayed 95% interval is the 2.5th to 97.5th percentile of those results. It expresses sensitivity to this defined input-uncertainty model—not a statistical guarantee that a package is secure, and not a probability that an exploit will occur.</p>
       <div class="docs-note"><strong>Accuracy principles:</strong> known vulnerability data is shown as findings rather than hidden inside a score; unknown or unreachable registry data is reported as unverified rather than turned into a fabricated low score; and the seeded simulation gives identical inputs identical confidence bounds in CI. Registry freshness, advisory coverage, metadata quality, and the qualitative category prior remain real limitations.</div>
@@ -157,7 +203,9 @@
       </p>
       <pre class="docs-code">depvault shield express&#64;4.18.2   # pre-scan one package, then install if it passes
 depvault shield audit            # audit all currently installed packages
-depvault hooks install           # print shell wrappers that gate npm/pnpm/yarn/pip/cargo/go installs</pre>
+depvault hooks install           # print shell wrappers that gate npm/pnpm/yarn/pip/cargo/go installs
+depvault scan --untrusted        # audit code you don't control — see below</pre>
+      <div class="docs-caveat"><strong>Auditing code you don't control.</strong> <code>depvault.json</code> lives <em>inside</em> the repository being scanned, so a project can waive its own findings or mark its own dependencies trusted. That is the point of the feature for your own repo. When you are reviewing someone else's code, pass <code>--untrusted</code>: the policy is still parsed and every suppression it attempted is <em>reported</em>, but none are applied, and the threshold can only be raised — never lowered by the thing being audited.</div>
       <pre class="docs-terminal"><span class="terminal-dim"># Build the CLI from this repository, then scan a project</span>
 pnpm install
 pnpm --filter cli build
@@ -171,6 +219,36 @@ pnpm --filter cli build
         Offline use: <code>depvault shield sync</code> downloads a signed verdict cache while online; if the backend
         later becomes unreachable, cached packages still get a real verdict — anything not already cached fails closed.
       </p>
+    </section>
+
+    <section class="docs-section glass-panel" id="leakguard" [hidden]="!isVisible('leakguard')">
+      <h2>LeakGuard — Secret Detection &amp; Remediation</h2>
+      <p>LeakGuard scans your working tree, staged changes, or a diff for hardcoded credentials — API keys, tokens, private keys, database connection strings — before they leave your machine. It runs on the same embedded engine as the Trust Score scanner: no separate binary to install, no subprocess, and nothing phones home unless you explicitly opt in.</p>
+      <pre class="docs-terminal"><span class="terminal-prompt">$</span> depvault leakguard scan                 <span class="terminal-dim"># scan the working tree</span>
+<span class="terminal-prompt">$</span> depvault leakguard scan --staged        <span class="terminal-dim"># fast pass over what's about to be committed</span>
+<span class="terminal-prompt">$</span> depvault leakguard scan --fail-on high  <span class="terminal-dim"># CI-style exit-code gate</span></pre>
+      <h3>Reading a result</h3>
+      <p>Every finding reports a <strong>severity</strong> (CRITICAL/HIGH/MEDIUM/LOW), a <strong>liveness</strong> status, and a <strong>status</strong>. Liveness is <code>not checked</code> by default; <code>--verify-live</code> makes one real auth-probe request to the credential's own provider to confirm it still works — off by default, and the CLI asks for confirmation in an interactive terminal before sending anything. Status distinguishes an <code>active</code> finding from one matched by a <code>depvault.json</code> allowlist or that looks like a placeholder value (<code>sk_test_...</code>, <code>AKIA...XXXX</code>).</p>
+      <div class="docs-note"><strong>Nothing raw ever leaves the redaction boundary.</strong> A finding's <code>match</code> is always a redacted preview (first/last 4 characters) — the real value never appears in CLI output, CI logs, SARIF, or a dashboard sync.</div>
+      <h3>Responding to a finding</h3>
+      <pre class="docs-terminal"><span class="terminal-prompt">$</span> depvault leakguard scan --playbook ./incident   <span class="terminal-dim"># incident-playbook.md + per-finding rotation scripts</span>
+<span class="terminal-prompt">$</span> depvault leakguard scan --interactive             <span class="terminal-dim"># walk through findings one at a time</span></pre>
+      <h3>Pre-commit and pre-push hooks</h3>
+      <p><code>depvault hooks install --git</code> installs two git hooks, scoped differently on purpose. <strong>Pre-commit</strong> runs a fast, staged-diff-only LeakGuard pass alongside the Trust Score gate on every commit. <strong>Pre-push</strong> runs a full working-tree LeakGuard scan once per push — the last local checkpoint before code actually leaves your machine, catching a secret that was already sitting in the tree (e.g. from before LeakGuard was installed, or committed with <code>--no-verify</code>) that a staged-diff-only check would never re-examine. Neither hook makes a network call — no liveness/blast-radius verification locally; that stays CI's job. Bypass either once with <code>--no-verify</code> (<code>git commit --no-verify</code> / <code>git push --no-verify</code>).</p>
+      <h3>CI and the dashboard</h3>
+      <p>The GitHub Action and both git hooks run the identical CLI under the hood, so a finding never disagrees between your terminal, CI, and your editor. In CI, results post as SARIF (visible in the repo's Security tab) and as part of the same PR comment as the Trust Score results — one combined report, not two competing bot comments.</p>
+      <p>Run <code>depvault leakguard scan --upload</code> (after <code>depvault login</code>) to sync a local scan to your dashboard — see <a routerLink="/repository-details">a repository's detail page</a> for the LeakGuard card once you have.</p>
+      <h3>Configuration</h3>
+      <pre class="docs-code">&#123;
+  "leakGuard": &#123;
+    "failOn": "HIGH",
+    "allowPaths": ["**&#47;*.test.ts", "fixtures&#47;**"],
+    "allowValues": ["sk_test_FAKEFAKEFAKEFAKE"],
+    "verifyLive": false,
+    "blastRadius": false
+  &#125;
+&#125;</pre>
+      <p><code>allowPaths</code> excludes fixtures/examples from scanning; <code>allowValues</code> allowlists one exact known-fake value. <code>verifyLive</code> and <code>blastRadius</code> can only be turned on explicitly here or via their matching CLI flag — never implicitly.</p>
     </section>
 
     <section class="docs-section glass-panel" id="github-actions" [hidden]="!isVisible('github-actions')">
@@ -259,6 +337,9 @@ vim.lsp.enable('depvault')</pre>
       <p>Dashboard Settings centralizes members, notifications, webhooks, personal upload tokens, and Gatekeeper policies. FREE uses the safe default policy; PAID unlocks organization-wide customization. See <a routerLink="/pricing">Pricing</a> for limits.</p>
       <table class="docs-table"><thead><tr><th>Policy</th><th>Effect</th></tr></thead><tbody><tr><td>Block Critical CVEs</td><td>Reject packages with critical known vulnerability exposure.</td></tr><tr><td>Block Ghost Towns</td><td>Apply policy to packages with abandonment risk.</td></tr><tr><td>Block GPL / toxic licenses</td><td>Apply license-policy enforcement.</td></tr><tr><td>Warn ecosystem conflicts</td><td>Show compatibility concerns without necessarily blocking.</td></tr><tr><td>Custom scoring weights</td><td>Paid organizations can tune security, license, maintenance, and popularity influence.</td></tr></tbody></table>
       <p>Use a personal API token only for <code>depvault login</code> and local <code>depvault upload</code>; do not add it to a repository or client-side source code.</p>
+
+      <h3>Notifications Center</h3>
+      <p>Every health-score change, new vulnerability, and LeakGuard finding above a threshold can raise a notification. The Notifications Center supports searching, filtering by repository, marking one or many as read, and deleting individually, in bulk, or all at once. <strong>Clean up old (30d+)</strong> removes your own read notifications past that age in one action — it never touches anyone else's.</p>
     </section>
 
     <section class="docs-section glass-panel" id="privacy" [hidden]="!isVisible('privacy')">
@@ -273,6 +354,7 @@ vim.lsp.enable('depvault')</pre>
         <a [routerLink]="[]" fragment="ecosystems" class="docs-related__link">Ecosystem Support</a>
         <a [routerLink]="[]" fragment="mcp-server" class="docs-related__link">MCP Server Setup</a>
         <a [routerLink]="[]" fragment="cli" class="docs-related__link">CLI Shield &amp; Hooks</a>
+        <a [routerLink]="[]" fragment="leakguard" class="docs-related__link">LeakGuard Secret Detection</a>
       </div>
     </section>
 

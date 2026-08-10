@@ -20,18 +20,25 @@ export class UserProfile implements OnInit, OnDestroy {
   userAvatar: string = 'assets/icons/user.svg';
 
   resumeFileName: string = '';
-  profileSummary: string = '';
+  bio: string = '';
 
-  githubUsername: string = '';
-  linkedinProfileUrl: string = '';
-  twitterHandle: string = '';
-  phoneNumber: string = '';
+  githubUrl: string = '';
+  linkedinUrl: string = '';
+  twitterUrl: string = '';
   location: string = '';
   skills: string[] = [];
+  /** Comma-separated editable form of `skills`, since the schema stores an array but a text input needs a string. */
+  skillsInput: string = '';
   statusMessage: string = '';
   statusType: 'success' | 'error' = 'success';
 
+  // Inputs for the "Link X" buttons — a username/handle to resolve, not the stored URL itself.
+  githubUsername: string = '';
+  linkedinProfileUrl: string = '';
+  twitterHandle: string = '';
+
   isLoading = true;
+  isSaving = false;
   private authSub?: Subscription;
 
   constructor(
@@ -65,18 +72,41 @@ export class UserProfile implements OnInit, OnDestroy {
       next: (profile) => {
         this.userName = profile.username || 'User';
         this.userEmail = profile.email || '';
-        this.githubUsername = profile.githubUsername || '';
-        this.linkedinProfileUrl = profile.linkedinProfileUrl || '';
-        this.twitterHandle = profile.twitterHandle || '';
-        this.profileSummary = profile.profileSummary || '';
+        this.githubUrl = profile.github_url || '';
+        this.linkedinUrl = profile.linkedin_url || '';
+        this.twitterUrl = profile.twitter_url || '';
+        this.bio = profile.bio || '';
         this.location = profile.location || '';
         this.skills = profile.skills || [];
+        this.skillsInput = this.skills.join(', ');
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching profile:', err);
         this.isLoading = false;
       }
+    });
+  }
+
+  /** Saves bio/location/skills — the fields with no dedicated "Link X" flow of their own. */
+  saveProfile(): void {
+    this.isSaving = true;
+    const skills = this.skillsInput
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    this.userProfileService.updateProfile({ bio: this.bio, location: this.location, skills }).subscribe({
+      next: () => {
+        this.skills = skills;
+        this.isSaving = false;
+        this.setStatus('Profile saved.', 'success');
+      },
+      error: (err) => {
+        console.error('Failed to save profile', err);
+        this.isSaving = false;
+        this.setStatus('Failed to save profile.', 'error');
+      },
     });
   }
 
@@ -122,7 +152,10 @@ export class UserProfile implements OnInit, OnDestroy {
     }
     
     this.userProfileService.linkSocialProfile('github', this.githubUsername).subscribe({
-      next: () => this.setStatus('GitHub profile linked.', 'success'),
+      next: () => {
+        this.setStatus('GitHub profile linked.', 'success');
+        if (this.internalUsername) this.loadProfile(this.internalUsername);
+      },
       error: () => this.setStatus('Failed to link GitHub profile.', 'error')
     });
   }
@@ -135,7 +168,10 @@ export class UserProfile implements OnInit, OnDestroy {
     }
     
     this.userProfileService.linkSocialProfile('linkedin', this.linkedinProfileUrl).subscribe({
-      next: () => this.setStatus('LinkedIn profile linked.', 'success'),
+      next: () => {
+        this.setStatus('LinkedIn profile linked.', 'success');
+        if (this.internalUsername) this.loadProfile(this.internalUsername);
+      },
       error: () => this.setStatus('Failed to link LinkedIn profile.', 'error')
     });
   }
@@ -148,24 +184,22 @@ export class UserProfile implements OnInit, OnDestroy {
     }
     
     this.userProfileService.linkSocialProfile('twitter', this.twitterHandle).subscribe({
-      next: () => this.setStatus('Twitter account linked.', 'success'),
+      next: () => {
+        this.setStatus('Twitter account linked.', 'success');
+        if (this.internalUsername) this.loadProfile(this.internalUsername);
+      },
       error: () => this.setStatus('Failed to link Twitter account.', 'error')
     });
   }
-
-  addSocialLink(): void {
-    alert('Adding new social link functionality (not implemented in UI)');
-  }
-
 
   exportProfileFile(): void {
     const profile = {
       userName: this.userName,
       userEmail: this.userEmail,
-      githubUsername: this.githubUsername,
-      linkedinProfileUrl: this.linkedinProfileUrl,
-      twitterHandle: this.twitterHandle,
-      phoneNumber: this.phoneNumber,
+      bio: this.bio,
+      githubUrl: this.githubUrl,
+      linkedinUrl: this.linkedinUrl,
+      twitterUrl: this.twitterUrl,
       location: this.location,
       skills: this.skills,
     };

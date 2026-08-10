@@ -1,0 +1,27 @@
+<div
+  class="leak-item"
+  [class.live]="isConfirmedLive"
+  [class.suppressed]="isSuppressed"
+>
+  <div
+    class="leak-severity"
+    [class.critical]="finding.severity === 'CRITICAL'"
+    [class.high]="finding.severity === 'HIGH'"
+    [class.medium]="finding.severity === 'MEDIUM'"
+    [class.low]="finding.severity === 'LOW'"
+  >
+    {{ severityLabel }}
+  </div>
+
+  <div class="leak-type" [title]="finding.description">{{ finding.description }}</div>
+  <div class="leak-location" [title]="locationLabel">{{ locationLabel }}</div>
+  <div class="leak-match"><code>{{ finding.match }}</code></div>
+
+  <div class="leak-liveness" [class.live]="isConfirmedLive">
+    {{ livenessLabel }}
+  </div>
+
+  <div class="leak-status" [class.suppressed]="isSuppressed">
+    {{ statusLabel }}
+  </div>
+</div>

@@ -14,10 +14,9 @@ export interface AuthState {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly TOKEN_SESSION_KEY = 'gh_token_session';
+  private readonly TOKEN_SESSION_KEY = 'depvault_session_token';
   private readonly AUTH_STATE_LOCAL_KEY = 'auth_state';
   private readonly TOKEN_EXPIRY_MS = 12 * 60 * 60 * 1000; // 12 hours
-  private readonly MAX_TOKEN_LENGTH = 500; // GitHub tokens max length
 
   private readonly authStateSubject = new BehaviorSubject<AuthState>(this.loadAuthState());
   public authState$ = this.authStateSubject.asObservable();
@@ -95,44 +94,6 @@ export class AuthService {
   }
 
   /**
-   * LOGIN: Store GitHub token securely in sessionStorage
-   * - SessionStorage: Clears when browser closes (most secure)
-   * - Tokens never logged to console or stored in localStorage
-   * - Validates token format before storing
-   */
-  async loginWithToken(token: string): Promise<boolean> {
-    try {
-      // Validate token format
-      if (!this.isValidTokenFormat(token)) {
-        throw new Error('Invalid token format');
-      }
-
-      // Validate token with GitHub API (verify it works)
-      const isValid = await this.verifyToken(token);
-      if (!isValid) {
-        throw new Error('Invalid or expired token');
-      }
-
-      // Store token ONLY in sessionStorage (not localStorage)
-      sessionStorage.setItem(this.TOKEN_SESSION_KEY, this.obfuscateToken(token));
-
-      // Store auth state in localStorage (non-sensitive)
-      const authState: AuthState = {
-        isAuthenticated: true,
-        username: await this.fetchGitHubUsername(token),
-        lastAuthTime: Date.now(),
-      };
-      localStorage.setItem(this.AUTH_STATE_LOCAL_KEY, JSON.stringify(authState));
-
-      this.authStateSubject.next(authState);
-      return true;
-    } catch {
-      console.error('Authentication failed (error details not logged for security)');
-      return false;
-    }
-  }
-
-  /**
    * LOGOUT: Clear all auth data safely
    */
   logout(): void {
@@ -187,70 +148,6 @@ export class AuthService {
     }
 
     return true;
-  }
-
-  /**
-   * VALIDATE TOKEN FORMAT: Basic format validation
-   * GitHub tokens: ghp_* (45 chars), ghu_* (36 chars), ghs_* (40 chars), ghr_* (36 chars)
-   */
-  private isValidTokenFormat(token: string): boolean {
-    if (!token || typeof token !== 'string') return false;
-    if (token.length > this.MAX_TOKEN_LENGTH) return false;
-
-    // Must start with valid GitHub token prefix
-    const validPrefixes = ['ghp_', 'ghu_', 'ghs_', 'ghr_'];
-    return validPrefixes.some((prefix) => token.startsWith(prefix));
-  }
-
-  /**
-   * VERIFY TOKEN: Test token with GitHub API
-   * Uses minimal permissions to verify token validity
-   */
-  private async verifyToken(token: string): Promise<boolean> {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      const response = await fetch('https://api.github.com/user', {
-        headers: {
-          Authorization: `token ${token}`,
-          'User-Agent': 'DepVault',
-          Accept: 'application/vnd.github.v3+json',
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      // 401: Invalid token, 403: Token exists but permission issues, 200: Valid
-      return response.status === 200 || response.status === 403;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * FETCH USERNAME: Get authenticated user's GitHub username
-   * Used for UI display only (non-sensitive)
-   */
-  private async fetchGitHubUsername(token: string): Promise<string> {
-    try {
-      const response = await fetch('https://api.github.com/user', {
-        headers: {
-          Authorization: `token ${token}`,
-          'User-Agent': 'DepVault',
-          Accept: 'application/vnd.github.v3+json',
-        },
-      });
-
-      if (response.ok) {
-        const data = (await response.json()) as { login: string };
-        return data.login;
-      }
-    } catch {
-      // Silent fail - username is optional
-    }
-    return 'User';
   }
 
   /**

@@ -416,3 +416,35 @@
 
   .docs-steps { grid-template-columns: 1fr; }
 }
+
+/* ── Internal-package badge ────────────────────────────────────────────────
+   An internal package is scored by a different model than a registry one
+   (git bus factor rather than downloads, its own dependency surface rather
+   than its own advisories). A reviewer comparing two rows in the same table
+   needs to see that before they compare the numbers, so the marker has to
+   survive a skim — colour, weight and a filled background rather than a
+   colour-only cue, which would vanish for a colour-blind reader or in a
+   printed/greyscale review.
+
+   Amber rather than the teal accent: teal reads as "healthy" everywhere else
+   in this design system, and this is a neutral provenance flag, not a verdict. */
+.docs-badge-internal {
+  display: inline-block;
+  padding: .12em .5em;
+  border: 1px solid rgba(217, 119, 6, .45);
+  border-radius: 4px;
+  background: rgba(217, 119, 6, .16);
+  color: #f0b429;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .74em;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* The table cell variant sits tight against the package name it qualifies. */
+.docs-table td .docs-badge-internal {
+  margin-right: .4rem;
+}

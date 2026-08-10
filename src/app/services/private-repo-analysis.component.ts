@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AuthService } from './auth.service';
-import { RepoHealthAnalysisService } from './repo-health-analysis.service';
+import { RepoHealthAnalysisService, RepositoryAnalysisResult } from './repo-health-analysis.service';
+import { GithubAppService, GithubAppInstallation } from './github-app.service';
 import { IconComponent } from '@/app/shared/icon/icon';
 
 /**
@@ -10,22 +11,24 @@ import { IconComponent } from '@/app/shared/icon/icon';
  *
  * Features:
  * - Accepts repository URL (https://github.com/owner/repo format)
- * - Uses stored GitHub token from AuthService (sessionStorage)
- * - Calls backend /repo-health/private endpoint
+ * - Requires the caller to be signed in to DepVault AND to have connected the
+ *   DepVault GitHub App to the org/account that owns the repo (see
+ *   GithubAppService) — access to a private repo is granted by installing a
+ *   GitHub App with the App's own scoped permissions, never by handing this
+ *   product a personal access token.
+ * - Calls backend /repo-health/private endpoint with the selected installation id
  * - Displays analysis results with security alerts, vulnerability info, etc.
  * - Handles errors gracefully without exposing sensitive data
  *
  * Security Considerations:
- * - Only uses token when user is authenticated (checked via AuthService.isAuthenticated())
- * - Token never exposed in logs, console, or error messages
+ * - No GitHub credential of any kind ever touches this component or the browser
  * - Only sends requests to internal API endpoints
  * - Sanitizes error responses before displaying to user
- * - Session-based token is auto-cleared on browser close
  */
 @Component({
   selector: 'app-private-repo-analysis',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent],
   template: `
     <div class="private-repo-analysis-container">
       <div class="analysis-section">
@@ -38,12 +41,39 @@ import { IconComponent } from '@/app/shared/icon/icon';
         @if (!authService.isAuthenticated()) {
           <div class="alert alert-warning">
             <app-icon iconType="alert" class="alert-icon"></app-icon>
+            <span>Sign in to your DepVault account first to analyze private repositories.</span>
+          </div>
+        } @else if (isLoadingInstallations) {
+          <p class="description">Checking your connected GitHub App installations…</p>
+        } @else if (installations.length === 0) {
+          <div class="alert alert-warning">
+            <app-icon iconType="alert" class="alert-icon"></app-icon>
             <span>
-              You must authenticate with a GitHub token first to analyze private repositories.
-              Please set up your GitHub token above.
+              Connect the DepVault GitHub App to the account or organization that owns your private
+              repository — DepVault never asks for a personal access token.
             </span>
           </div>
+          <button type="button" class="btn btn-primary" [disabled]="isConnectingApp" (click)="connectGithubApp()">
+            @if (isConnectingApp) {
+              <span class="spinner"></span>
+              Redirecting to GitHub…
+            } @else {
+              <app-icon iconType="github" class="btn-icon"></app-icon>
+              Connect GitHub App
+            }
+          </button>
+          @if (connectError) {
+            <div class="alert alert-error"><span>{{ connectError }}</span></div>
+          }
         } @else {
+          <div class="form-group">
+            <label for="installation-select">GitHub App Installation</label>
+            <select id="installation-select" class="repo-url-input" [(ngModel)]="selectedInstallationId" [ngModelOptions]="{standalone: true}">
+              @for (installation of installations; track installation.installationId) {
+                <option [value]="installation.installationId">{{ installation.accountLogin || ('Installation #' + installation.installationId) }}</option>
+              }
+            </select>
+          </div>
           <form [formGroup]="analysisForm" (ngSubmit)="onAnalyzePrivateRepo()">
             <div class="form-group">
               <label for="repo-url">Repository URL</label>
@@ -113,9 +143,9 @@ import { IconComponent } from '@/app/shared/icon/icon';
                     <label>Overall Health</label>
                     <div
                       class="health-score"
-                      [ngClass]="'score-' + getHealthLevel(analysisResult.overall_health?.score)"
+                      [ngClass]="'score-' + getHealthLevel(analysisResult.overall_health.score)"
                     >
-                      {{ analysisResult.overall_health?.score || 'N/A' }}%
+                      {{ analysisResult.overall_health.score }}%
                     </div>
                   </div>
 
@@ -170,19 +200,19 @@ import { IconComponent } from '@/app/shared/icon/icon';
                     <div class="alerts-list">
                       @for (
                         alert of analysisResult.security_alert_details.slice(0, 5);
-                        track alert.event_id
+                        track alert.id
                       ) {
                         <div
                           class="alert-item"
-                          [ngClass]="'severity-' + (alert.severity || 'unknown').toLowerCase()"
+                          [ngClass]="'severity-' + (alert.security_advisory.severity || 'unknown').toLowerCase()"
                         >
-                          <div class="alert-severity">{{ alert.severity || 'UNKNOWN' }}</div>
+                          <div class="alert-severity">{{ alert.security_advisory.severity || 'UNKNOWN' }}</div>
                           <div class="alert-details">
                             <div class="alert-type">
-                              {{ alert.type || alert.rule_id || 'Security Alert' }}
+                              {{ alert.dependency.package.name || 'Security Alert' }}
                             </div>
                             <div class="alert-description">
-                              {{ alert.description || 'No description available' }}
+                              {{ alert.security_advisory.summary || alert.security_advisory.description || 'No description available' }}
                             </div>
                           </div>
                         </div>
@@ -202,10 +232,9 @@ import { IconComponent } from '@/app/shared/icon/icon';
                   <div class="dependencies-section">
                     <h6>Risky Dependencies</h6>
                     <div class="dependencies-list">
-                      @for (dep of analysisResult.risky_dependencies.slice(0, 5); track dep.name) {
+                      @for (dep of analysisResult.risky_dependencies.slice(0, 5); track dep) {
                         <div class="dependency-item">
-                          <div class="dep-name">{{ dep.name || 'Unknown' }}</div>
-                          <div class="dep-issue">{{ dep.reason || 'Potential vulnerability' }}</div>
+                          <div class="dep-name">{{ dep }}</div>
                         </div>
                       }
                     </div>
@@ -229,7 +258,13 @@ export class PrivateRepoAnalysisComponent implements OnInit {
   analysisForm: FormGroup;
   isAnalyzing = false;
   errorMessage: string | null = null;
-  analysisResult: any = null;
+  analysisResult: RepositoryAnalysisResult | null = null;
+
+  installations: GithubAppInstallation[] = [];
+  isLoadingInstallations = true;
+  selectedInstallationId = '';
+  isConnectingApp = false;
+  connectError: string | null = null;
 
   // GitHub URL pattern: https://github.com/owner/repo
   private readonly GITHUB_URL_PATTERN =
@@ -238,6 +273,7 @@ export class PrivateRepoAnalysisComponent implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly repoHealthAnalysisService: RepoHealthAnalysisService,
+    private readonly githubAppService: GithubAppService,
     public readonly authService: AuthService,
   ) {
     this.analysisForm = this.fb.group({
@@ -246,20 +282,56 @@ export class PrivateRepoAnalysisComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Monitor token expiration
-    this.monitorTokenExpiration();
+    this.monitorSession();
+    if (this.authService.isAuthenticated()) {
+      this.loadInstallations();
+    } else {
+      this.isLoadingInstallations = false;
+    }
   }
 
-  /**
-   * Monitor token expiration and disable form if token expires
-   */
-  private monitorTokenExpiration(): void {
+  private loadInstallations(): void {
+    this.isLoadingInstallations = true;
+    this.githubAppService.getMyInstallations().subscribe({
+      next: (installations) => {
+        this.installations = installations;
+        if (installations.length > 0 && !this.selectedInstallationId) {
+          this.selectedInstallationId = installations[0].installationId;
+        }
+        this.isLoadingInstallations = false;
+      },
+      error: (err) => {
+        console.error('Failed to load GitHub App installations', err);
+        this.isLoadingInstallations = false;
+      },
+    });
+  }
+
+  connectGithubApp(): void {
+    this.isConnectingApp = true;
+    this.connectError = null;
+    this.githubAppService.getInstallUrl().subscribe({
+      next: (res) => {
+        window.location.href = res.url;
+      },
+      error: (err) => {
+        this.isConnectingApp = false;
+        this.connectError =
+          err?.status === 503
+            ? 'Private repository analysis is not available yet — the GitHub App is not configured on this server.'
+            : 'Failed to start the GitHub App connection. Please try again.';
+      },
+    });
+  }
+
+  /** Session (DepVault JWT) expiration check — this used to reference a stored GitHub token, which no longer exists. */
+  private monitorSession(): void {
     setInterval(() => {
       if (!this.authService.isAuthenticated()) {
         this.analysisForm.disable();
-        this.errorMessage = 'Your GitHub token has expired. Please authenticate again.';
+        this.errorMessage = 'Your session has expired. Please sign in again.';
       }
-    }, 5000); // Check every 5 seconds
+    }, 5000);
   }
 
   /**
@@ -267,15 +339,15 @@ export class PrivateRepoAnalysisComponent implements OnInit {
    *
    * Security Flow:
    * 1. Validate repository URL format (client-side)
-   * 2. Get token from AuthService (sessionStorage-based)
-   * 3. Call backend /repo-health/private endpoint with URL and token
-   * 4. Backend validates token with GitHub API
-   * 5. Backend analyzes private repo (token never exposed in response)
-   * 6. Display results with alert details
+   * 2. Confirm the caller selected a connected GitHub App installation
+   * 3. Call backend /repo-health/private endpoint with the URL + installation id
+   * 4. Backend verifies the caller owns that installation, exchanges it for a
+   *    short-lived Installation Access Token, and analyzes the repo
+   * 5. Display results with alert details
    */
   async onAnalyzePrivateRepo(): Promise<void> {
-    if (!this.analysisForm.valid || !this.authService.isAuthenticated()) {
-      this.errorMessage = 'Invalid repository URL or authentication required';
+    if (!this.analysisForm.valid || !this.authService.isAuthenticated() || !this.selectedInstallationId) {
+      this.errorMessage = 'Invalid repository URL, authentication, or GitHub App installation required';
       return;
     }
 
@@ -286,10 +358,9 @@ export class PrivateRepoAnalysisComponent implements OnInit {
     try {
       const repoUrl = this.analysisForm.get('repoUrl')?.value.trim();
 
-      // Call backend endpoint
-      // Token is automatically injected by AuthInterceptor
+      // Call backend endpoint — JWT is automatically injected by AuthInterceptor
       const response = await this.repoHealthAnalysisService
-        .analyzePrivateRepository(repoUrl)
+        .analyzePrivateRepository(repoUrl, this.selectedInstallationId)
         .toPromise();
 
       if (response) {

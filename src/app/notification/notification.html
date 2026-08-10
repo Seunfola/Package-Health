@@ -19,6 +19,34 @@
       </div>
     </div>
 
+    <div class="notifications-toolbar">
+      <form class="search-form" (ngSubmit)="onSearchSubmit()">
+        <input
+          type="text"
+          name="notificationSearch"
+          [(ngModel)]="searchTerm"
+          placeholder="Search notifications…"
+          aria-label="Search notifications"
+        />
+        <button type="submit" class="toolbar-button">Search</button>
+        @if (isSearching) {
+          <button type="button" class="toolbar-button" (click)="clearSearch()">Clear</button>
+        }
+      </form>
+
+      <div class="bulk-actions">
+        @if (hasSelection) {
+          <span class="selection-count">{{ selectedIds.size }} selected</span>
+          <button class="toolbar-button" [disabled]="isBusy" (click)="markSelectedAsRead()">Mark read</button>
+          <button class="toolbar-button danger" [disabled]="isBusy" (click)="deleteSelected()">Delete selected</button>
+          <button class="toolbar-button" (click)="clearSelection()">Clear selection</button>
+        } @else {
+          <button class="toolbar-button" [disabled]="isBusy" (click)="cleanupOld()">Clean up old (30d+)</button>
+          <button class="toolbar-button danger" [disabled]="isBusy || notifications.length === 0" (click)="clearAll()">Clear all</button>
+        }
+      </div>
+    </div>
+
     @if (isLoading) {
       <div class="notifications-list"><div class="notification-skeleton"></div><div class="notification-skeleton"></div></div>
     } @else if (error) {
@@ -28,9 +56,26 @@
     } @else {
     <div class="notifications-list">
       @for (notification of filteredNotifications; track notification.id) {
-      <app-notification-item [type]="notification.type" [title]="notification.title"
-        [repository]="notification.repository" [time]="notification.time" [iconType]="notification.iconType"
-        [isRead]="notification.isRead" (click)="!notification.isRead && markAsRead(notification.id)"></app-notification-item>
+      <div class="notification-row">
+        <input
+          type="checkbox"
+          class="notification-select"
+          [checked]="isSelected(notification.id)"
+          (click)="toggleSelect(notification.id, $event)"
+          aria-label="Select notification"
+        />
+        <app-notification-item
+          [type]="notification.type"
+          [title]="notification.title"
+          [repository]="notification.repository"
+          [time]="notification.time"
+          [iconType]="notification.iconType"
+          [isRead]="notification.isRead"
+          [detailsUrl]="notification.detailsUrl"
+          (click)="!notification.isRead && markAsRead(notification.id)"
+          (dismiss)="dismiss(notification.id)"
+        ></app-notification-item>
+      </div>
       }
     </div>
     }

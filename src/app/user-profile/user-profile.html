@@ -14,9 +14,6 @@
             <img [src]="userAvatar" alt="User Avatar" class="user-avatar">
             <h3 class="user-name">{{ userName }}</h3>
             <p class="user-email">{{ userEmail }}</p>
-            @if (phoneNumber) {
-              <p class="user-email">{{ phoneNumber }}</p>
-            }
             @if (location) {
               <p class="user-email">{{ location }}</p>
             }
@@ -31,20 +28,22 @@
               <div class="social-icon">
                 <img src="assets/icons/github.svg" alt="GitHub">
               </div>
-              <span class="social-username">{{ githubUsername }}</span>
+              <span class="social-username">{{ githubUrl || 'Not linked' }}</span>
             </div>
 
             <div class="social-link-item">
               <div class="social-icon">
                 <img src="assets/icons/linkedin.svg" alt="LinkedIn" class="add-icon" width="20" height="20" />
               </div>
-              <span class="social-username">{{ linkedinProfileUrl }}</span>
+              <span class="social-username">{{ linkedinUrl || 'Not linked' }}</span>
             </div>
 
-            <button class="add-social-btn" (click)="addSocialLink()">
-              <img src="assets/icons/circleplus.svg" alt="add" class="add-icon" width="20" height="20" />
-              Add Social Link
-            </button>
+            <div class="social-link-item">
+              <div class="social-icon">
+                <img src="assets/icons/circleplus.svg" alt="Twitter" class="add-icon" width="20" height="20" />
+              </div>
+              <span class="social-username">{{ twitterUrl || 'Not linked' }}</span>
+            </div>
           </div>
         </div>
 
@@ -62,12 +61,36 @@
               <input id="resume-upload" type="file" accept=".pdf,.txt,.md,.json" (change)="onFileSelected($event)">
             </div>
             <p class="file-status">{{ resumeFileName ? resumeFileName : 'No resume file selected.' }}</p>
-            @if (profileSummary) {
-              <p class="card-description">{{ profileSummary }}</p>
-            }
-            @if (skills.length > 0) {
-              <p class="card-description">Skills: {{ skills.join(', ') }}</p>
-            }
+          </div>
+
+          <div class="profile-card profile-details-edit">
+            <h4 class="card-title">Profile Details</h4>
+            <p class="card-description">A short bio, your location, and your skills — shown on your public profile page.</p>
+
+            <div class="social-link-form">
+              <h5 class="social-platform">Bio</h5>
+              <div class="input-group">
+                <textarea [(ngModel)]="bio" rows="3" placeholder="A short summary about you" maxlength="2000"></textarea>
+              </div>
+            </div>
+
+            <div class="social-link-form">
+              <h5 class="social-platform">Location</h5>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="location" placeholder="City, Country" maxlength="200">
+              </div>
+            </div>
+
+            <div class="social-link-form">
+              <h5 class="social-platform">Skills</h5>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="skillsInput" placeholder="TypeScript, Angular, NestJS (comma-separated)">
+              </div>
+            </div>
+
+            <button class="link-btn" (click)="saveProfile()" [disabled]="isSaving">
+              {{ isSaving ? 'Saving…' : 'Save Profile' }}
+            </button>
           </div>
 
           <div class="profile-card social-media-link">

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, AuthState } from '../services/auth.service';
 import { RepoService, RepoListItem, RepoStats } from '../services/RepoService';
+import { LeakGuardService, LeakGuardScanResult } from '../services/leak-guard.service';
 import { StatusCard } from '../reusable/status-card/status-card';
 import { Observable } from 'rxjs';
 import { UnauthorizedWarning } from '../shared/unauthorized-warning/unauthorized-warning';
@@ -45,9 +46,14 @@ export class DashboardComponent implements OnInit {
   total = 0;
   totalPages = 0;
 
+  leakScans: LeakGuardScanResult[] = [];
+  isLoadingLeakScans = true;
+  leakScansError = '';
+
   constructor(
     private readonly authService: AuthService,
     private readonly repoService: RepoService,
+    private readonly leakGuardService: LeakGuardService,
     private readonly router: Router,
   ) {
     this.authState$ = this.authService.authState$;
@@ -56,6 +62,41 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.loadRepos();
     this.loadStats();
+    this.loadLeakScans();
+  }
+
+  loadLeakScans(): void {
+    this.isLoadingLeakScans = true;
+    this.leakScansError = '';
+
+    this.leakGuardService.getMyLeakScans().subscribe({
+      next: (scans) => {
+        this.leakScans = scans;
+        this.isLoadingLeakScans = false;
+      },
+      error: (err) => {
+        console.error('Failed to load LeakGuard scans', err);
+        this.leakScansError = 'Failed to load your LeakGuard scans.';
+        this.isLoadingLeakScans = false;
+      },
+    });
+  }
+
+  /** Findings that actually need attention — excludes allowlisted/placeholder matches, same as the CLI's own gate logic. */
+  activeFindingCount(scan: LeakGuardScanResult): number {
+    return scan.findings.filter((f) => !f.allowlisted && !f.isLikelyPlaceholder).length;
+  }
+
+  get totalActiveLeakFindings(): number {
+    return this.leakScans.reduce((sum, scan) => sum + this.activeFindingCount(scan), 0);
+  }
+
+  get reposWithActiveLeaks(): number {
+    return this.leakScans.filter((scan) => this.activeFindingCount(scan) > 0).length;
+  }
+
+  viewLeakScan(scan: LeakGuardScanResult): void {
+    this.router.navigate(['/repository-details', scan.owner, scan.repo]);
   }
 
   loadRepos(page: number = 1): void {

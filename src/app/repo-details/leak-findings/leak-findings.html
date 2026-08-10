@@ -1,0 +1,74 @@
+<div class="leak-findings-container">
+  <div class="leak-header">
+    <h3>LeakGuard — Secret Scan</h3>
+    <p>Hardcoded API keys, tokens, and credentials found in this repository.</p>
+
+    @if (hasScan) {
+      <div class="leak-summary">
+        <div class="summary-stat">
+          <span class="stat-label">Total:</span>
+          <span class="stat-value">{{ findings.length }}</span>
+        </div>
+        <div class="summary-stat critical">
+          <span class="stat-label">Critical:</span>
+          <span class="stat-value">{{ criticalCount }}</span>
+        </div>
+        <div class="summary-stat high">
+          <span class="stat-label">High:</span>
+          <span class="stat-value">{{ highCount }}</span>
+        </div>
+        @if (liveCount > 0) {
+          <div class="summary-stat live">
+            <span class="stat-label">Confirmed live:</span>
+            <span class="stat-value">{{ liveCount }}</span>
+          </div>
+        }
+        @if (lastScannedLabel) {
+          <div class="summary-stat scanned-at">
+            <span class="stat-label">Last synced:</span>
+            <span class="stat-value">{{ lastScannedLabel }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="empty-state">
+      <p>Loading secret scan results&hellip;</p>
+    </div>
+  } @else if (error) {
+    <div class="empty-state error">
+      <p class="empty-title">Couldn't load LeakGuard scan results</p>
+      <p class="empty-hint">{{ error }}</p>
+    </div>
+  } @else if (!hasScan) {
+    <div class="empty-state no-scan">
+      <p class="empty-title">No LeakGuard scan uploaded yet</p>
+      <p class="empty-hint">
+        Run
+        <code>depvault leakguard scan --upload</code>
+        from this repository to sync secret-detection results to this dashboard.
+      </p>
+    </div>
+  } @else if (isClean) {
+    <div class="empty-state clean">
+      <p class="empty-title">No secrets detected</p>
+      <p class="empty-hint">The most recent LeakGuard scan found nothing to report.</p>
+    </div>
+  } @else {
+    <div class="leak-list-header">
+      <span class="col-severity">Severity</span>
+      <span class="col-type">Secret Type</span>
+      <span class="col-location">Location</span>
+      <span class="col-match">Match</span>
+      <span class="col-liveness">Liveness</span>
+      <span class="col-status">Status</span>
+    </div>
+    <div class="leak-list">
+      @for (finding of findings; track finding.fingerprint) {
+        <app-leak-finding-item [finding]="finding"></app-leak-finding-item>
+      }
+    </div>
+  }
+</div>

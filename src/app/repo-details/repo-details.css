@@ -8,11 +8,47 @@
     font-size: 30px;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .page-title span {
     color: var(--accent-teal);
+}
+
+.page-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.generate-notifications-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.generate-notifications-btn:hover:not(:disabled) {
+    background-color: rgba(15, 23, 42, 0.05);
+}
+
+.generate-notifications-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.generate-notifications-message {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
 }
 
 app-repo-details-dash {

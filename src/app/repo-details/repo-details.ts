@@ -1,13 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, of } from 'rxjs';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import { RepoDetailsDash } from './repo-details-dash/repo-details-dash';
 import { ChartCard } from './git-graph/chart-card/chart-card';
 import { LineChart } from './line-chart/line-chart';
 import { CodeQualityMetrics } from './code-quality-metrics/code-quality-metrics';
 import { SecurityAlerts } from './security-alerts/security-alerts';
+import { LeakFindings } from './leak-findings/leak-findings';
 import { AnalysisData, RepoService } from '../services/RepoService';
+import { LeakGuardScanResult, LeakGuardService } from '../services/leak-guard.service';
+import { NotificationService } from '../services/notification.service';
 import { ContributionGraph } from './git-graph/contribution-graph/contribution-graph';
 import { DependencyGraph } from './dependency-graph/dependency-graph';
 import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
@@ -22,6 +27,7 @@ import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
     LineChart,
     CodeQualityMetrics,
     SecurityAlerts,
+    LeakFindings,
     ContributionGraph,
     DependencyGraph,
     EmptyStateCard,
@@ -33,6 +39,17 @@ export class RepoDetails implements OnInit {
   analysisData: AnalysisData | null = null;
   /** Set on a failed fetch (as opposed to "no repo selected") so the empty state can say what actually happened. */
   loadError: string | null = null;
+
+  /** Null while loading AND when no LeakGuard scan has ever been uploaded for this repo — the 404 case is expected, not an error, since syncing is opt-in. */
+  leakScan: LeakGuardScanResult | null = null;
+  leakScanLoading = true;
+  /** Set only on a genuine fetch failure (network/5xx) — a 404 is the expected "never synced" case and must not set this, or a real outage would misreport as "no scan uploaded yet". */
+  leakScanError: string | null = null;
+
+  private ownerParam = '';
+  private repoParam = '';
+  isGeneratingNotifications = false;
+  generateNotificationsMessage: string | null = null;
 
   public commitData: ChartConfiguration<'line'>['data'] = {
     datasets: [
@@ -74,6 +91,8 @@ export class RepoDetails implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly repoService: RepoService,
+    private readonly leakGuardService: LeakGuardService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   ngOnInit() {
@@ -81,6 +100,8 @@ export class RepoDetails implements OnInit {
     const name = this.route.snapshot.paramMap.get('name');
 
     if (owner && name) {
+      this.ownerParam = owner;
+      this.repoParam = name;
       this.repoService.getAnalysisData(owner, name).subscribe({
         next: (data) => {
           this.analysisData = data;
@@ -92,6 +113,22 @@ export class RepoDetails implements OnInit {
           this.loadError = 'Failed to load repository analysis. Please try again.';
         },
       });
+
+      this.leakGuardService
+        .getLeakScan(owner, name)
+        .pipe(
+          catchError((err: HttpErrorResponse) => {
+            if (err.status !== 404) {
+              console.error('Error fetching LeakGuard scan:', err);
+              this.leakScanError = 'Failed to load LeakGuard scan results.';
+            }
+            return of(null);
+          }),
+        )
+        .subscribe((scan) => {
+          this.leakScan = scan;
+          this.leakScanLoading = false;
+        });
     }
     // No owner/name in the route: analysisData stays null and the template's
     // "No repository data available" empty state renders — no fake data.
@@ -99,6 +136,27 @@ export class RepoDetails implements OnInit {
 
   returnToDashboard(): void {
     void this.router.navigate(['/dashboard']);
+  }
+
+  generateNotifications(): void {
+    if (!this.ownerParam || !this.repoParam) return;
+    this.isGeneratingNotifications = true;
+    this.generateNotificationsMessage = null;
+
+    this.notificationService.generateForRepository(this.ownerParam, this.repoParam).subscribe({
+      next: (res) => {
+        this.isGeneratingNotifications = false;
+        this.generateNotificationsMessage =
+          res.generated > 0
+            ? `Generated ${res.generated} notification${res.generated === 1 ? '' : 's'} — check your Notifications page.`
+            : 'No new notifications to generate — everything is already up to date.';
+      },
+      error: (err) => {
+        console.error('Failed to generate notifications:', err);
+        this.isGeneratingNotifications = false;
+        this.generateNotificationsMessage = 'Failed to generate notifications.';
+      },
+    });
   }
 
   initializeChartData() {

@@ -1,0 +1,117 @@
+.leak-item {
+  display: grid;
+  grid-template-columns: 90px 1.3fr 1.3fr 1fr 110px 110px;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.leak-item:last-child {
+  border-bottom: none;
+}
+
+.leak-item.live {
+  background-color: rgba(220, 38, 38, 0.05);
+}
+
+.leak-item.suppressed {
+  opacity: 0.6;
+}
+
+.leak-severity {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  width: fit-content;
+}
+
+.leak-severity.critical {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.leak-severity.high {
+  background-color: rgba(220, 38, 38, 0.12);
+  color: #991b1b;
+}
+
+.leak-severity.medium {
+  background-color: rgba(217, 119, 6, 0.14);
+  color: #92400e;
+}
+
+.leak-severity.low {
+  background-color: rgba(100, 116, 139, 0.14);
+  color: var(--text-secondary);
+}
+
+.leak-type {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leak-location {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leak-match code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+  background-color: rgba(15, 23, 42, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: var(--text-primary);
+}
+
+.leak-liveness {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.leak-liveness.live {
+  color: #dc2626;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.leak-status {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.leak-status.suppressed {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .leak-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 16px;
+  }
+
+  .leak-match,
+  .leak-location {
+    white-space: normal;
+    word-break: break-all;
+  }
+}

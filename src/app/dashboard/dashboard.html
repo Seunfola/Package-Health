@@ -81,6 +81,58 @@
     actionLabel="Connect GitHub"
     (action)="connectRepo()">
   </app-empty-state-card>
+
+  <!-- LeakGuard Scans -->
+  <section class="repos-section leak-scans-section" *ngIf="!isLoadingLeakScans && leakScans.length > 0">
+    <div class="repos-header">
+      <h2>Your LeakGuard Scans</h2>
+      <span class="leak-scans-summary">
+        <span [ngClass]="reposWithActiveLeaks > 0 ? 'has-alerts' : 'no-alerts'">
+          {{ totalActiveLeakFindings }} active finding{{ totalActiveLeakFindings === 1 ? '' : 's' }}
+        </span>
+        across {{ reposWithActiveLeaks }} repositor{{ reposWithActiveLeaks === 1 ? 'y' : 'ies' }}
+      </span>
+    </div>
+
+    <div class="table-card">
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>Repository</th>
+            <th>Status</th>
+            <th>Active Findings</th>
+            <th>Mode</th>
+            <th>Last Synced</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let scan of leakScans" (click)="viewLeakScan(scan)" class="repo-row">
+            <td class="pkg-name">{{ scan.owner }}/{{ scan.repo }}</td>
+            <td>
+              <span class="health-badge" [ngClass]="activeFindingCount(scan) > 0 ? 'poor' : 'excellent'">
+                {{ activeFindingCount(scan) > 0 ? 'Action needed' : 'Clean' }}
+              </span>
+            </td>
+            <td>
+              <span [ngClass]="activeFindingCount(scan) > 0 ? 'has-alerts' : 'no-alerts'">
+                {{ activeFindingCount(scan) }}
+              </span>
+            </td>
+            <td>{{ scan.mode }}</td>
+            <td>{{ scan.updatedAt ? (scan.updatedAt | date: 'mediumDate') : 'Unknown' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="repos-error" *ngIf="leakScansError">{{ leakScansError }}</p>
+
+  <app-empty-state-card
+    *ngIf="!isLoadingLeakScans && leakScans.length === 0 && !leakScansError"
+    title="No LeakGuard scans synced yet"
+    message="Run &quot;depvault leakguard scan --upload&quot; from any repository to sync secret-detection results here."
+  ></app-empty-state-card>
   </div>
   
   <ng-template #unauthorized>
