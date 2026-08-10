@@ -77,9 +77,11 @@ export class HeroSection {
       const visibility = await this.detectRepositoryVisibility(parsedRepo.owner, parsedRepo.name);
       const isAuthenticated = this.authService.isAuthenticated();
 
-      if (visibility === 'private' && !isAuthenticated) {
+      if (visibility === 'private') {
         alert(
-          'This repository appears to be private. Login with a GitHub token in Settings before analyzing private repositories.',
+          isAuthenticated
+            ? 'This repository appears to be private. Use the "Analyze Private Repository" form below — it needs a connected GitHub App installation, not a token.'
+            : 'This repository appears to be private. Sign in, then use the "Analyze Private Repository" form below.',
         );
         return;
       }
@@ -163,11 +165,11 @@ export class HeroSection {
   private handleError(error: any) {
     if (error.status === 401 || error.status === 403) {
       alert(
-        'Authentication required or insufficient token scopes. Login to analyze private repositories.',
+        'Authentication required, or your GitHub App installation is not connected to this repository. Use the "Analyze Private Repository" form for private repos.',
       );
     } else if (error.status === 404 && this.activeTab === 'github') {
       alert(
-        'Repository not found. If it is private, login with a GitHub token and try again. Otherwise verify the URL.',
+        'Repository not found. If it is private, use the "Analyze Private Repository" form below. Otherwise verify the URL.',
       );
     } else {
       alert('Analysis failed. Please verify the input and try again.');
@@ -195,16 +197,19 @@ export class HeroSection {
     return null;
   }
 
+  /**
+   * Unauthenticated probe against GitHub's public API — DepVault never holds
+   * a GitHub credential to attach here (see AuthService; the DepVault
+   * session JWT this used to send as a Bearer token isn't a GitHub
+   * credential at all, GitHub would just reject it). A private repo 404s for
+   * an anonymous request either way, which is exactly the signal this needs.
+   */
   private async detectRepositoryVisibility(owner: string, name: string): Promise<RepoVisibility> {
     try {
-      const token = this.authService.getToken();
       const headers: Record<string, string> = {
         Accept: 'application/vnd.github+json',
         'User-Agent': 'DepVault',
       };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
 
       const response = await fetch(`https://api.github.com/repos/${owner}/${name}`, { headers });
       if (!response.ok) return 'unknown';

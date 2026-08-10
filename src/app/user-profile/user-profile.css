@@ -209,7 +209,8 @@
   margin-right: 10px;
 }
 
-.input-group input {
+.input-group input,
+.input-group textarea {
   flex-grow: 1;
   min-width: 0;
   background: none;
@@ -218,10 +219,18 @@
   font-size: 1em;
   padding: 5px 0;
   outline: none;
+  font-family: inherit;
+  resize: vertical;
 }
 
-.input-group input::placeholder {
+.input-group input::placeholder,
+.input-group textarea::placeholder {
   color: var(--text-muted);
+}
+
+.link-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .link-btn {

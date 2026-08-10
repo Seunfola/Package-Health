@@ -1,8 +1,14 @@
 <div *ngIf="analysisData" class="container">
-  <h2 class="page-title">
-    Repository Details:
-    <span>{{ analysisData.repoName }}</span>
-  </h2>
+  <div class="page-title-row">
+    <h2 class="page-title">
+      Repository Details:
+      <span>{{ analysisData.repoName }}</span>
+    </h2>
+    <button class="generate-notifications-btn" [disabled]="isGeneratingNotifications" (click)="generateNotifications()">
+      {{ isGeneratingNotifications ? 'Generating…' : 'Generate Notifications' }}
+    </button>
+  </div>
+  <p *ngIf="generateNotificationsMessage" class="generate-notifications-message">{{ generateNotificationsMessage }}</p>
 
   <div *ngIf="analysisData.degraded" class="degraded-banner" role="status">
     <span class="degraded-icon">&#9888;</span>

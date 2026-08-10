@@ -12,6 +12,7 @@ import { SecurityAlerts } from './security-alerts/security-alerts';
 import { LeakFindings } from './leak-findings/leak-findings';
 import { AnalysisData, RepoService } from '../services/RepoService';
 import { LeakGuardScanResult, LeakGuardService } from '../services/leak-guard.service';
+import { NotificationService } from '../services/notification.service';
 import { ContributionGraph } from './git-graph/contribution-graph/contribution-graph';
 import { DependencyGraph } from './dependency-graph/dependency-graph';
 import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
@@ -44,6 +45,11 @@ export class RepoDetails implements OnInit {
   leakScanLoading = true;
   /** Set only on a genuine fetch failure (network/5xx) — a 404 is the expected "never synced" case and must not set this, or a real outage would misreport as "no scan uploaded yet". */
   leakScanError: string | null = null;
+
+  private ownerParam = '';
+  private repoParam = '';
+  isGeneratingNotifications = false;
+  generateNotificationsMessage: string | null = null;
 
   public commitData: ChartConfiguration<'line'>['data'] = {
     datasets: [
@@ -86,6 +92,7 @@ export class RepoDetails implements OnInit {
     private readonly router: Router,
     private readonly repoService: RepoService,
     private readonly leakGuardService: LeakGuardService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   ngOnInit() {
@@ -93,6 +100,8 @@ export class RepoDetails implements OnInit {
     const name = this.route.snapshot.paramMap.get('name');
 
     if (owner && name) {
+      this.ownerParam = owner;
+      this.repoParam = name;
       this.repoService.getAnalysisData(owner, name).subscribe({
         next: (data) => {
           this.analysisData = data;
@@ -127,6 +136,27 @@ export class RepoDetails implements OnInit {
 
   returnToDashboard(): void {
     void this.router.navigate(['/dashboard']);
+  }
+
+  generateNotifications(): void {
+    if (!this.ownerParam || !this.repoParam) return;
+    this.isGeneratingNotifications = true;
+    this.generateNotificationsMessage = null;
+
+    this.notificationService.generateForRepository(this.ownerParam, this.repoParam).subscribe({
+      next: (res) => {
+        this.isGeneratingNotifications = false;
+        this.generateNotificationsMessage =
+          res.generated > 0
+            ? `Generated ${res.generated} notification${res.generated === 1 ? '' : 's'} — check your Notifications page.`
+            : 'No new notifications to generate — everything is already up to date.';
+      },
+      error: (err) => {
+        console.error('Failed to generate notifications:', err);
+        this.isGeneratingNotifications = false;
+        this.generateNotificationsMessage = 'Failed to generate notifications.';
+      },
+    });
   }
 
   initializeChartData() {

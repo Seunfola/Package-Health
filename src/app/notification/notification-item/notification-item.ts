@@ -1,6 +1,6 @@
 import { IconComponent } from '@/app/shared/icon/icon';
 import { CommonModule, NgClass } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-notification-item',
@@ -10,7 +10,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
   styleUrl: './notification-item.css',
 })
 export class NotificationItem implements OnChanges {
-[x: string]: any;
+  /** Raw backend enum value, e.g. `SECURITY_VULNERABILITY` — drives `typeClass`; use `typeLabel` for display. */
   @Input() type: string = '';
   @Input() title: string = '';
   @Input() message: string = '';
@@ -19,6 +19,10 @@ export class NotificationItem implements OnChanges {
   @Input() severity: string = '';
   @Input() iconType: string = '';
   @Input() isRead: boolean = false;
+  @Input() detailsUrl?: string;
+
+  /** Emitted when "Dismiss" is clicked — the parent owns the actual delete call. */
+  @Output() dismiss = new EventEmitter<void>();
 
   formattedTime: string = '';
 
@@ -56,21 +60,45 @@ export class NotificationItem implements OnChanges {
     }
   }
 
+  // `type` is the raw backend enum (NOTIFICATION_TYPES in notification.constants.ts)
+  // — SECURITY_VULNERABILITY, not "Security Vulnerability". These switches
+  // previously matched human-readable strings the API never actually sends,
+  // so typeClass silently never applied and the banner showed the raw enum.
   get typeClass(): string {
     switch (this.type) {
-      case 'Security Vulnerability':
+      case 'SECURITY_VULNERABILITY':
         return 'security-vulnerability';
-      case 'Dependency Update':
+      case 'SECURITY_ALERT':
+        return 'security-vulnerability';
+      case 'DEPENDENCY_UPDATE':
         return 'dependency-update';
-      case 'New Issue':
+      case 'NEW_ISSUE':
         return 'new-issue';
-      case 'Pull Request':
+      case 'PULL_REQUEST':
         return 'pull-request';
-      case 'System Alert':
+      case 'SYSTEM_ALERT':
         return 'system-alert';
       default:
         return '';
     }
+  }
+
+  get typeLabel(): string {
+    return this.type
+      .toLowerCase()
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  onDismiss(event: Event): void {
+    event.stopPropagation();
+    this.dismiss.emit();
+  }
+
+  onViewDetails(event: Event): void {
+    event.stopPropagation();
+    if (this.detailsUrl) window.open(this.detailsUrl, '_blank', 'noopener,noreferrer');
   }
 
 }

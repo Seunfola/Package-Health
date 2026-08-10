@@ -1,6 +1,6 @@
 <div class="notification-item" [ngClass]="typeClass">
   <div class="banner-container">
-    <div class="type-banner">{{ type }}</div>
+    <div class="type-banner">{{ typeLabel }}</div>
   </div>
   <div class="main-content">
     <div class="left-section">
@@ -20,8 +20,10 @@
   <div class="footer-actions">
     <p class="time">{{ formattedTime }}</p>
     <div class="buttons">
-      <button class="view-details">View Details</button>
-      <button class="dismiss">Dismiss</button>
+      @if (detailsUrl) {
+        <button class="view-details" (click)="onViewDetails($event)">View Details</button>
+      }
+      <button class="dismiss" (click)="onDismiss($event)">Dismiss</button>
     </div>
   </div>
 </div>
