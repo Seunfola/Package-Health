@@ -21,10 +21,28 @@
       </div>
     </div>
 
-    @if (isLoggedIn) {
-    <div class="avatar">
-      <img [ngSrc]="userProfileImage" alt="User Avatar" width="40" height="40" />
-    </div>
+    @if ((authState$ | async)?.isAuthenticated) {
+      <div class="user-menu">
+        <button
+          type="button"
+          class="avatar avatar--placeholder"
+          (click)="toggleUserMenu()"
+          [attr.aria-expanded]="showUserMenu"
+          aria-label="Account menu"
+        >
+          <img ngSrc="assets/icons/user.svg" alt="" width="20" height="20" />
+        </button>
+        @if (showUserMenu) {
+          <div class="user-menu__backdrop" (click)="closeUserMenu()"></div>
+          <div class="user-menu__dropdown" role="menu">
+            <p class="user-menu__name">{{ (authState$ | async)?.username || 'Signed in' }}</p>
+            <a routerLink="/home" class="user-menu__item" (click)="closeUserMenu()">DepVault.com</a>
+            <a routerLink="/user-profile" class="user-menu__item" (click)="closeUserMenu()">Profile</a>
+            <a routerLink="/dashboard-settings" class="user-menu__item" (click)="closeUserMenu()">Settings</a>
+            <button type="button" class="user-menu__item user-menu__item--logout" (click)="onLogout()">Log out</button>
+          </div>
+        }
+      </div>
     } @else {
     <button class="avatar avatar--placeholder" (click)="openLoginModal()" aria-label="Open Login">
       <img ngSrc="assets/icons/user.svg" alt="User Icon" width="20" height="20" />

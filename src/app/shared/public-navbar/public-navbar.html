@@ -8,11 +8,37 @@
     <a routerLink="/features" class="nav-link">Features</a>
     <a routerLink="/pricing" class="nav-link">Pricing</a>
     <a routerLink="/docs" class="nav-link">Docs</a>
+    <a routerLink="/home" fragment="about" class="nav-link">About</a>
   </nav>
 
   <div class="public-navbar__actions">
-    <button type="button" class="btn-outline-navbar" (click)="openLoginModal()">Sign In</button>
-    <a routerLink="/get-started" class="btn-primary">Get Started</a>
+    @if ((authState$ | async)?.isAuthenticated) {
+      <a routerLink="/dashboard" class="btn-primary">Dashboard</a>
+      <div class="user-menu">
+        <button
+          type="button"
+          class="user-menu__trigger"
+          (click)="toggleUserMenu()"
+          [attr.aria-expanded]="showUserMenu"
+          aria-label="Account menu"
+        >
+          <img ngSrc="assets/icons/user.svg" alt="" width="18" height="18" />
+        </button>
+        @if (showUserMenu) {
+          <div class="user-menu__backdrop" (click)="closeUserMenu()"></div>
+          <div class="user-menu__dropdown" role="menu">
+            <p class="user-menu__name">{{ (authState$ | async)?.username || 'Signed in' }}</p>
+            <a routerLink="/dashboard" class="user-menu__item" (click)="closeUserMenu()">Dashboard</a>
+            <a routerLink="/user-profile" class="user-menu__item" (click)="closeUserMenu()">Profile</a>
+            <a routerLink="/dashboard-settings" class="user-menu__item" (click)="closeUserMenu()">Settings</a>
+            <button type="button" class="user-menu__item user-menu__item--logout" (click)="onLogout()">Log out</button>
+          </div>
+        }
+      </div>
+    } @else {
+      <button type="button" class="btn-outline-navbar" (click)="openLoginModal()">Sign In</button>
+      <a routerLink="/get-started" class="btn-primary">Get Started</a>
+    }
   </div>
 
   <button
@@ -42,10 +68,20 @@
   <a routerLink="/features" class="mobile-menu__link" (click)="closeMobileMenu()">Features</a>
   <a routerLink="/pricing" class="mobile-menu__link" (click)="closeMobileMenu()">Pricing</a>
   <a routerLink="/docs" class="mobile-menu__link" (click)="closeMobileMenu()">Docs</a>
-  <div class="mobile-menu__actions">
-    <button type="button" class="btn-outline-navbar" (click)="openLoginModal()">Sign In</button>
-    <a routerLink="/get-started" class="btn-primary" (click)="closeMobileMenu()">Get Started</a>
-  </div>
+  <a routerLink="/home" fragment="about" class="mobile-menu__link" (click)="closeMobileMenu()">About</a>
+  @if ((authState$ | async)?.isAuthenticated) {
+    <a routerLink="/dashboard" class="mobile-menu__link" (click)="closeMobileMenu()">Dashboard</a>
+    <a routerLink="/user-profile" class="mobile-menu__link" (click)="closeMobileMenu()">Profile</a>
+    <a routerLink="/dashboard-settings" class="mobile-menu__link" (click)="closeMobileMenu()">Settings</a>
+    <div class="mobile-menu__actions">
+      <button type="button" class="btn-outline-navbar" (click)="onLogout()">Log out</button>
+    </div>
+  } @else {
+    <div class="mobile-menu__actions">
+      <button type="button" class="btn-outline-navbar" (click)="openLoginModal()">Sign In</button>
+      <a routerLink="/get-started" class="btn-primary" (click)="closeMobileMenu()">Get Started</a>
+    </div>
+  }
 </nav>
 }
 
