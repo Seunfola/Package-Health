@@ -37,6 +37,7 @@ export class Footer {
     {
       title: 'Resources',
       links: [
+        { label: 'Newsletter', routerLink: '/newsletter' },
         { label: 'GitHub (Web App)', href: 'https://github.com/Seunfola/Package-Health', external: true },
         { label: 'GitHub (Backend)', href: 'https://github.com/Seunfola/package-health-backup', external: true },
         {

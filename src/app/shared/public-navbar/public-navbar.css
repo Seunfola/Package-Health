@@ -3,10 +3,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--bg-navbar);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
   padding: 0.75rem 3.5rem;
-  color: var(--text-on-dark);
+  color: var(--text-primary);
   position: relative;
   z-index: 10;
 }
@@ -37,7 +37,7 @@
 .logo-text {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-on-dark);
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .nav-link {
-  color: rgba(249, 250, 251, 0.75);
+  color: var(--text-secondary);
   font-size: 0.95rem;
   font-weight: 500;
   text-decoration: none;
@@ -58,11 +58,11 @@
 }
 
 .nav-link:hover {
-  color: var(--text-on-dark);
+  color: var(--text-primary);
 }
 
 .nav-link.active {
-  color: var(--text-on-dark);
+  color: var(--text-primary);
   border-bottom-color: var(--accent-emerald);
 }
 
@@ -72,13 +72,11 @@
   gap: 0.75rem;
 }
 
-/* "Sign In" — bordered outline button on the dark bar, matching the
-   reference mockups exactly (distinct from .btn-ghost's plain-text look
-   used elsewhere on light backgrounds). */
-.btn-outline-dark {
+/* "Sign In" — bordered outline button on the light bar. */
+.btn-outline-navbar {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: var(--text-on-dark);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -87,26 +85,17 @@
   transition: var(--transition-smooth);
 }
 
-.btn-outline-dark:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.5);
+.btn-outline-navbar:hover {
+  background: var(--bg-slate);
+  border-color: #CBD5E1;
 }
 
-/* "Get Started" — a solid white button on the dark bar (high contrast),
-   distinct from the blue .btn-primary used everywhere else on the page —
-   matches every reference mockup exactly. */
+/* "Get Started" — no local override needed anymore: the standard blue
+   .btn-primary (defined globally) already has full contrast on a light
+   navbar, unlike the solid-white button the old dark bar required. */
 .public-navbar__actions .btn-primary {
-  background: #FFFFFF;
-  color: var(--bg-navbar);
   padding: 0.6rem 1.5rem;
   font-size: 0.9rem;
-  box-shadow: none;
-}
-
-.public-navbar__actions .btn-primary:hover {
-  background: #F1F5F9;
-  transform: none;
-  box-shadow: none;
 }
 
 .modal-overlay {
@@ -126,7 +115,7 @@
   display: none;
   background: none;
   border: none;
-  color: var(--text-on-dark);
+  color: var(--text-primary);
   cursor: pointer;
   padding: 0.4rem;
   border-radius: 4px;
@@ -134,30 +123,30 @@
 }
 
 .menu-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-slate);
 }
 
 .mobile-menu {
   display: none;
   flex-direction: column;
-  background-color: var(--bg-navbar);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
   padding: 0.5rem 1.25rem 1.25rem;
   position: relative;
   z-index: 9;
 }
 
 .mobile-menu__link {
-  color: rgba(249, 250, 251, 0.85);
+  color: var(--text-secondary);
   font-size: 1rem;
   font-weight: 500;
   text-decoration: none;
   padding: 0.85rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .mobile-menu__link:hover {
-  color: var(--text-on-dark);
+  color: var(--text-primary);
 }
 
 .mobile-menu__actions {
@@ -167,14 +156,9 @@
   margin-top: 1.25rem;
 }
 
-.mobile-menu__actions .btn-outline-dark,
+.mobile-menu__actions .btn-outline-navbar,
 .mobile-menu__actions .btn-primary {
   width: 100%;
-}
-
-.mobile-menu__actions .btn-primary {
-  background: #FFFFFF;
-  color: var(--bg-navbar);
 }
 
 @media (max-width: 768px) {
@@ -184,10 +168,6 @@
 
   .public-navbar__links,
   .public-navbar__actions {
-    display: none;
-  }
-
-  .logo-text {
     display: none;
   }
 

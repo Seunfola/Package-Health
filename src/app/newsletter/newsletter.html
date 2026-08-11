@@ -1,0 +1,67 @@
+<main class="newsletter">
+  <section class="newsletter__hero">
+    <p class="eyebrow"><span></span> DepVault newsletter</p>
+    <h1>Dependency risk intelligence, in your inbox.</h1>
+    <p class="newsletter__intro">
+      Short, practical dispatches on supply-chain security — new attack patterns, notable CVEs, and what's
+      new in DepVault. No fluff, unsubscribe anytime.
+    </p>
+  </section>
+
+  <section class="newsletter__body">
+    <div class="newsletter__card">
+      @if (state !== 'success') {
+        <form #subscribeForm="ngForm" (ngSubmit)="subscribe(subscribeForm)" novalidate>
+          <label for="newsletter-email">Email address</label>
+          <div class="newsletter__field">
+            <input
+              id="newsletter-email"
+              name="email"
+              type="email"
+              required
+              email
+              placeholder="you@company.com"
+              [(ngModel)]="email"
+              #emailField="ngModel"
+              [disabled]="state === 'loading'"
+              autocomplete="email"
+            />
+            <button type="submit" class="btn-primary" [disabled]="subscribeForm.invalid || state === 'loading'">
+              {{ state === 'loading' ? 'Subscribing…' : 'Subscribe' }}
+            </button>
+          </div>
+          @if (emailField.invalid && emailField.touched) {
+            <p class="newsletter__hint newsletter__hint--error">Enter a valid email address.</p>
+          }
+          @if (state === 'error') {
+            <p class="newsletter__hint newsletter__hint--error">{{ errorMessage }}</p>
+          }
+          <p class="newsletter__privacy">
+            No spam, ever. Read the <a routerLink="/privacy">Privacy Policy</a> for details on how your email is
+            handled.
+          </p>
+        </form>
+      } @else {
+        <div class="newsletter__success" role="status">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <h2>You're on the list.</h2>
+          <p>We'll send the next dispatch to <strong>{{ email }}</strong>.</p>
+        </div>
+      }
+    </div>
+
+    <ul class="newsletter__highlights">
+      @for (item of highlights; track item) {
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>{{ item }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+</main>
