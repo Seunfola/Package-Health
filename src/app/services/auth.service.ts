@@ -10,6 +10,11 @@ export interface AuthState {
   // UX-only (e.g. whether to show the telemetry dashboard nav link) — the
   // real enforcement is the backend's PlatformAdminGuard, not this flag.
   isPlatformAdmin?: boolean;
+  // Gates the post-signup onboarding wizard (see onboarding.guard.ts).
+  // Deliberately checked as `!== false` everywhere it's read, not `=== true`
+  // — `undefined` covers sessions stored before this field existed, and must
+  // read as "already onboarded", matching the backend's own default: true.
+  onboardingCompleted?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -55,6 +60,7 @@ export class AuthService {
         username: profile?.username || 'OAuth User',
         lastAuthTime: Date.now(),
         isPlatformAdmin: profile?.isPlatformAdmin === true,
+        onboardingCompleted: profile?.onboardingCompleted !== false,
       };
       
       localStorage.setItem(this.AUTH_STATE_LOCAL_KEY, JSON.stringify(authState));
@@ -80,6 +86,25 @@ export class AuthService {
     } catch (e) {
       console.error('Failed to exchange auth code', e);
       return null;
+    }
+  }
+
+  /**
+   * Dismisses the onboarding wizard — called both when the user finishes it
+   * and when they skip it, same semantics as the backend endpoint. Updates
+   * local state optimistically so onboardingGuard stops redirecting
+   * immediately, without waiting on a re-fetch of /me.
+   */
+  async completeOnboarding(): Promise<void> {
+    try {
+      await this.http.post(`${environment.authUrl}/onboarding/complete`, {}).toPromise();
+    } catch (e) {
+      console.error('Failed to mark onboarding complete', e);
+    } finally {
+      const current = this.authStateSubject.value;
+      const authState: AuthState = { ...current, onboardingCompleted: true };
+      localStorage.setItem(this.AUTH_STATE_LOCAL_KEY, JSON.stringify(authState));
+      this.authStateSubject.next(authState);
     }
   }
 

@@ -21,6 +21,8 @@ import { GetStartedPage } from './get-started/get-started';
 import { FeaturesPage } from './features/features';
 import { NewsletterPage } from './newsletter/newsletter';
 import { authGuard } from './services/auth.guard';
+import { onboardingGuard } from './services/onboarding.guard';
+import { OnboardingWizard } from './onboarding/onboarding';
 
 export const routes: Routes = [
   {
@@ -42,14 +44,24 @@ export const routes: Routes = [
     ],
   },
   {
+    // Authenticated but deliberately outside DashboardLayout — the wizard
+    // owns its own full-bleed chrome, not the sidebar/navbar shell, and a
+    // not-yet-onboarded user must be able to reach it even though
+    // onboardingGuard blocks every DashboardLayout route below.
+    path: 'onboarding',
+    component: OnboardingWizard,
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     component: DashboardLayout,
     // Guards every child route below — previously authGuard existed but was
     // never wired in, so /dashboard, /notifications, /user-profile etc. were
     // reachable by direct URL with no client-side auth check at all (the
     // backend still rejected the underlying API calls, but the route itself
-    // rendered before any of those calls failed).
-    canActivate: [authGuard],
+    // rendered before any of those calls failed). onboardingGuard runs after
+    // authGuard so it only ever evaluates for an already-authenticated user.
+    canActivate: [authGuard, onboardingGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'repo-health', component: RepoHealth },
