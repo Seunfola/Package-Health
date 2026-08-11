@@ -1,0 +1,59 @@
+<div class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="header-text">
+      <h1>LeakGuard Scans</h1>
+      <p>Secret-detection results synced from <code>depvault leakguard scan --upload</code>.</p>
+    </div>
+  </header>
+
+  <section class="repos-section" *ngIf="!isLoading && scans.length > 0">
+    <div class="repos-header">
+      <h2>{{ scans.length }} scanned repositor{{ scans.length === 1 ? 'y' : 'ies' }}</h2>
+      <span class="leak-scans-summary">
+        <span [ngClass]="reposWithActiveFindings > 0 ? 'has-alerts' : 'no-alerts'">
+          {{ totalActiveFindings }} active finding{{ totalActiveFindings === 1 ? '' : 's' }}
+        </span>
+        across {{ reposWithActiveFindings }} repositor{{ reposWithActiveFindings === 1 ? 'y' : 'ies' }}
+      </span>
+    </div>
+
+    <div class="table-card">
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>Repository</th>
+            <th>Status</th>
+            <th>Active Findings</th>
+            <th>Mode</th>
+            <th>Last Synced</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let scan of scans" (click)="viewScan(scan)" class="repo-row">
+            <td class="pkg-name">{{ scan.owner }}/{{ scan.repo }}</td>
+            <td>
+              <span class="health-badge" [ngClass]="activeFindingCount(scan) > 0 ? 'poor' : 'excellent'">
+                {{ activeFindingCount(scan) > 0 ? 'Action needed' : 'Clean' }}
+              </span>
+            </td>
+            <td>
+              <span [ngClass]="activeFindingCount(scan) > 0 ? 'has-alerts' : 'no-alerts'">
+                {{ activeFindingCount(scan) }}
+              </span>
+            </td>
+            <td>{{ scan.mode }}</td>
+            <td>{{ scan.updatedAt ? (scan.updatedAt | date: 'mediumDate') : 'Unknown' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="repos-error" *ngIf="error">{{ error }}</p>
+
+  <app-empty-state-card
+    *ngIf="!isLoading && scans.length === 0 && !error"
+    title="No LeakGuard scans synced yet"
+    message="Run &quot;depvault leakguard scan --upload&quot; from any repository to sync secret-detection results here."
+  ></app-empty-state-card>
+</div>

@@ -15,6 +15,8 @@ import { AcceptTransferComponent } from './accept-transfer/accept-transfer.compo
 import { DocsPage } from './docs/docs';
 import { PricingPage } from './pricing/pricing';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardRepositories } from './dashboard/repositories/repositories';
+import { DashboardLeakScans } from './dashboard/leak-scans/leak-scans';
 import { TelemetryDashboard } from './telemetry/telemetry-dashboard';
 import { NotFound } from './not-found/not-found';
 import { GetStartedPage } from './get-started/get-started';
@@ -63,6 +65,14 @@ export const routes: Routes = [
     // authGuard so it only ever evaluates for an already-authenticated user.
     canActivate: [authGuard, onboardingGuard],
     children: [
+      // More specific paths must come before the shorter 'dashboard' prefix
+      // they share — Angular's router matches route config in declaration
+      // order and picks the first path-segment match, so if 'dashboard'
+      // (no children) were listed first it would claim the first segment
+      // and leave 'repositories'/'leak-scans' unresolved instead of trying
+      // the next sibling, producing a 404 despite a route existing for it.
+      { path: 'dashboard/repositories', component: DashboardRepositories },
+      { path: 'dashboard/leak-scans', component: DashboardLeakScans },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'repo-health', component: RepoHealth },
       { path: 'repository-details/:owner/:name', component: RepoDetails },

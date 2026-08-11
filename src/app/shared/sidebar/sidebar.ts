@@ -3,6 +3,19 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
+interface MenuChild {
+  label: string;
+  path: string;
+}
+
+interface MenuItem {
+  icon: string;
+  label: string;
+  path: string;
+  separator: boolean;
+  children?: MenuChild[];
+}
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -12,10 +25,34 @@ import { AuthService } from '../../services/auth.service';
 })
 export class Sidebar {
   @Input() isOpen = false;
-  activeIndex: number | null = 0;
 
-  private readonly baseMenuItems = [
-    { icon: 'activity', label: 'Dashboard', path: '/dashboard', separator: false },
+  /**
+   * Explicit expand/collapse choices the user has made, keyed by parent
+   * path — absent means "follow the route" (auto-expand the group
+   * containing the active child). A manual collapse has to stick even while
+   * a child route is active, so this can't be a plain Set of "touched"
+   * paths; it needs to carry the direction (open vs. closed), not just that
+   * an override exists.
+   */
+  private readonly manualOverride = new Map<string, boolean>();
+
+  private readonly baseMenuItems: MenuItem[] = [
+    {
+      icon: 'activity',
+      label: 'Dashboard',
+      path: '/dashboard',
+      separator: false,
+      children: [
+        { label: 'Overview', path: '/dashboard' },
+        { label: 'Repositories', path: '/dashboard/repositories' },
+        { label: 'LeakGuard Scans', path: '/dashboard/leak-scans' },
+      ],
+    },
+    // Package Health and Dashboard Settings are still single pages — they
+    // gain `children` here in a follow-up pass once they're actually split
+    // into subroutes (Settings alone is ~750 lines covering ~8 concerns
+    // with shared org-switcher state, not a same-sitting refactor). Listing
+    // children before those routes exist would ship dead sidebar links.
     { icon: 'chart', label: 'Package Health', path: '/repo-health', separator: true },
     { icon: 'user', label: 'User Profile', path: '/user-profile', separator: false },
     { icon: 'settings', label: 'Dashboard Settings', path: '/dashboard-settings', separator: true },
@@ -25,7 +62,7 @@ export class Sidebar {
   // Hidden for everyone else — not a security boundary (the backend's
   // PlatformAdminGuard is), just avoids showing a link that would 403 for
   // non-admins.
-  private readonly telemetryMenuItem = { icon: 'gauge', label: 'Usage Telemetry', path: '/telemetry', separator: true };
+  private readonly telemetryMenuItem: MenuItem = { icon: 'gauge', label: 'Usage Telemetry', path: '/telemetry', separator: true };
 
   /** Guest/marketing pages — the sidebar is the only mobile nav surface, so
       this is how a mobile user reaches them without logging out first. */
@@ -41,14 +78,37 @@ export class Sidebar {
     private readonly router: Router,
   ) {}
 
-  get menuItems() {
+  get menuItems(): MenuItem[] {
     return this.authService.currentState.isPlatformAdmin
       ? [...this.baseMenuItems, this.telemetryMenuItem]
       : this.baseMenuItems;
   }
 
-  setActive(index: number) {
-    this.activeIndex = index;
+  /**
+   * A group is open if the user explicitly opened or closed it, or —
+   * absent either — a child route is currently active. Called from the
+   * template (not a memoized getter), so it's re-evaluated on every change
+   * detection pass, including the router-triggered one after navigation —
+   * no manual subscription needed to keep this in sync with the URL.
+   */
+  isExpanded(item: MenuItem): boolean {
+    if (!item.children) return false;
+    const override = this.manualOverride.get(item.path);
+    return override !== undefined ? override : this.isGroupActive(item);
+  }
+
+  toggleExpand(item: MenuItem, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.manualOverride.set(item.path, !this.isExpanded(item));
+  }
+
+  private isGroupActive(item: MenuItem): boolean {
+    const url = this.router.url.split('?')[0].split('#')[0];
+    return url === item.path || url.startsWith(item.path + '/');
+  }
+
+  closeMobileSidebar(): void {
     if (this.isOpen) {
       this.isOpen = false;
     }

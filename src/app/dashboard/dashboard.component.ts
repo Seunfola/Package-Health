@@ -18,35 +18,36 @@ interface StatTile {
   cardBorderRadius: string;
 }
 
+/** How many rows the Overview's "recent" previews show before pointing to the full subroute. */
+const PREVIEW_LIMIT = 5;
+
 /**
- * Dashboard: real content wired to the backend's repo listing/stats endpoints
- * (`GET /api/repos`, `GET /api/repos/stats`, Part A3). Auth is now enforced by
- * `authGuard` on the route itself (see app.routes.ts) rather than an ad hoc
- * check here.
+ * Dashboard Overview — a quick summary (stat tiles + the 5 most recent
+ * repositories/LeakGuard scans), not the full browsing experience. The full
+ * paginated tables live at /dashboard/repositories and
+ * /dashboard/leak-scans (DashboardRepositories, DashboardLeakScans) — this
+ * split keeps the landing page fast to scan instead of dumping every table
+ * a returning user has already seen.
  */
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, StatusCard, UnauthorizedWarning, EmptyStateCard],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  styleUrls: ['./dashboard.css', './dashboard-shared.css'],
 })
 export class DashboardComponent implements OnInit {
   authState$: Observable<AuthState>;
 
-  repos: RepoListItem[] = [];
+  recentRepos: RepoListItem[] = [];
   statTiles: StatTile[] = [];
 
   isLoadingRepos = true;
   reposError = '';
   isLoadingStats = true;
+  totalRepoCount = 0;
 
-  page = 1;
-  readonly limit = 10;
-  total = 0;
-  totalPages = 0;
-
-  leakScans: LeakGuardScanResult[] = [];
+  recentLeakScans: LeakGuardScanResult[] = [];
   isLoadingLeakScans = true;
   leakScansError = '';
 
@@ -60,18 +61,18 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadRepos();
+    this.loadRecentRepos();
     this.loadStats();
-    this.loadLeakScans();
+    this.loadRecentLeakScans();
   }
 
-  loadLeakScans(): void {
+  loadRecentLeakScans(): void {
     this.isLoadingLeakScans = true;
     this.leakScansError = '';
 
     this.leakGuardService.getMyLeakScans().subscribe({
       next: (scans) => {
-        this.leakScans = scans;
+        this.recentLeakScans = scans.slice(0, PREVIEW_LIMIT);
         this.isLoadingLeakScans = false;
       },
       error: (err) => {
@@ -87,28 +88,18 @@ export class DashboardComponent implements OnInit {
     return scan.findings.filter((f) => !f.allowlisted && !f.isLikelyPlaceholder).length;
   }
 
-  get totalActiveLeakFindings(): number {
-    return this.leakScans.reduce((sum, scan) => sum + this.activeFindingCount(scan), 0);
-  }
-
-  get reposWithActiveLeaks(): number {
-    return this.leakScans.filter((scan) => this.activeFindingCount(scan) > 0).length;
-  }
-
   viewLeakScan(scan: LeakGuardScanResult): void {
     this.router.navigate(['/repository-details', scan.owner, scan.repo]);
   }
 
-  loadRepos(page: number = 1): void {
+  loadRecentRepos(): void {
     this.isLoadingRepos = true;
     this.reposError = '';
 
-    this.repoService.getRepos(page, this.limit).subscribe({
+    this.repoService.getRepos(1, PREVIEW_LIMIT).subscribe({
       next: (result) => {
-        this.repos = result.data;
-        this.page = result.page;
-        this.total = result.total;
-        this.totalPages = result.totalPages;
+        this.recentRepos = result.data;
+        this.totalRepoCount = result.total;
         this.isLoadingRepos = false;
       },
       error: (err) => {
@@ -134,24 +125,20 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  nextPage(): void {
-    if (this.page < this.totalPages) {
-      this.loadRepos(this.page + 1);
-    }
-  }
-
-  previousPage(): void {
-    if (this.page > 1) {
-      this.loadRepos(this.page - 1);
-    }
-  }
-
   connectRepo(): void {
     this.router.navigate(['/dashboard-settings']);
   }
 
   viewRepo(repo: RepoListItem): void {
     this.router.navigate(['/repository-details', repo.owner, repo.repo]);
+  }
+
+  goToRepositories(): void {
+    this.router.navigate(['/dashboard/repositories']);
+  }
+
+  goToLeakScans(): void {
+    this.router.navigate(['/dashboard/leak-scans']);
   }
 
   getHealthLevel(score: number | undefined): 'excellent' | 'good' | 'moderate' | 'poor' {

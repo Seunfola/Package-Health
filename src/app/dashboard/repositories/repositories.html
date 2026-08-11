@@ -1,0 +1,67 @@
+<div class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="header-text">
+      <h1>Repositories</h1>
+      <p>Every repository you've analyzed, most recently pushed first.</p>
+    </div>
+  </header>
+
+  <section class="repos-section" *ngIf="!isLoading && repos.length > 0">
+    <div class="repos-header">
+      <h2>{{ total }} repositor{{ total === 1 ? 'y' : 'ies' }}</h2>
+      <button class="btn-primary" (click)="connectRepo()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Connect Another Repository
+      </button>
+    </div>
+
+    <div class="table-card">
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>Repository</th>
+            <th>Health Score</th>
+            <th>Stars</th>
+            <th>Open Issues</th>
+            <th>Security Alerts</th>
+            <th>Last Pushed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let repo of repos" (click)="viewRepo(repo)" class="repo-row">
+            <td class="pkg-name">{{ repo.owner }}/{{ repo.repo }}</td>
+            <td>
+              <span class="health-badge" [ngClass]="getHealthLevel(repo.overall_health?.score)">
+                {{ repo.overall_health?.score ?? 'N/A' }}
+              </span>
+            </td>
+            <td>{{ repo.stars ?? 0 }}</td>
+            <td>{{ repo.open_issues ?? 0 }}</td>
+            <td>
+              <span [ngClass]="(repo.security_alerts ?? 0) > 0 ? 'has-alerts' : 'no-alerts'">
+                {{ repo.security_alerts ?? 0 }}
+              </span>
+            </td>
+            <td>{{ repo.last_pushed ? (repo.last_pushed | date: 'mediumDate') : 'Unknown' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button class="btn-outline" (click)="previousPage()" [disabled]="page <= 1">Previous</button>
+      <span class="pagination-label">Page {{ page }} of {{ totalPages }} &middot; {{ total }} repositories</span>
+      <button class="btn-outline" (click)="nextPage()" [disabled]="page >= totalPages">Next</button>
+    </div>
+  </section>
+
+  <p class="repos-error" *ngIf="error">{{ error }}</p>
+
+  <app-empty-state-card
+    *ngIf="!isLoading && repos.length === 0 && !error"
+    title="No repositories connected yet"
+    message="Connect a GitHub repository to start monitoring dependency health and Gatekeeper policy results."
+    actionLabel="Connect GitHub"
+    (action)="connectRepo()">
+  </app-empty-state-card>
+</div>
