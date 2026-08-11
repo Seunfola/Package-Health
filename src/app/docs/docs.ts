@@ -71,6 +71,18 @@ export class DocsPage {
       keywords: 'github actions ci cd pull request job summary comment action yaml fail below output threshold gatekeeper',
     },
     {
+      id: 'ci-cd',
+      title: 'CI/CD Beyond GitHub',
+      category: 'Automation',
+      keywords: 'ci cd gitlab bitbucket pipelines jenkins jenkinsfile exit code contract fail on sarif leakguard template',
+    },
+    {
+      id: 'downloads',
+      title: 'Downloads & Install Links',
+      category: 'Automation',
+      keywords: 'download install npm npx package cli vscode extension marketplace jetbrains lsp4ij github release build from source',
+    },
+    {
       id: 'mcp-server',
       title: 'MCP for AI Agents',
       category: 'Developer Tools',

@@ -52,6 +52,17 @@
           <p>Connect DepVault to Claude Code, Cursor, or Windsurf so your AI agent can check Trust Scores directly.</p>
         </div>
       </a>
+      <a [routerLink]="[]" fragment="downloads" class="docs-action-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <div>
+          <h3>Download &amp; Install</h3>
+          <p>Real links and current publish status for the CLI, MCP server, VS Code extension, and every other surface.</p>
+        </div>
+      </a>
     </div>
 
     @if (noResults) {
@@ -196,6 +207,54 @@
 
     <div class="docs-caveat"><strong>Important:</strong> MCP auto-scan is a convenience feature, not an all-install interceptor. It runs when this package's own install lifecycle runs and cannot protect unrelated future <code>npm install</code> commands. Use CLI Shield hooks or GitHub Actions for an actual install or merge gate.</div>
 
+    <section class="docs-section glass-panel" id="downloads" [hidden]="!isVisible('downloads')">
+      <h2>Downloads &amp; Install Links</h2>
+      <p>Every surface composes from the same <code>@depvault/core</code> pipeline, but they're at different points in their publishing lifecycle. Here's the real, current status of each — nothing below is a placeholder.</p>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Surface</th><th>Status</th><th>Get it</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>MCP server</td>
+            <td><span class="docs-badge-internal" style="background:#dcfce7;color:#166534;">published</span></td>
+            <td><code>npx -y &#64;deepvaultscan/mcp-server</code> — <a href="https://www.npmjs.com/package/&#64;deepvaultscan/mcp-server" target="_blank" rel="noopener">view on npm</a></td>
+          </tr>
+          <tr>
+            <td>CLI</td>
+            <td>not yet on npm</td>
+            <td>Build from source — see <a [routerLink]="[]" fragment="cli">CLI &amp; Shield</a> below, or browse <a href="https://github.com/Seunfola/package-health-backup/tree/main/apps/cli" target="_blank" rel="noopener">apps/cli on GitHub</a></td>
+          </tr>
+          <tr>
+            <td>VS Code extension</td>
+            <td>not yet on the Marketplace</td>
+            <td>Build the <code>.vsix</code> from source — see <a [routerLink]="[]" fragment="ide-lsp">IDE Extension &amp; LSP</a> below, or browse <a href="https://github.com/Seunfola/package-health-backup/tree/main/apps/vscode-extension" target="_blank" rel="noopener">apps/vscode-extension on GitHub</a></td>
+          </tr>
+          <tr>
+            <td>LSP server (Neovim, Sublime)</td>
+            <td><span class="docs-badge-internal" style="background:#dcfce7;color:#166534;">published</span></td>
+            <td><code>npm install -g &#64;depvault/lsp-server</code></td>
+          </tr>
+          <tr>
+            <td>JetBrains plugin</td>
+            <td>scaffold, build from source</td>
+            <td>Requires the free <strong>LSP4IJ</strong> plugin (search it in your IDE's Marketplace) plus <code>apps/jetbrains-plugin</code> built locally — see <a [routerLink]="[]" fragment="ide-lsp">IDE Extension &amp; LSP</a> below</td>
+          </tr>
+          <tr>
+            <td>GitHub Action (dependency scan)</td>
+            <td><span class="docs-badge-internal" style="background:#dcfce7;color:#166534;">published</span></td>
+            <td><code>uses: Seunfola/package-health-backup/apps/github-action&#64;v1</code></td>
+          </tr>
+          <tr>
+            <td>GitHub Action (LeakGuard)</td>
+            <td><span class="docs-badge-internal" style="background:#dcfce7;color:#166534;">published</span></td>
+            <td><code>uses: Seunfola/package-health-backup/apps/leakguard-action&#64;v1</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="docs-note"><strong>Source, always:</strong> <a href="https://github.com/Seunfola/package-health-backup" target="_blank" rel="noopener">github.com/Seunfola/package-health-backup</a> — every surface above lives in this one repository.</div>
+    </section>
+
     <section class="docs-section glass-panel" id="cli" [hidden]="!isVisible('cli')">
       <h2>CLI — Shield &amp; Install Hooks</h2>
       <p class="docs-caveat">
@@ -274,6 +333,63 @@ jobs:
       <p>The action exposes <code>score</code>, <code>passed</code>, and <code>critical-count</code> outputs. Pin to a release tag or commit SHA rather than a moving branch. Reporting runs before the final failure, so reviewers see package-level results even on a blocked pull request.</p>
     </section>
 
+    <section class="docs-section glass-panel" id="ci-cd" [hidden]="!isVisible('ci-cd')">
+      <h2>CI/CD Beyond GitHub</h2>
+      <p>LeakGuard's CI story isn't GitHub-only. Every integration — the GitHub Action above, GitLab, Bitbucket, Jenkins, or a CI system with none of those — relies on the identical exit-code contract, so a result never disagrees between platforms:</p>
+      <pre class="docs-terminal"><span class="terminal-prompt">$</span> depvault leakguard scan &lt;path&gt; --fail-on &lt;low|medium|high|critical&gt;</pre>
+      <p>Exit <code>0</code> when nothing at or above <code>--fail-on</code> severity survives allowlist/placeholder filtering; exit <code>1</code> otherwise. Add <code>--sarif &lt;file&gt;</code> for a SARIF 2.1.0 report any code-scanning UI can render. No integration re-derives this decision — each one renders what the CLI already decided.</p>
+
+      <h3>GitLab CI</h3>
+      <p>Copy this job into your project's <code>.gitlab-ci.yml</code>:</p>
+      <pre class="docs-code">leakguard:
+  stage: test
+  image: node:20-alpine
+  variables:
+    LEAKGUARD_FAIL_ON: 'high'
+    LEAKGUARD_CLI_VERSION: '1.1.0'  <span class="terminal-dim"># pin deliberately, bump on purpose</span>
+  script:
+    - npx -y "&#64;deepvaultscan/cli&#64;$&#123;LEAKGUARD_CLI_VERSION&#125;" leakguard scan . --fail-on $&#123;LEAKGUARD_FAIL_ON&#125; --sarif leakguard-results.sarif
+  artifacts:
+    when: always
+    paths: [leakguard-results.sarif]
+    expire_in: 30 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</pre>
+
+      <h3>Bitbucket Pipelines</h3>
+      <p>Merge this step into <code>bitbucket-pipelines.yml</code>:</p>
+      <pre class="docs-code">pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: LeakGuard secret scan
+          script:
+            - npx -y "&#64;deepvaultscan/cli&#64;1.1.0" leakguard scan . --fail-on high --sarif leakguard-results.sarif
+          artifacts:
+            - leakguard-results.sarif</pre>
+
+      <h3>Jenkins</h3>
+      <p>Add this stage to a declarative <code>Jenkinsfile</code>:</p>
+      <pre class="docs-code">stage('LeakGuard secret scan') &#123;
+    steps &#123;
+        sh '''
+            npx -y "&#64;deepvaultscan/cli&#64;1.1.0" \
+                leakguard scan . --fail-on high \
+                --sarif leakguard-results.sarif
+        '''
+    &#125;
+    post &#123;
+        always &#123;
+            archiveArtifacts artifacts: 'leakguard-results.sarif', allowEmptyArchive: true
+        &#125;
+    &#125;
+&#125;</pre>
+
+      <div class="docs-caveat"><strong>CLI version pin:</strong> these templates pin <code>&#64;deepvaultscan/cli&#64;1.1.0</code> per this repository's own <code>docs/leakguard/</code> templates. The CLI isn't published to npm yet (see <a [routerLink]="[]" fragment="downloads">Downloads &amp; Install Links</a>) — until it is, run these steps against a self-built binary instead of <code>npx</code>.</div>
+      <div class="docs-note"><strong>Opt-in network checks stay opt-in in CI too:</strong> append <code>--verify-live</code> or <code>--blast-radius</code> only once your org has explicitly decided CI may generate that traffic (a real auth-probe to the credential's own provider, or a GitHub code-search query) — neither flag is implied by running in CI.</div>
+    </section>
+
     <section class="docs-section glass-panel" id="ide-lsp" [hidden]="!isVisible('ide-lsp')">
       <h2>IDE extension &amp; LSP intelligence</h2>
       <p>Every editor integration runs the same editor-agnostic <code>@depvault/lsp-server</code> over standard input/output. It analyzes <code>package.json</code>, <code>requirements.txt</code>, <code>pyproject.toml</code>, and <code>Cargo.toml</code>. Go manifests are supported by the CLI and GitHub Action, but are not currently an LSP manifest target.</p>
@@ -292,6 +408,16 @@ jobs:
 <span class="terminal-prompt">$</span> pnpm --filter depvault-vscode build
 <span class="terminal-prompt">$</span> pnpm --filter depvault-vscode package
 <span class="terminal-dim"># In VS Code: Extensions → … → Install from VSIX</span></pre>
+
+      <h3>Signing in for dashboard sync</h3>
+      <p>Analysis itself needs no account — CodeLens, hover, and diagnostics work fully signed out. Signing in is only for syncing a LeakGuard workspace scan to this dashboard, so it shows up alongside scans from the CLI and CI instead of staying local to your editor.</p>
+      <ol class="docs-list">
+        <li>Generate a personal access token from <a routerLink="/dashboard-settings/tokens">Settings → API Tokens</a> — it's shown once, so copy it immediately.</li>
+        <li>In VS Code, open the Command Palette and run <strong>DepVault: Sign In</strong>. Paste the token (it starts with <code>dv_pat_</code>).</li>
+        <li>The status bar switches to <strong>DepVault: Signed in</strong>. Run <strong>DepVault LeakGuard: Scan Workspace for Secrets</strong> again — the result now also syncs to your dashboard's <a routerLink="/repo-health/synced-scans">Synced Scans</a> page.</li>
+      </ol>
+      <div class="docs-note"><strong>Where the token lives:</strong> the extension stores it in VS Code's <code>SecretStorage</code> — the OS keychain, not a plaintext setting — and sends it only to the API URL configured in <code>depvault.apiUrl</code> (defaults to the hosted DepVault backend). Run <strong>DepVault: Sign Out</strong> to remove it.</div>
+      <div class="docs-caveat"><strong>What actually syncs:</strong> only a full workspace scan you explicitly run (<strong>Scan Workspace for Secrets</strong>). The real-time diagnostics that appear as you type are local-only and never uploaded, signed in or not.</div>
 
       <h3>Neovim</h3>
       <p>Install the server globally, confirm that <code>depvault-lsp-server</code> is on your <code>PATH</code>, then add this configuration to <code>init.lua</code> for Neovim 0.11 or later:</p>
@@ -355,6 +481,8 @@ vim.lsp.enable('depvault')</pre>
         <a [routerLink]="[]" fragment="mcp-server" class="docs-related__link">MCP Server Setup</a>
         <a [routerLink]="[]" fragment="cli" class="docs-related__link">CLI Shield &amp; Hooks</a>
         <a [routerLink]="[]" fragment="leakguard" class="docs-related__link">LeakGuard Secret Detection</a>
+        <a [routerLink]="[]" fragment="downloads" class="docs-related__link">Downloads &amp; Install Links</a>
+        <a [routerLink]="[]" fragment="ci-cd" class="docs-related__link">CI/CD Beyond GitHub</a>
       </div>
     </section>
 
