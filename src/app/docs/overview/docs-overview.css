@@ -1,0 +1,120 @@
+.docs-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.docs-intro {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.docs-intro kbd {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-slate);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.85em;
+}
+
+.docs-action-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.docs-action-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.docs-action-card:hover {
+  border-color: var(--accent-teal);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.docs-action-card svg {
+  color: var(--accent-teal);
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.docs-action-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.docs-action-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.docs-overview-group {
+  margin-bottom: 2.5rem;
+}
+
+.docs-overview-group h2 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.docs-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.docs-overview-card {
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.docs-overview-card:hover {
+  border-color: var(--accent-teal);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.docs-overview-card h3 {
+  margin: 0 0 0.35rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.docs-overview-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .docs-action-cards,
+  .docs-overview-grid {
+    grid-template-columns: 1fr;
+  }
+}

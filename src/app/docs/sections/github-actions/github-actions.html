@@ -1,0 +1,20 @@
+<h2>GitHub Actions</h2>
+<p>The composite action scores the checked-out manifest, writes a job summary, can update one pull-request comment, and fails the job when the average Trust Score is below your threshold. It runs on your GitHub runner and needs no account, backend, or API key.</p>
+<pre class="docs-terminal"><span class="terminal-dim"># .github/workflows/depvault.yml</span>
+name: DepVault Scan
+on: [pull_request]
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write <span class="terminal-dim"># required only for PR comments</span>
+    steps:
+      - uses: actions/checkout&#64;v4
+      - uses: Seunfola/package-health-backup/apps/github-action&#64;v1
+        id: depvault
+        with:
+          fail-below: '80'
+          ignore-dev: 'false'</pre>
+<table class="docs-table"><thead><tr><th>Input</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td><code>path</code></td><td><code>.</code></td><td>Directory relative to repository root.</td></tr><tr><td><code>fail-below</code></td><td>config value</td><td>Minimum average score; falls back to <code>depvault.json</code>.</td></tr><tr><td><code>risk-level</code></td><td>config / medium</td><td><code>low</code>, <code>medium</code>, or <code>high</code>.</td></tr><tr><td><code>comment-pr</code></td><td><code>true</code></td><td>Post or update one PR comment.</td></tr><tr><td><code>job-summary</code></td><td><code>true</code></td><td>Write the Actions job summary.</td></tr></tbody></table>
+<p>The action exposes <code>score</code>, <code>passed</code>, and <code>critical-count</code> outputs. Pin to a release tag or commit SHA rather than a moving branch. Reporting runs before the final failure, so reviewers see package-level results even on a blocked pull request.</p>

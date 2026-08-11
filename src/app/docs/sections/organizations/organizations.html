@@ -1,0 +1,7 @@
+<h2>Organizations &amp; custom settings</h2>
+<p>Dashboard Settings centralizes members, notifications, webhooks, personal upload tokens, and Gatekeeper policies. FREE uses the safe default policy; PAID unlocks organization-wide customization. See <a routerLink="/pricing">Pricing</a> for limits.</p>
+<table class="docs-table"><thead><tr><th>Policy</th><th>Effect</th></tr></thead><tbody><tr><td>Block Critical CVEs</td><td>Reject packages with critical known vulnerability exposure.</td></tr><tr><td>Block Ghost Towns</td><td>Apply policy to packages with abandonment risk.</td></tr><tr><td>Block GPL / toxic licenses</td><td>Apply license-policy enforcement.</td></tr><tr><td>Warn ecosystem conflicts</td><td>Show compatibility concerns without necessarily blocking.</td></tr><tr><td>Custom scoring weights</td><td>Paid organizations can tune security, license, maintenance, and popularity influence.</td></tr></tbody></table>
+<p>Use a personal API token only for <code>depvault login</code> and local <code>depvault upload</code>; do not add it to a repository or client-side source code.</p>
+
+<h3>Notifications Center</h3>
+<p>Every health-score change, new vulnerability, and LeakGuard finding above a threshold can raise a notification. The Notifications Center supports searching, filtering by repository, marking one or many as read, and deleting individually, in bulk, or all at once. <strong>Clean up old (30d+)</strong> removes your own read notifications past that age in one action — it never touches anyone else's.</p>

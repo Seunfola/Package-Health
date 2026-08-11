@@ -1,0 +1,56 @@
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <a routerLink="/docs" class="docs-sidebar__title">Documentation</a>
+
+    <button type="button" class="docs-search-trigger" (click)="openPalette()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <span>Search docs&hellip;</span>
+      <kbd>&#8984;K</kbd>
+    </button>
+
+    @for (group of groups; track group.category) {
+      <div class="docs-sidebar__group">
+        <h3 class="docs-sidebar__category">{{ group.category }}</h3>
+        @for (section of group.sections; track section.id) {
+          <a [routerLink]="['/docs', section.id]" routerLinkActive="active" class="docs-sidebar__link">{{ section.title }}</a>
+        }
+      </div>
+    }
+  </aside>
+
+  <main class="docs-main">
+    <router-outlet></router-outlet>
+
+    @if (currentSectionId) {
+      <nav class="docs-prevnext" aria-label="Doc topic navigation">
+        @if (prevSection) {
+          <a [routerLink]="['/docs', prevSection.id]" class="docs-prevnext__link docs-prevnext__link--prev">
+            <span>&larr; Previous</span>
+            <strong>{{ prevSection.title }}</strong>
+          </a>
+        } @else {
+          <span class="docs-prevnext__spacer"></span>
+        }
+        @if (nextSection) {
+          <a [routerLink]="['/docs', nextSection.id]" class="docs-prevnext__link docs-prevnext__link--next">
+            <span>Next &rarr;</span>
+            <strong>{{ nextSection.title }}</strong>
+          </a>
+        }
+      </nav>
+    }
+
+    <footer class="docs-footer">
+      <span>&copy; {{ currentYear }} DepVault. All rights reserved.</span>
+      <a routerLink="/terms">Terms of Service</a>
+      <a routerLink="/privacy">Privacy Policy</a>
+    </footer>
+  </main>
+</div>
+
+@if (paletteOpen) {
+  <app-docs-command-palette (closed)="closePalette()"></app-docs-command-palette>
+}

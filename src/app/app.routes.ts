@@ -18,7 +18,21 @@ import { TermsOfService } from './legal/terms/terms';
 import { AuthCallbackComponent } from './auth-callback/auth-callback.component';
 import { AcceptInviteComponent } from './accept-invite/accept-invite.component';
 import { AcceptTransferComponent } from './accept-transfer/accept-transfer.component';
-import { DocsPage } from './docs/docs';
+import { DocsLayout } from './docs/layout/docs-layout';
+import { DocsOverview } from './docs/overview/docs-overview';
+import { DocQuickStart } from './docs/sections/quick-start/quick-start';
+import { DocAnalyzer } from './docs/sections/analyzer/analyzer';
+import { DocEcosystems } from './docs/sections/ecosystems/ecosystems';
+import { DocAnalysisMethod } from './docs/sections/analysis-method/analysis-method';
+import { DocDownloads } from './docs/sections/downloads/downloads';
+import { DocCli } from './docs/sections/cli/cli';
+import { DocLeakguard } from './docs/sections/leakguard/leakguard';
+import { DocGithubActions } from './docs/sections/github-actions/github-actions';
+import { DocCiCd } from './docs/sections/ci-cd/ci-cd';
+import { DocMcpServer } from './docs/sections/mcp-server/mcp-server';
+import { DocIdeLsp } from './docs/sections/ide-lsp/ide-lsp';
+import { DocOrganizations } from './docs/sections/organizations/organizations';
+import { DocPrivacy } from './docs/sections/privacy/privacy';
 import { PricingPage } from './pricing/pricing';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashboardRepositories } from './dashboard/repositories/repositories';
@@ -40,7 +54,30 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: Homepage },
-      { path: 'docs', component: DocsPage },
+      {
+        // Each topic is its own route now — /docs/cli, /docs/leakguard, etc.
+        // — instead of one component rendering all 13 sections and toggling
+        // [hidden]. DocsLayout owns the sidebar, the ⌘K command palette, and
+        // prev/next; only the active topic's own content ever mounts.
+        path: 'docs',
+        component: DocsLayout,
+        children: [
+          { path: '', component: DocsOverview },
+          { path: 'quick-start', component: DocQuickStart },
+          { path: 'analyzer', component: DocAnalyzer },
+          { path: 'ecosystems', component: DocEcosystems },
+          { path: 'analysis-method', component: DocAnalysisMethod },
+          { path: 'downloads', component: DocDownloads },
+          { path: 'cli', component: DocCli },
+          { path: 'leakguard', component: DocLeakguard },
+          { path: 'github-actions', component: DocGithubActions },
+          { path: 'ci-cd', component: DocCiCd },
+          { path: 'mcp-server', component: DocMcpServer },
+          { path: 'ide-lsp', component: DocIdeLsp },
+          { path: 'organizations', component: DocOrganizations },
+          { path: 'privacy', component: DocPrivacy },
+        ],
+      },
       { path: 'pricing', component: PricingPage },
       { path: 'get-started', component: GetStartedPage },
       { path: 'features', component: FeaturesPage },

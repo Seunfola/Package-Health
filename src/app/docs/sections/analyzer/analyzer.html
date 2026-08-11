@@ -1,0 +1,15 @@
+<h2>Dashboard &amp; Analyzer</h2>
+<p>The browser is the best place to investigate a decision. The homepage accepts a public GitHub URL, pasted manifest, or manifest upload. Package Health looks up a single npm, PyPI, or Cargo package and exposes its Trust Score, confidence interval, severity distribution, findings, and historical trend.</p>
+<table class="docs-table"><thead><tr><th>Surface</th><th>Use it for</th><th>Available actions</th></tr></thead><tbody><tr><td>Project analyzer</td><td>Review a dependency set before a merge, migration, or onboarding.</td><td>Inspect package-level scores, reasons, and vulnerabilities.</td></tr><tr><td>Package Health</td><td>Evaluate one package and an optional version.</td><td>Download a report or CycloneDX SBOM, request fix suggestions, retrieve a badge, and copy a CI-ready summary.</td></tr><tr><td>Private repository analysis</td><td>Analyze a private GitHub repo without granting it any standing access.</td><td>Connect the DepVault GitHub App, pick an installation, analyze.</td></tr><tr><td>Synced Scans</td><td>Review a private project analyzed from a local checkout.</td><td>Use <code>depvault upload</code> after authenticating with a personal API token.</td></tr></tbody></table>
+<div class="docs-note"><strong>Decision model:</strong> a Trust Score is a signal, not a security guarantee. Treat CRITICAL findings and compatibility testing as independent requirements before a production upgrade.</div>
+
+<h3>Analyzing a private repository</h3>
+<p>DepVault never asks for a personal access token to reach a private repo. Instead it uses a GitHub App: you install/configure the app on the account or organization that owns the repo, GitHub hands DepVault a short-lived, narrowly-scoped installation token behind the scenes, and nothing longer-lived than that is ever stored.</p>
+<ol class="docs-list">
+  <li>Sign in, then open the <strong>Analyze Private Repository</strong> form on the homepage.</li>
+  <li>Click <strong>Connect GitHub App</strong>. You're redirected to GitHub to choose which account/organization and which repositories to grant access to — the same flow as installing any other GitHub App.</li>
+  <li>GitHub redirects you back automatically once you confirm. The form now shows a dropdown of every installation you've connected.</li>
+  <li>Pick the installation that owns the repo, paste the repo URL, and analyze.</li>
+</ol>
+<div class="docs-note"><strong>Ownership is verified server-side.</strong> DepVault only ever uses an installation you've personally connected through this flow — it never accepts an arbitrary installation id from a request, even from a signed-in user.</div>
+<div class="docs-caveat">If <strong>Connect GitHub App</strong> reports the app isn't configured, the DepVault deployment you're using hasn't set up its GitHub App yet — this is an operator-side setup step, not something fixable from the browser.</div>

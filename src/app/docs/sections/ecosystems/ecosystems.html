@@ -1,0 +1,42 @@
+<h2>Ecosystems Supported</h2>
+<p>One scoring engine, the same mathematical pipeline, across four ecosystems:</p>
+<table class="docs-table">
+  <thead>
+    <tr><th>Ecosystem</th><th>Manifest file(s)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>npm</td><td><code>package.json</code></td></tr>
+    <tr><td>PyPI</td><td><code>requirements.txt</code>, <code>pyproject.toml</code> (PEP 621, Poetry or PDM), <code>Pipfile</code> (pipenv)</td></tr>
+    <tr><td>Cargo</td><td><code>Cargo.toml</code>, including dotted <code>[dependencies.foo]</code> tables</td></tr>
+    <tr><td>Go</td><td><code>go.mod</code></td></tr>
+  </tbody>
+</table>
+<div class="docs-note"><strong>Package managers are not ecosystems.</strong> npm, yarn, pnpm and bun all resolve from the one npm registry and share <code>package.json</code>, so they are a single ecosystem to the scoring engine. What differs is the lockfile and the remediation command — DepVault detects the manager (Corepack's <code>packageManager</code> field first, then lockfiles including <code>bun.lockb</code>) and prints a command you can actually run, rather than assuming one tool.</div>
+
+<h3>Internal and workspace packages</h3>
+<p>A <code>workspace:</code>, <code>file:</code> or <code>link:</code> dependency is code you wrote. It has no registry entry, but it is not unverifiable: it inherits every advisory it pulls in. DepVault scores these from local source and marks them <span class="docs-badge-internal">internal</span> in every report — terminal, PR comment and dashboard — so you can tell at a glance which model produced a number before comparing it with the row above.</p>
+<p>The marker is deliberately not colour alone: it carries a filled background, bold monospace weight and an uppercase label, so it survives a greyscale print, a colour-blind reader and a fast skim of a long table.</p>
+<table class="docs-table">
+  <thead>
+    <tr><th>Package</th><th>Score</th><th>Scored from</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="docs-badge-internal">internal</span><code>&#64;acme/auth-helpers</code></td><td>47/100</td><td>Git history + its own dependencies</td></tr>
+    <tr><td><code>express</code></td><td>99/100</td><td>Registry metadata + advisories</td></tr>
+  </tbody>
+</table>
+<table class="docs-table">
+  <thead>
+    <tr><th>Signal</th><th>Registry package</th><th>Internal package</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Security</td><td>Advisories for the resolved version</td><td>Advisories of its own dependencies</td></tr>
+    <tr><td>Popularity</td><td>Download volume</td><td>Structurally excluded — weight redistributed</td></tr>
+    <tr><td>Maintenance</td><td>Registry maintainer count</td><td>Git bus factor (distinct authors, 90 days)</td></tr>
+    <tr><td>Freshness</td><td>Registry publish date</td><td>Last commit date</td></tr>
+    <tr><td>License</td><td>SPDX from registry metadata</td><td>Local manifest</td></tr>
+  </tbody>
+</table>
+<div class="docs-caveat"><strong>No source-level analysis.</strong> DepVault has no static-analysis engine, so an internal package's score reflects its dependency surface and maintenance health — not the risk of its own code. A hand-written crypto helper with no dependencies will score well; that is a statement about its supply chain, not about its implementation.</div>
+<h3>How scoring works</h3>
+<p>DepVault combines known vulnerability exposure, package criticality, maintainer diversity, freshness, maintenance, popularity, and license signals. Security contributes 45% of the Trust Score; license and maintenance 20% each; popularity 15%. Freshness adjusts maintenance, and Monte Carlo sampling can provide the displayed 95% confidence interval. The score helps compare choices; the finding list identifies urgent remediation work.</p>

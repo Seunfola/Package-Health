@@ -1,0 +1,52 @@
+<div class="palette-backdrop" (click)="close()">
+  <div class="palette" role="dialog" aria-modal="true" aria-label="Search documentation" (click)="$event.stopPropagation()">
+    <div class="palette__search">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input
+        #searchInput
+        type="text"
+        [(ngModel)]="query"
+        (ngModelChange)="onQueryChange()"
+        (keydown.ArrowDown)="moveDown(); $event.preventDefault()"
+        (keydown.ArrowUp)="moveUp(); $event.preventDefault()"
+        (keydown.Enter)="selectActive()"
+        (keydown.Escape)="close()"
+        placeholder="Search documentation…"
+        aria-label="Search documentation"
+      />
+      <kbd>Esc</kbd>
+    </div>
+
+    <div class="palette__results" role="listbox">
+      @if (results.length === 0) {
+        <p class="palette__empty">No topics match &quot;{{ query }}&quot;.</p>
+      }
+      @for (section of results; track section.id; let i = $index) {
+        <button
+          type="button"
+          class="palette__item"
+          [class.active]="i === activeIndex"
+          (mouseenter)="activeIndex = i"
+          (click)="go(section)"
+          role="option"
+          [attr.aria-selected]="i === activeIndex"
+        >
+          <div>
+            <p class="palette__item-title">{{ section.title }}</p>
+            <p class="palette__item-desc">{{ section.description }}</p>
+          </div>
+          <span class="palette__item-category">{{ section.category }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="palette__hints">
+      <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> navigate</span>
+      <span><kbd>&crarr;</kbd> open</span>
+      <span><kbd>Esc</kbd> close</span>
+    </div>
+  </div>
+</div>

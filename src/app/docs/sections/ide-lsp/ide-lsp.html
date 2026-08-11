@@ -1,0 +1,65 @@
+<h2>IDE extension &amp; LSP intelligence</h2>
+<p>Every editor integration runs the same editor-agnostic <code>@depvault/lsp-server</code> over standard input/output. It analyzes <code>package.json</code>, <code>requirements.txt</code>, <code>pyproject.toml</code>, and <code>Cargo.toml</code>. Go manifests are supported by the CLI and GitHub Action, but are not currently an LSP manifest target.</p>
+<h3>What the language server does</h3>
+<ul class="docs-list"><li><strong>CodeLens:</strong> where the client supports it, each dependency line shows <code>[OK] DepVault Trust: 94/100</code>, a warning, or a CRITICAL marker.</li><li><strong>Hover:</strong> place the cursor on a dependency to see the full Trust Score report and suggested remediation.</li><li><strong>Diagnostics:</strong> a score below the configured threshold becomes a warning; a CRITICAL known vulnerability becomes an error.</li><li><strong>Quick fix:</strong> use the editor's code-actions menu to replace a vulnerable version with the recommended fixed version when one is available.</li><li><strong>Update timing:</strong> the server re-analyzes after opening and saving a manifest, and debounces edits for 500 ms.</li></ul>
+<div class="docs-note"><strong>Network requirement:</strong> editor scoring needs package-registry data. If a registry is unreachable or rate-limited, DepVault reports that it could not verify the dependency; it does not fabricate a score of zero.</div>
+
+<h3>VS Code extension</h3>
+<p>Install the DepVault extension in VS Code, open a supported manifest, then adjust its settings under <strong>Settings → Extensions → DepVault</strong> or in <code>settings.json</code>. The extension requires VS Code 1.85 or later and bundles the language server with it.</p>
+<pre class="docs-code">&#123;
+  "depvault.scoreThreshold": 50,
+  "depvault.enabledEcosystems": ["npm", "pypi", "cargo"]
+&#125;</pre>
+<p><code>scoreThreshold</code> accepts 0–100 and defaults to 50. <code>enabledEcosystems</code> defaults to npm, PyPI, and Cargo. If you are building from this repository instead of installing a packaged extension, run:</p>
+<pre class="docs-terminal"><span class="terminal-prompt">$</span> pnpm --filter @depvault/lsp-server build
+<span class="terminal-prompt">$</span> pnpm --filter depvault-vscode build
+<span class="terminal-prompt">$</span> pnpm --filter depvault-vscode package
+<span class="terminal-dim"># In VS Code: Extensions → … → Install from VSIX</span></pre>
+
+<h3>Signing in for dashboard sync</h3>
+<p>Analysis itself needs no account — CodeLens, hover, and diagnostics work fully signed out. Signing in is only for syncing a LeakGuard workspace scan to this dashboard, so it shows up alongside scans from the CLI and CI instead of staying local to your editor.</p>
+<ol class="docs-list">
+  <li>Generate a personal access token from <a routerLink="/dashboard-settings/tokens">Settings → API Tokens</a> — it's shown once, so copy it immediately.</li>
+  <li>In VS Code, open the Command Palette and run <strong>DepVault: Sign In</strong>. Paste the token (it starts with <code>dv_pat_</code>).</li>
+  <li>The status bar switches to <strong>DepVault: Signed in</strong>. Run <strong>DepVault LeakGuard: Scan Workspace for Secrets</strong> again — the result now also syncs to your dashboard's <a routerLink="/repo-health/synced-scans">Synced Scans</a> page.</li>
+</ol>
+<div class="docs-note"><strong>Where the token lives:</strong> the extension stores it in VS Code's <code>SecretStorage</code> — the OS keychain, not a plaintext setting — and sends it only to the API URL configured in <code>depvault.apiUrl</code> (defaults to the hosted DepVault backend). Run <strong>DepVault: Sign Out</strong> to remove it.</div>
+<div class="docs-caveat"><strong>What actually syncs:</strong> only a full workspace scan you explicitly run (<strong>Scan Workspace for Secrets</strong>). The real-time diagnostics that appear as you type are local-only and never uploaded, signed in or not.</div>
+
+<h3>Neovim</h3>
+<p>Install the server globally, confirm that <code>depvault-lsp-server</code> is on your <code>PATH</code>, then add this configuration to <code>init.lua</code> for Neovim 0.11 or later:</p>
+<pre class="docs-code">vim.lsp.config('depvault', &#123;
+  cmd = &#123; 'depvault-lsp-server', '--stdio' &#125;,
+  filetypes = &#123; 'json', 'toml', 'requirements' &#125;,
+  root_markers = &#123; 'package.json', 'requirements.txt', 'pyproject.toml', 'Cargo.toml', '.git' &#125;,
+  init_options = &#123;
+    scoreThreshold = 50,
+    enabledEcosystems = &#123; 'npm', 'pypi', 'cargo' &#125;,
+  &#125;,
+&#125;)
+vim.lsp.enable('depvault')</pre>
+<pre class="docs-terminal"><span class="terminal-prompt">$</span> npm install -g &#64;depvault/lsp-server
+<span class="terminal-dim"># In Neovim: K for hover; :lua vim.lsp.buf.code_action() for fixes</span></pre>
+<p>Neovim's built-in client does not render CodeLens text by default. Hover, diagnostics, and code actions work normally. Neovim 0.8–0.10 and <code>nvim-lspconfig</code> require a custom client registration; use the project's Neovim integration README as the exact configuration source for those versions.</p>
+
+<h3>Sublime Text</h3>
+<p>Install the <strong>LSP</strong> package through Package Control, install the language server, then open <strong>Preferences → Package Settings → LSP → Settings</strong>. Add the following under <code>clients</code>:</p>
+<pre class="docs-code">&#123;
+  "clients": &#123;
+    "depvault": &#123;
+      "enabled": true,
+      "command": ["depvault-lsp-server", "--stdio"],
+      "selector": "source.json | source.toml | text.plain.requirements",
+      "initializationOptions": &#123;
+        "scoreThreshold": 50,
+        "enabledEcosystems": ["npm", "pypi", "cargo"]
+      &#125;
+    &#125;
+  &#125;
+&#125;</pre>
+<p>If your syntax package assigns a different scope to <code>requirements.txt</code>, change the selector accordingly. Sublime renders hover, diagnostics, and code actions; its LSP client does not render CodeLens.</p>
+
+<h3>JetBrains IDEs: IntelliJ, PyCharm, WebStorm, GoLand, and more</h3>
+<p>The JetBrains client is a Kotlin/Gradle plugin at <code>apps/jetbrains-plugin</code>. It uses the free LSP4IJ plugin to launch the same language server, rather than duplicating scoring and inspection logic. This integration is currently a <strong>scaffold</strong>: its source follows LSP4IJ's integration model, but it has not been build-verified against a live IntelliJ Platform SDK. Validate it in your target IDE before distributing it to a team.</p>
+<ol class="docs-list"><li>Install <strong>LSP4IJ</strong> from the JetBrains Marketplace: <strong>Settings → Plugins → Marketplace</strong>.</li><li>Install the language server globally: <code>npm install -g @depvault/lsp-server</code>.</li><li>From this repository, build the plugin: <code>cd apps/jetbrains-plugin &amp;&amp; ./gradlew buildPlugin</code>.</li><li>Install the generated <code>build/distributions/depvault-jetbrains-*.zip</code> via <strong>Settings → Plugins → Install Plugin from Disk…</strong>.</li><li>Open a supported dependency manifest and verify hover, Problems diagnostics, and quick-fixes.</li></ol>
+<div class="docs-caveat"><strong>JetBrains rollout checklist:</strong> first verify the pinned LSP4IJ and IntelliJ Platform versions with your installed IDE, confirm the server binary is discoverable on <code>PATH</code>, and test diagnostics and upgrade actions against a non-production project.</div>

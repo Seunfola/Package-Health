@@ -1,0 +1,52 @@
+<h1 class="docs-title">DepVault Documentation</h1>
+<p class="docs-intro">
+  Everything you need to score dependencies, wire up the MCP server for AI agents, gate installs with the CLI, and
+  manage your organization's plan. Press <kbd>&#8984;K</kbd> to jump straight to a topic.
+</p>
+
+<div class="docs-action-cards">
+  <a routerLink="/home" fragment="analyze" class="docs-action-card">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M15 22V18a4 4 0 0 0-1-3.75c2.75-.41 5.5-1.35 5.5-6a4.12 4.12 0 0 0-1.58-3.26 4.07 4.07 0 0 0-.06-3.23s-1.12-.33-3.53 1.25a12 12 0 0 0-6 0c-2.41-1.58-3.53-1.25-3.53-1.25a4.07 4.07 0 0 0-.06 3.23A4.12 4.12 0 0 0 4 8c0 4.65 2.75 5.59 5.5 6a4 4 0 0 0-1 3.75v4"></path>
+    </svg>
+    <div>
+      <h3>Analyze a Repository</h3>
+      <p>Submit a GitHub URL or manifest file to get a Trust Score — no login required for public repos.</p>
+    </div>
+  </a>
+  <a routerLink="/docs/mcp-server" class="docs-action-card">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="4 17 10 11 4 5"></polyline>
+      <line x1="12" y1="19" x2="20" y2="19"></line>
+    </svg>
+    <div>
+      <h3>Set Up the MCP Server</h3>
+      <p>Connect DepVault to Claude Code, Cursor, or Windsurf so your AI agent can check Trust Scores directly.</p>
+    </div>
+  </a>
+  <a routerLink="/docs/downloads" class="docs-action-card">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    <div>
+      <h3>Download &amp; Install</h3>
+      <p>Real links and current publish status for the CLI, MCP server, VS Code extension, and every other surface.</p>
+    </div>
+  </a>
+</div>
+
+@for (group of groups; track group.category) {
+  <section class="docs-overview-group">
+    <h2>{{ group.category }}</h2>
+    <div class="docs-overview-grid">
+      @for (section of group.sections; track section.id) {
+        <a [routerLink]="['/docs', section.id]" class="docs-overview-card">
+          <h3>{{ section.title }}</h3>
+          <p>{{ section.description }}</p>
+        </a>
+      }
+    </div>
+  </section>
+}
