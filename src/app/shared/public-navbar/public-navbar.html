@@ -8,7 +8,7 @@
     <a routerLink="/features" class="nav-link">Features</a>
     <a routerLink="/pricing" class="nav-link">Pricing</a>
     <a routerLink="/docs" class="nav-link">Docs</a>
-    <a routerLink="/home" fragment="about" class="nav-link">About</a>
+    <a routerLink="/how-it-works" class="nav-link">How It Works</a>
   </nav>
 
   <div class="public-navbar__actions">
@@ -68,7 +68,7 @@
   <a routerLink="/features" class="mobile-menu__link" (click)="closeMobileMenu()">Features</a>
   <a routerLink="/pricing" class="mobile-menu__link" (click)="closeMobileMenu()">Pricing</a>
   <a routerLink="/docs" class="mobile-menu__link" (click)="closeMobileMenu()">Docs</a>
-  <a routerLink="/home" fragment="about" class="mobile-menu__link" (click)="closeMobileMenu()">About</a>
+  <a routerLink="/how-it-works" class="mobile-menu__link" (click)="closeMobileMenu()">How It Works</a>
   @if ((authState$ | async)?.isAuthenticated) {
     <a routerLink="/dashboard" class="mobile-menu__link" (click)="closeMobileMenu()">Dashboard</a>
     <a routerLink="/user-profile" class="mobile-menu__link" (click)="closeMobileMenu()">Profile</a>

@@ -20,6 +20,19 @@
   text-align: center;
 }
 
+.about-campaign-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--accent-teal);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.about-campaign-link:hover {
+  text-decoration: underline;
+}
+
 .process-steps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

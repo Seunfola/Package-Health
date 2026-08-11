@@ -32,7 +32,7 @@ export class Footer {
         { label: 'Features', routerLink: '/features' },
         { label: 'Pricing', routerLink: '/pricing' },
         { label: 'Docs', routerLink: '/docs' },
-        { label: 'About', routerLink: '/home', fragment: 'about' },
+        { label: 'How It Works', routerLink: '/how-it-works' },
       ],
     },
     {

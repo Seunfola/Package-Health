@@ -1,0 +1,112 @@
+<main class="how-page">
+  <section class="how-hero">
+    <p class="features-eyebrow"><span></span> The engine, not the pitch</p>
+    <h1>How DepVault actually works.</h1>
+    <p>Every surface — CLI, editor, CI, an AI agent, this dashboard — calls the same scan pipeline and renders the same verdict. This page is that pipeline, end to end.</p>
+  </section>
+
+  <section class="how-section">
+    <header>
+      <p class="features-eyebrow"><span></span> The pipeline</p>
+      <h2>One scan, five steps.</h2>
+      <p class="section-lede">A scan is deterministic and composable — resolve, detect, fetch, score, enforce. No surface re-implements any of it; each one calls the same functions and only owns presentation and exit codes.</p>
+    </header>
+
+    <ol class="pipeline">
+      @for (step of pipelineSteps; track step.title) {
+        <li class="pipeline__step">
+          <span class="pipeline__number">{{ step.number }}</span>
+          <div>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="how-section how-section--math">
+    <header>
+      <p class="features-eyebrow"><span></span> The formula</p>
+      <h2>Four signals, one weighted score.</h2>
+      <p class="section-lede">Not a raw CVE count — a predictive blend of security, license, maintenance, and popularity, run through Monte Carlo simulation for a confidence interval instead of a falsely-precise single number.</p>
+    </header>
+
+    <div class="score-breakdown">
+      @for (item of scoreBreakdown; track item.label) {
+        <div class="score-breakdown__row">
+          <div class="score-breakdown__label">
+            <span>{{ item.label }}</span>
+            <strong>{{ item.weight }}%</strong>
+          </div>
+          <div class="score-breakdown__bar"><b [style.width.%]="item.weight * 2"></b></div>
+          <p>{{ item.detail }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="how-section">
+    <header>
+      <p class="features-eyebrow"><span></span> Ecosystem-agnostic</p>
+      <h2>Four ecosystems, the manifests you already have.</h2>
+    </header>
+
+    <div class="table-wrap">
+      <table class="how-table">
+        <thead>
+          <tr><th>Ecosystem</th><th>Manifests</th><th>Package managers</th></tr>
+        </thead>
+        <tbody>
+          @for (eco of ecosystems; track eco.name) {
+            <tr>
+              <td>{{ eco.name }}</td>
+              <td>{{ eco.manifests }}</td>
+              <td>{{ eco.managers }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="how-section how-section--split">
+    <article class="how-card">
+      <span class="how-card__icon">⛨</span>
+      <h3>LeakGuard</h3>
+      <p>An embedded secret-detection engine — 60+ rules across 40+ providers, regex plus Shannon-entropy scoring, no subprocess. Findings are redacted by default; a raw value is only ever held in memory for one opt-in liveness check, never logged or stored.</p>
+      <a routerLink="/docs" fragment="leakguard">Read the LeakGuard docs &rarr;</a>
+    </article>
+    <article class="how-card">
+      <span class="how-card__icon">⛭</span>
+      <h3>Gatekeeper</h3>
+      <p>Org-wide policy on top of the same real scores: block CRITICAL vulnerabilities, reject GPL and other copyleft licenses, flag abandoned packages, warn on conflicting ecosystem packages, or run entirely custom scoring weights on a paid plan.</p>
+      <a routerLink="/dashboard-settings/gatekeeper">Configure your policy &rarr;</a>
+    </article>
+  </section>
+
+  <section class="how-section">
+    <header>
+      <p class="features-eyebrow"><span></span> Same engine, everywhere</p>
+      <h2>Where this pipeline actually runs.</h2>
+      <p class="section-lede">Cross-surface agreement is a behavioural contract, not a coincidence — a change that makes one surface score differently from another is treated as a bug.</p>
+    </header>
+
+    <div class="surfaces-grid">
+      @for (surface of surfaces; track surface.name) {
+        <div class="surfaces-grid__item">
+          <h3>{{ surface.name }}</h3>
+          <p>{{ surface.detail }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="feature-cta">
+    <div>
+      <p class="features-eyebrow"><span></span> See it on a real dependency</p>
+      <h2>Run the pipeline yourself.</h2>
+    </div>
+    <a routerLink="/home" fragment="analyze" class="btn-primary">Analyze a repository <span aria-hidden="true">→</span></a>
+  </section>
+</main>

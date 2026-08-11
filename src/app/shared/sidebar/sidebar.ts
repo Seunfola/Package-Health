@@ -87,7 +87,7 @@ export class Sidebar {
     { label: 'Features', path: '/features' },
     { label: 'Pricing', path: '/pricing' },
     { label: 'Docs', path: '/docs' },
-    { label: 'About', path: '/home', fragment: 'about' },
+    { label: 'How It Works', path: '/how-it-works' },
   ];
 
   constructor(

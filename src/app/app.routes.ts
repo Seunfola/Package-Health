@@ -28,6 +28,7 @@ import { NotFound } from './not-found/not-found';
 import { GetStartedPage } from './get-started/get-started';
 import { FeaturesPage } from './features/features';
 import { NewsletterPage } from './newsletter/newsletter';
+import { HowItWorksPage } from './how-it-works/how-it-works';
 import { authGuard } from './services/auth.guard';
 import { onboardingGuard } from './services/onboarding.guard';
 import { OnboardingWizard } from './onboarding/onboarding';
@@ -43,6 +44,7 @@ export const routes: Routes = [
       { path: 'pricing', component: PricingPage },
       { path: 'get-started', component: GetStartedPage },
       { path: 'features', component: FeaturesPage },
+      { path: 'how-it-works', component: HowItWorksPage },
       { path: 'newsletter', component: NewsletterPage },
       { path: 'privacy', component: PrivacyPolicy },
       { path: 'terms', component: TermsOfService },
