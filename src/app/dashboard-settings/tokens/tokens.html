@@ -1,0 +1,59 @@
+<app-settings-card title="Personal Access Tokens"
+  subtitle="Long-lived, revocable credentials for the CLI, the IDE extension, and CI — unlike your browser session, these don't expire in an hour. Used for 'depvault login', 'depvault upload', and signing the IDE extension in.">
+  @if (justCreatedToken) {
+    <div class="pat-reveal">
+      <p class="pat-reveal__warning">Copy this token now — you won't be able to see it again.</p>
+      <div class="pat-reveal__row">
+        <code class="pat-reveal__value">{{ justCreatedToken }}</code>
+        <button (click)="copyPatToken(justCreatedToken)" class="save-button">
+          {{ patCopied ? 'Copied!' : 'Copy' }}
+        </button>
+      </div>
+      <button (click)="dismissNewToken()" class="pat-reveal__dismiss">Done — I've saved it</button>
+    </div>
+  }
+
+  <div class="pat-create">
+    <input
+      type="text"
+      [(ngModel)]="newTokenName"
+      placeholder="Token name — e.g. VS Code on my laptop"
+      class="pat-create__input"
+      [disabled]="isCreatingToken"
+      (keydown.enter)="createPersonalAccessToken()"
+    />
+    <button (click)="createPersonalAccessToken()" [disabled]="!newTokenName.trim() || isCreatingToken" class="save-button">
+      {{ isCreatingToken ? 'Generating…' : 'Generate token' }}
+    </button>
+  </div>
+  @if (createTokenError) {
+    <p class="pat-error">{{ createTokenError }}</p>
+  }
+
+  @if (isLoadingTokens) {
+    <p class="settings-subtitle">Loading…</p>
+  } @else if (personalAccessTokens.length === 0) {
+    <p class="settings-subtitle">No tokens yet — generate one above to use with the CLI or IDE extension.</p>
+  } @else {
+    <table class="pat-table">
+      <thead>
+        <tr><th>Name</th><th>Token</th><th>Created</th><th>Last used</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (token of personalAccessTokens; track token.id) {
+          <tr>
+            <td>{{ token.name }}</td>
+            <td><code>{{ token.tokenPrefix }}…</code></td>
+            <td>{{ token.createdAt | date: 'mediumDate' }}</td>
+            <td>{{ token.lastUsedAt ? (token.lastUsedAt | date: 'mediumDate') : 'Never' }}</td>
+            <td>
+              <button (click)="revokePersonalAccessToken(token.id)" [disabled]="revokingTokenId === token.id" class="pat-revoke">
+                {{ revokingTokenId === token.id ? 'Revoking…' : 'Revoke' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</app-settings-card>

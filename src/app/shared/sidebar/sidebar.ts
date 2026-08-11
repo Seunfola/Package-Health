@@ -59,11 +59,20 @@ export class Sidebar {
       ],
     },
     { icon: 'user', label: 'User Profile', path: '/user-profile', separator: false },
-    // Dashboard Settings is still a single page — it gains `children` once
-    // its own subroutes exist (it's ~750 lines covering ~8 concerns with
-    // shared org-switcher state, not a same-sitting split). Listing
-    // children before those routes exist would ship dead sidebar links.
-    { icon: 'settings', label: 'Dashboard Settings', path: '/dashboard-settings', separator: true },
+    {
+      icon: 'settings',
+      label: 'Dashboard Settings',
+      path: '/dashboard-settings',
+      separator: true,
+      children: [
+        { label: 'Preferences', path: '/dashboard-settings' },
+        { label: 'Organization', path: '/dashboard-settings/organization' },
+        { label: 'Members', path: '/dashboard-settings/members' },
+        { label: 'API Tokens', path: '/dashboard-settings/tokens' },
+        { label: 'Gatekeeper Policy', path: '/dashboard-settings/gatekeeper' },
+        { label: 'Notifications', path: '/dashboard-settings/webhooks' },
+      ],
+    },
     { icon: 'notification', label: 'Notifications', path: '/notifications', separator: false },
   ];
 

@@ -1,0 +1,74 @@
+<app-settings-card title="Organization Gatekeeper Policies" subtitle="Customize the strictness of the predictive risk engine for your entire organization.">
+  @if (!org.isPaidOrg) {
+    <p class="guidance-text" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+      Customizing these policies (and custom scoring weights below) is a paid feature. Your organization currently uses the same sensible defaults every FREE org starts with — read-only until you upgrade.
+    </p>
+  }
+
+  <fieldset [disabled]="!org.isPaidOrg" style="border: none; padding: 0; margin: 0;">
+    <app-settings-item [title]="'Block Critical CVEs'"
+      [subtitle]="'Automatically reject installation of packages harboring CRITICAL severity vulnerabilities.'"
+      [(enabled)]="blockCriticalCves"></app-settings-item>
+
+    <app-settings-item [title]="'Block GPL (Toxic Copyleft)'"
+      [subtitle]="'Prevent developers from installing restrictive copyleft licenses like GPL and AGPL to avoid legal exposure.'"
+      [(enabled)]="blockGplLicenses"></app-settings-item>
+
+    <app-settings-item [title]="'Warn Ecosystem Conflicts'"
+      [subtitle]="'Detect and warn about conflicting packages (e.g. react-query vs @tanstack/react-query).'"
+      [(enabled)]="warnEcosystemConflicts"></app-settings-item>
+
+    <app-settings-item [title]="'Block Ghost Towns (Abandonware)'"
+      [subtitle]="'Block packages that fall below a minimum Trust Score for maintenance and popularity.'"
+      [(enabled)]="blockGhostTowns"></app-settings-item>
+
+    @if (blockGhostTowns) {
+      <app-settings-input title="Ghost Town Health Threshold"
+        subtitle="Minimum required Trust Score (0-100).">
+        <div class="input-container">
+          <input type="number" [(ngModel)]="ghostTownThreshold" class="settings-input-field"
+            aria-label="Ghost Town Health Threshold" min="0" max="60" />
+        </div>
+        <p class="guidance-text">
+          <strong>Guidance:</strong> Setting this above 50 risks blocking highly stable, older utility packages that simply haven't needed updates in years. We enforce a maximum limit of 60 to prevent catastrophic blocking of your legitimate ecosystem dependencies.
+        </p>
+      </app-settings-input>
+    }
+
+    <app-settings-item [title]="'Custom Trust Score Weights'"
+      [subtitle]="'Override the default 45/20/20/15 (security/license/maintenance/popularity) split to match what your organization actually cares about.'"
+      [(enabled)]="useCustomWeights"></app-settings-item>
+
+    @if (useCustomWeights) {
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0;">
+        <label>Security (%)
+          <input type="number" [(ngModel)]="weightSecurity" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>License (%)
+          <input type="number" [(ngModel)]="weightLicense" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>Maintenance (%)
+          <input type="number" [(ngModel)]="weightMaintenance" class="settings-input-field" min="0" max="100" />
+        </label>
+        <label>Popularity (%)
+          <input type="number" [(ngModel)]="weightPopularity" class="settings-input-field" min="0" max="100" />
+        </label>
+      </div>
+      <p [style.color]="weightsSum === 100 ? 'var(--accent-teal)' : 'var(--color-danger)'" style="font-size: 13px;">
+        Sum: {{ weightsSum }} / 100 {{ weightsSum === 100 ? '' : '— must equal 100 to save' }}
+      </p>
+      @if (weightsError) {
+        <p class="error-message">{{ weightsError }}</p>
+      }
+    }
+  </fieldset>
+</app-settings-card>
+
+<div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 24px; gap: 16px;">
+  @if (message) {
+    <span class="status-message">{{ message }}</span>
+  }
+  <button class="save-button" (click)="savePolicies()" [disabled]="isSaving">
+    {{ isSaving ? 'Saving...' : 'Save Gatekeeper Policy' }}
+  </button>
+</div>

@@ -6,6 +6,11 @@ import { RepoHealth } from './repo-health/repo-health';
 import { SyncedScans } from './repo-health/synced-scans/synced-scans';
 import { RepoDetails } from './repo-details/repo-details';
 import { DashboardSettings } from './dashboard-settings/dashboard-settings';
+import { OrganizationSettings } from './dashboard-settings/organization/organization';
+import { MembersSettings } from './dashboard-settings/members/members';
+import { TokensSettings } from './dashboard-settings/tokens/tokens';
+import { GatekeeperSettings } from './dashboard-settings/gatekeeper/gatekeeper';
+import { WebhooksSettings } from './dashboard-settings/webhooks/webhooks';
 import { Notification } from './notification/notification';
 import { UserProfile } from './user-profile/user-profile';
 import { PrivacyPolicy } from './legal/privacy/privacy';
@@ -82,6 +87,13 @@ export const routes: Routes = [
       { path: 'repo-health', component: RepoHealth },
       { path: 'repository-details/:owner/:name', component: RepoDetails },
       { path: 'repository-details', component: RepoDetails, data: { deadEnd: true } },
+      // Specific subroutes before the plain 'dashboard-settings' prefix —
+      // same reason as the dashboard/repo-health comments above.
+      { path: 'dashboard-settings/organization', component: OrganizationSettings },
+      { path: 'dashboard-settings/members', component: MembersSettings },
+      { path: 'dashboard-settings/tokens', component: TokensSettings },
+      { path: 'dashboard-settings/gatekeeper', component: GatekeeperSettings },
+      { path: 'dashboard-settings/webhooks', component: WebhooksSettings },
       { path: 'dashboard-settings', component: DashboardSettings },
       { path: 'notifications', component: Notification },
       { path: 'user-profile', component: UserProfile },
