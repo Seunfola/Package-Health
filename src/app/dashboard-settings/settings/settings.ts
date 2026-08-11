@@ -12,6 +12,7 @@ import { GatekeeperService, GatekeeperPolicyConfig } from '@/app/services/gateke
 import { OrganizationService, OrganizationMember, Organization, OrgInvitation, OrgAuditLogEntry, OrgUsage } from '@/app/services/organization.service';
 import { NotificationWebhookService, NotificationWebhook, NotificationWebhookType } from '@/app/services/notification-webhook.service';
 import { RepoService, RepoListItem } from '@/app/services/RepoService';
+import { PersonalAccessTokenService, PersonalAccessTokenSummary } from '@/app/services/personal-access-token.service';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
 @Component({
@@ -50,7 +51,17 @@ export class Settings implements OnInit {
   isSaving = false;
   message = '';
 
-  cliTokenCopied = false;
+  // Personal Access Tokens — long-lived, revocable, used by the CLI/IDE
+  // extension/CI instead of the short-lived (1h) browser session JWT.
+  personalAccessTokens: PersonalAccessTokenSummary[] = [];
+  isLoadingTokens = false;
+  newTokenName = '';
+  isCreatingToken = false;
+  createTokenError = '';
+  /** Set only immediately after creation — the raw value is never retrievable again, so this is cleared as soon as the user dismisses it. */
+  justCreatedToken: string | null = null;
+  revokingTokenId: string | null = null;
+  patCopied = false;
 
   // Gatekeeper Policies State
   blockCriticalCves = true;
@@ -133,29 +144,11 @@ export class Settings implements OnInit {
     private readonly organizationService: OrganizationService,
     private readonly notificationWebhookService: NotificationWebhookService,
     private readonly repoService: RepoService,
+    private readonly personalAccessTokenService: PersonalAccessTokenService,
   ) {}
 
   get authState$() {
     return this.authService.authState$;
-  }
-
-  /**
-   * Copies the user's existing DepVault session JWT for use with
-   * `depvault login <token>` — the CLI's local-analysis upload path
-   * (`depvault upload`) authenticates with this alone; it never requests
-   * or uses GitHub access.
-   */
-  copyCliToken(): void {
-    const token = this.authService.getToken();
-    if (!token) return;
-    navigator.clipboard.writeText(token).then(() => {
-      this.cliTokenCopied = true;
-      setTimeout(() => (this.cliTokenCopied = false), 3000);
-    });
-  }
-
-  get hasCliToken(): boolean {
-    return !!this.authService.getToken();
   }
 
   /** Scans uploaded via `depvault upload` — the only visibility into CLI cloud sync this dashboard has, beyond the CLI's own output. */
@@ -177,6 +170,67 @@ export class Settings implements OnInit {
     this.loadPreferences();
     this.loadMyOrganizations();
     this.loadMyUploadedRepos();
+    this.loadPersonalAccessTokens();
+  }
+
+  loadPersonalAccessTokens(): void {
+    this.isLoadingTokens = true;
+    this.personalAccessTokenService.list().subscribe({
+      next: (tokens) => {
+        this.personalAccessTokens = tokens;
+        this.isLoadingTokens = false;
+      },
+      error: (err) => {
+        console.error('Failed to load personal access tokens', err);
+        this.isLoadingTokens = false;
+      },
+    });
+  }
+
+  createPersonalAccessToken(): void {
+    const name = this.newTokenName.trim();
+    if (!name || this.isCreatingToken) return;
+
+    this.isCreatingToken = true;
+    this.createTokenError = '';
+    this.personalAccessTokenService.create(name).subscribe({
+      next: ({ token, summary }) => {
+        this.justCreatedToken = token;
+        this.personalAccessTokens = [summary, ...this.personalAccessTokens];
+        this.newTokenName = '';
+        this.isCreatingToken = false;
+      },
+      error: (err) => {
+        this.createTokenError = err?.error?.message || 'Failed to create token.';
+        this.isCreatingToken = false;
+      },
+    });
+  }
+
+  dismissNewToken(): void {
+    this.justCreatedToken = null;
+    this.patCopied = false;
+  }
+
+  copyPatToken(token: string): void {
+    navigator.clipboard.writeText(token).then(() => {
+      this.patCopied = true;
+      setTimeout(() => (this.patCopied = false), 3000);
+    });
+  }
+
+  revokePersonalAccessToken(id: string): void {
+    this.revokingTokenId = id;
+    this.personalAccessTokenService.revoke(id).subscribe({
+      next: () => {
+        this.personalAccessTokens = this.personalAccessTokens.filter((t) => t.id !== id);
+        this.revokingTokenId = null;
+      },
+      error: (err) => {
+        console.error('Failed to revoke token', err);
+        this.revokingTokenId = null;
+      },
+    });
   }
 
   /** Every org the user owns or belongs to — powers the org switcher. Falls back to the single-tenant 'default-org' behavior if this fails or comes back empty. */
