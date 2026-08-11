@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterLinkActive } from '@angular/router';
+import { RouterModule, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -27,7 +27,19 @@ export class Sidebar {
   // non-admins.
   private readonly telemetryMenuItem = { icon: 'gauge', label: 'Usage Telemetry', path: '/telemetry', separator: true };
 
-  constructor(private readonly authService: AuthService) {}
+  /** Guest/marketing pages — the sidebar is the only mobile nav surface, so
+      this is how a mobile user reaches them without logging out first. */
+  readonly guestLinks = [
+    { label: 'Features', path: '/features' },
+    { label: 'Pricing', path: '/pricing' },
+    { label: 'Docs', path: '/docs' },
+    { label: 'About', path: '/home', fragment: 'about' },
+  ];
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router,
+  ) {}
 
   get menuItems() {
     return this.authService.currentState.isPlatformAdmin
@@ -40,5 +52,11 @@ export class Sidebar {
     if (this.isOpen) {
       this.isOpen = false;
     }
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.isOpen = false;
+    this.router.navigate(['/home']);
   }
 }

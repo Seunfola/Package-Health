@@ -99,6 +99,16 @@
     color: var(--accent-teal);
 }
 
+.list-item--logout a {
+    color: var(--color-danger);
+    cursor: pointer;
+}
+
+.sidebar__divider {
+    margin: 8px 4px;
+    border-top: 1px solid var(--glass-border);
+}
+
 @media (min-width: 768px) {
     .sidebar {
         width: 300px;
