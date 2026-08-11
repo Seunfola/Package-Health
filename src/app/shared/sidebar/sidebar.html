@@ -11,4 +11,21 @@
     </li>
     }
   </ul>
+
+  <div class="sidebar__divider"></div>
+
+  <ul class="list">
+    @for (link of guestLinks; track link.label) {
+    <li class="list-item">
+      <a [routerLink]="link.path" [fragment]="link.fragment" (click)="isOpen = false">
+        <span>{{ link.label }}</span>
+      </a>
+    </li>
+    }
+    <li class="list-item list-item--logout">
+      <a role="button" (click)="logout()">
+        <span>Log out</span>
+      </a>
+    </li>
+  </ul>
 </aside>
