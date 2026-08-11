@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StatusCard } from '../reusable/status-card/status-card';
 import { TrendChart } from '../reusable/charts/trend-chart/trend-chart';
@@ -36,7 +37,7 @@ type Ecosystem = (typeof ECOSYSTEMS)[number];
 @Component({
   selector: 'app-repo-health',
   standalone: true,
-  imports: [CommonModule, FormsModule, StatusCard, TrendChart],
+  imports: [CommonModule, FormsModule, RouterLink, StatusCard, TrendChart],
   templateUrl: './repo-health.html',
   styleUrl: './repo-health.css',
 })

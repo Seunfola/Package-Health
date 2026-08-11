@@ -1,0 +1,22 @@
+<h2>CLI — Shield &amp; Install Hooks</h2>
+<p class="docs-caveat">
+  The CLI is not yet published to the public npm registry — it's built from this project's source today.
+</p>
+<pre class="docs-code">depvault shield express&#64;4.18.2   # pre-scan one package, then install if it passes
+depvault shield audit            # audit all currently installed packages
+depvault hooks install           # print shell wrappers that gate npm/pnpm/yarn/pip/cargo/go installs
+depvault scan --untrusted        # audit code you don't control — see below</pre>
+<div class="docs-caveat"><strong>Auditing code you don't control.</strong> <code>depvault.json</code> lives <em>inside</em> the repository being scanned, so a project can waive its own findings or mark its own dependencies trusted. That is the point of the feature for your own repo. When you are reviewing someone else's code, pass <code>--untrusted</code>: the policy is still parsed and every suppression it attempted is <em>reported</em>, but none are applied, and the threshold can only be raised — never lowered by the thing being audited.</div>
+<pre class="docs-terminal"><span class="terminal-dim"># Build the CLI from this repository, then scan a project</span>
+pnpm install
+pnpm --filter cli build
+<span class="terminal-prompt">$</span> pnpm --filter cli exec depvault scan --path .</pre>
+<p>
+  <code>depvault shield &lt;pkg&gt;</code> only gates the exact command you run. <code>depvault hooks install</code>
+  is the real always-on gate — it prints shell functions that route every install through Shield first, blocking
+  on a <code>BLOCK</code> verdict unless overridden with <code>--force</code> (audited, not silent).
+</p>
+<p>
+  Offline use: <code>depvault shield sync</code> downloads a signed verdict cache while online; if the backend
+  later becomes unreachable, cached packages still get a real verdict — anything not already cached fails closed.
+</p>

@@ -1,0 +1,54 @@
+<h2>CI/CD Beyond GitHub</h2>
+<p>LeakGuard's CI story isn't GitHub-only. Every integration — the GitHub Action, GitLab, Bitbucket, Jenkins, or a CI system with none of those — relies on the identical exit-code contract, so a result never disagrees between platforms:</p>
+<pre class="docs-terminal"><span class="terminal-prompt">$</span> depvault leakguard scan &lt;path&gt; --fail-on &lt;low|medium|high|critical&gt;</pre>
+<p>Exit <code>0</code> when nothing at or above <code>--fail-on</code> severity survives allowlist/placeholder filtering; exit <code>1</code> otherwise. Add <code>--sarif &lt;file&gt;</code> for a SARIF 2.1.0 report any code-scanning UI can render. No integration re-derives this decision — each one renders what the CLI already decided.</p>
+
+<h3>GitLab CI</h3>
+<p>Copy this job into your project's <code>.gitlab-ci.yml</code>:</p>
+<pre class="docs-code">leakguard:
+  stage: test
+  image: node:20-alpine
+  variables:
+    LEAKGUARD_FAIL_ON: 'high'
+    LEAKGUARD_CLI_VERSION: '1.1.0'  <span class="terminal-dim"># pin deliberately, bump on purpose</span>
+  script:
+    - npx -y "&#64;deepvaultscan/cli&#64;$&#123;LEAKGUARD_CLI_VERSION&#125;" leakguard scan . --fail-on $&#123;LEAKGUARD_FAIL_ON&#125; --sarif leakguard-results.sarif
+  artifacts:
+    when: always
+    paths: [leakguard-results.sarif]
+    expire_in: 30 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</pre>
+
+<h3>Bitbucket Pipelines</h3>
+<p>Merge this step into <code>bitbucket-pipelines.yml</code>:</p>
+<pre class="docs-code">pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: LeakGuard secret scan
+          script:
+            - npx -y "&#64;deepvaultscan/cli&#64;1.1.0" leakguard scan . --fail-on high --sarif leakguard-results.sarif
+          artifacts:
+            - leakguard-results.sarif</pre>
+
+<h3>Jenkins</h3>
+<p>Add this stage to a declarative <code>Jenkinsfile</code>:</p>
+<pre class="docs-code">stage('LeakGuard secret scan') &#123;
+    steps &#123;
+        sh '''
+            npx -y "&#64;deepvaultscan/cli&#64;1.1.0" \
+                leakguard scan . --fail-on high \
+                --sarif leakguard-results.sarif
+        '''
+    &#125;
+    post &#123;
+        always &#123;
+            archiveArtifacts artifacts: 'leakguard-results.sarif', allowEmptyArchive: true
+        &#125;
+    &#125;
+&#125;</pre>
+
+<div class="docs-caveat"><strong>CLI version pin:</strong> these templates pin <code>&#64;deepvaultscan/cli&#64;1.1.0</code> per this repository's own <code>docs/leakguard/</code> templates. The CLI isn't published to npm yet (see <a routerLink="/docs/downloads">Downloads &amp; Install Links</a>) — until it is, run these steps against a self-built binary instead of <code>npx</code>.</div>
+<div class="docs-note"><strong>Opt-in network checks stay opt-in in CI too:</strong> append <code>--verify-live</code> or <code>--blast-radius</code> only once your org has explicitly decided CI may generate that traffic (a real auth-probe to the credential's own provider, or a GitHub code-search query) — neither flag is implied by running in CI.</div>

@@ -1,0 +1,13 @@
+<h2>Quick Start</h2>
+<p>
+  Submit a GitHub repository URL, paste a <code>package.json</code>, or upload a manifest file directly from the
+  <a routerLink="/home">homepage</a> — no login required for public repositories. DepVault reads only the
+  dependency manifest; your source code is never uploaded or stored.
+</p>
+<p>Every scan produces a single Trust Score (0–100), weighted across four dimensions:</p>
+<ul class="docs-list">
+  <li><strong>Security — 45%</strong>: known vulnerabilities, weighted by a Poisson CDF and the package's structural criticality.</li>
+  <li><strong>License — 20%</strong>: penalizes non-permissive or toxic copyleft licenses (GPL, AGPL).</li>
+  <li><strong>Maintenance — 20%</strong>: commit frequency, release cadence, and general repository health.</li>
+  <li><strong>Popularity — 15%</strong>: weekly downloads and dependent count.</li>
+</ul>

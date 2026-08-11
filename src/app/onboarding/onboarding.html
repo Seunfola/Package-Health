@@ -1,0 +1,187 @@
+<main class="wizard">
+  <header class="wizard__header">
+    <div class="wizard__brand">
+      <img src="assets/icons/depvault-logo.png" alt="DepVault" class="wizard__logo" />
+      <span>DepVault</span>
+    </div>
+    <div class="wizard__steps" role="tablist" aria-label="Onboarding progress">
+      @for (n of [1, 2, 3, 4]; track n) {
+        <button
+          type="button"
+          class="wizard__step-dot"
+          [class.active]="step === n"
+          [class.done]="step > n"
+          [disabled]="n >= step"
+          (click)="goTo(n)"
+          [attr.aria-current]="step === n ? 'step' : null"
+        >
+          @if (step > n) { <span aria-hidden="true">✓</span> } @else { {{ n }} }
+        </button>
+      }
+    </div>
+    <button type="button" class="wizard__skip" (click)="skip()" [disabled]="isFinishing">Skip for now</button>
+  </header>
+
+  <section class="wizard__body">
+    <!-- Step 1: Welcome -->
+    @if (step === 1) {
+      <div class="wizard__panel">
+        <p class="wizard__eyebrow"><span></span> Welcome to DepVault</p>
+        <h1>Hey {{ username }}, let's get your supply chain protected.</h1>
+        <p class="wizard__intro">Three quick steps: run your first Trust Score analysis, connect your dev tools, and you're done. No filler — every step here does something real.</p>
+
+        <div class="wizard__explain">
+          <div class="explain-card">
+            <span class="explain-card__icon">⌁</span>
+            <h3>What's a Trust Score?</h3>
+            <p>A single 0–100 number combining <strong>Security</strong> (45%), <strong>License</strong> (20%), <strong>Maintenance</strong> (20%), and <strong>Popularity</strong> (15%) — predictive, not just a CVE count.</p>
+          </div>
+          <div class="explain-card">
+            <span class="explain-card__icon">⛨</span>
+            <h3>4 ecosystems, one engine</h3>
+            <p>npm, PyPI, Cargo, and Go dependencies are all scored the same way, so a risky package can't hide behind a package manager you don't watch as closely.</p>
+          </div>
+          <div class="explain-card">
+            <span class="explain-card__icon">✦</span>
+            <h3>Works where you already do</h3>
+            <p>CLI, VS Code, CI gates, and an MCP tool for AI coding agents — all backed by the exact same scan pipeline as this dashboard.</p>
+          </div>
+        </div>
+
+        <div class="wizard__actions">
+          <span></span>
+          <button type="button" class="btn-primary" (click)="next()">Let's go <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+    }
+
+    <!-- Step 2: Analyze your first repo -->
+    @if (step === 2) {
+      <div class="wizard__panel">
+        <p class="wizard__eyebrow"><span></span> Step 1 of 2 — hands-on</p>
+        <h1>Run your first analysis.</h1>
+        <p class="wizard__intro">Paste a public GitHub repository. This is a real scan against the same engine that powers your dashboard.</p>
+
+        <div class="analyze-box">
+          <label for="repoUrl">Repository URL</label>
+          <div class="analyze-box__row">
+            <input
+              id="repoUrl"
+              type="text"
+              [(ngModel)]="repoUrl"
+              placeholder="github.com/owner/repository"
+              (keyup.enter)="analyzeRepo()"
+            />
+            <button type="button" class="btn-primary" (click)="analyzeRepo()" [disabled]="isAnalyzing || !repoUrl.trim()">
+              {{ isAnalyzing ? 'Analyzing…' : 'Analyze' }}
+            </button>
+          </div>
+          @if (analyzeError) { <p class="wizard__error">{{ analyzeError }}</p> }
+        </div>
+
+        @if (analyzeResult) {
+          <div class="result-card" [class]="'result-card--' + getHealthLevel(analyzeResult.overall_health.score)">
+            <div class="result-card__score">{{ analyzeResult.overall_health.score }}</div>
+            <div class="result-card__details">
+              <p class="result-card__name">{{ analyzeResult.owner }}/{{ analyzeResult.name || analyzeResult.repo }}</p>
+              <p class="result-card__label">Trust Score — {{ analyzeResult.overall_health.label }}</p>
+              @if (analyzeResult.security_alerts > 0) {
+                <p class="result-card__alerts">{{ analyzeResult.security_alerts }} open security alert{{ analyzeResult.security_alerts === 1 ? '' : 's' }}</p>
+              }
+            </div>
+            <a
+              class="result-card__link"
+              [routerLink]="['/repository-details', analyzeResult.owner, analyzeResult.repo]"
+            >Full breakdown →</a>
+          </div>
+        }
+
+        <div class="wizard__actions">
+          <button type="button" class="btn-secondary" (click)="back()">Back</button>
+          <button type="button" class="btn-primary" (click)="next()">
+            {{ analyzeResult ? 'Continue' : 'I\'ll do this later' }} <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Step 3: Connect your dev tools -->
+    @if (step === 3) {
+      <div class="wizard__panel">
+        <p class="wizard__eyebrow"><span></span> Step 2 of 2 — hands-on</p>
+        <h1>Bring DepVault into your workflow.</h1>
+        <p class="wizard__intro">Generate a personal access token, then use it to sign the CLI or IDE extension into your account so scans sync back to this dashboard.</p>
+
+        <div class="pat-box">
+          @if (!justCreatedToken) {
+            <div class="pat-box__create">
+              <input type="text" [(ngModel)]="newTokenName" placeholder="Token name (e.g. My laptop)" maxlength="80" />
+              <button type="button" class="btn-primary" (click)="createPersonalAccessToken()" [disabled]="isCreatingToken || !newTokenName.trim()">
+                {{ isCreatingToken ? 'Generating…' : 'Generate token' }}
+              </button>
+            </div>
+            @if (createTokenError) { <p class="wizard__error">{{ createTokenError }}</p> }
+          } @else {
+            <div class="pat-box__reveal">
+              <p class="pat-box__warning">Copy this now — it won't be shown again. Manage or revoke it anytime from Settings.</p>
+              <div class="pat-box__row">
+                <code class="pat-box__value">{{ justCreatedToken }}</code>
+                <button type="button" class="btn-secondary" (click)="copyPatToken(justCreatedToken)">{{ patCopied ? 'Copied!' : 'Copy' }}</button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h3>VS Code extension</h3>
+            <p>Install from source, then run <strong>DepVault: Sign In</strong> and paste your token.</p>
+            <a routerLink="/docs/ide-lsp" class="tool-card__link">Setup instructions →</a>
+          </div>
+          <div class="tool-card">
+            <h3>MCP server (AI agents)</h3>
+            <p>Give your coding agent a dependency-risk signal before it adds a package.</p>
+            <div class="tool-card__cmd">
+              <code>npx &#64;deepvaultscan/mcp-server</code>
+              <button type="button" (click)="copyCommand('npx @deepvaultscan/mcp-server')" [attr.aria-label]="'Copy command'">
+                {{ copiedCommand === 'npx @deepvaultscan/mcp-server' ? '✓' : '⧉' }}
+              </button>
+            </div>
+          </div>
+          <div class="tool-card">
+            <h3>CLI</h3>
+            <p>Not yet on npm — build from source and run <code>depvault login</code> with your token.</p>
+            <a routerLink="/docs/cli" class="tool-card__link">Build instructions →</a>
+          </div>
+        </div>
+
+        <div class="wizard__actions">
+          <button type="button" class="btn-secondary" (click)="back()">Back</button>
+          <button type="button" class="btn-primary" (click)="next()">Continue <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+    }
+
+    <!-- Step 4: Done -->
+    @if (step === 4) {
+      <div class="wizard__panel wizard__panel--done">
+        <span class="wizard__done-icon" aria-hidden="true">✓</span>
+        <p class="wizard__eyebrow"><span></span> All set</p>
+        <h1>You're ready, {{ username }}.</h1>
+        <p class="wizard__intro">Your dashboard is where every future scan, alert, and trend line will show up.</p>
+
+        <ul class="wizard__recap">
+          <li [class.done]="!!analyzeResult">{{ analyzeResult ? '✓' : '○' }} First repository analyzed</li>
+          <li [class.done]="!!justCreatedToken">{{ justCreatedToken ? '✓' : '○' }} Personal access token generated</li>
+          <li class="done">✓ Account ready</li>
+        </ul>
+
+        <div class="wizard__actions wizard__actions--center">
+          <button type="button" class="btn-primary" (click)="finish()" [disabled]="isFinishing">
+            {{ isFinishing ? 'Taking you there…' : 'Go to dashboard' }} <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    }
+  </section>
+</main>

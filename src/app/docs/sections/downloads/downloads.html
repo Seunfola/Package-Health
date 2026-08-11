@@ -1,0 +1,45 @@
+<h2>Downloads &amp; Install Links</h2>
+<p>Every surface composes from the same <code>@depvault/core</code> pipeline, but they're at different points in their publishing lifecycle. Here's the real, current status of each — nothing below is a placeholder.</p>
+<table class="docs-table">
+  <thead>
+    <tr><th>Surface</th><th>Status</th><th>Get it</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MCP server</td>
+      <td><span class="docs-badge-internal" style="background:#dcfce7;color:#166534;">published</span></td>
+      <td><code>npx -y &#64;deepvaultscan/mcp-server</code> — <a href="https://www.npmjs.com/package/&#64;deepvaultscan/mcp-server" target="_blank" rel="noopener">view on npm</a></td>
+    </tr>
+    <tr>
+      <td>CLI</td>
+      <td>not yet on npm</td>
+      <td>Build from source — see <a routerLink="/docs/cli">CLI &amp; Shield</a>, or browse <a href="https://github.com/Seunfola/package-health-backup/tree/main/apps/cli" target="_blank" rel="noopener">apps/cli on GitHub</a></td>
+    </tr>
+    <tr>
+      <td>VS Code extension</td>
+      <td>not yet on the Marketplace</td>
+      <td>Build the <code>.vsix</code> from source — see <a routerLink="/docs/ide-lsp">IDE Extension &amp; LSP</a>, or browse <a href="https://github.com/Seunfola/package-health-backup/tree/main/apps/vscode-extension" target="_blank" rel="noopener">apps/vscode-extension on GitHub</a></td>
+    </tr>
+    <tr>
+      <td>LSP server (Neovim, Sublime)</td>
+      <td><span class="docs-badge-internal" style="background:#dcfce7;color:#166534;">published</span></td>
+      <td><code>npm install -g &#64;depvault/lsp-server</code></td>
+    </tr>
+    <tr>
+      <td>JetBrains plugin</td>
+      <td>scaffold, build from source</td>
+      <td>Requires the free <strong>LSP4IJ</strong> plugin (search it in your IDE's Marketplace) plus <code>apps/jetbrains-plugin</code> built locally — see <a routerLink="/docs/ide-lsp">IDE Extension &amp; LSP</a></td>
+    </tr>
+    <tr>
+      <td>GitHub Action (dependency scan)</td>
+      <td><span class="docs-badge-internal" style="background:#dcfce7;color:#166534;">published</span></td>
+      <td><code>uses: Seunfola/package-health-backup/apps/github-action&#64;v1</code></td>
+    </tr>
+    <tr>
+      <td>GitHub Action (LeakGuard)</td>
+      <td><span class="docs-badge-internal" style="background:#dcfce7;color:#166534;">published</span></td>
+      <td><code>uses: Seunfola/package-health-backup/apps/leakguard-action&#64;v1</code></td>
+    </tr>
+  </tbody>
+</table>
+<div class="docs-note"><strong>Source, always:</strong> <a href="https://github.com/Seunfola/package-health-backup" target="_blank" rel="noopener">github.com/Seunfola/package-health-backup</a> — every surface above lives in this one repository.</div>

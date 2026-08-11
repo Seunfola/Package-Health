@@ -38,7 +38,8 @@ export class AuthCallbackComponent implements OnInit {
         await this.authService.setJwtToken(token);
         await this.finishPendingInviteIfAny();
         await this.finishPendingTransferIfAny();
-        this.router.navigate(['/dashboard']);
+        const destination = this.authService.currentState.onboardingCompleted === false ? '/onboarding' : '/dashboard';
+        this.router.navigate([destination]);
       } else {
         console.error('Authentication failed: code exchange failed.');
         this.router.navigate(['/home']);

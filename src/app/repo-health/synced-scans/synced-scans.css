@@ -1,0 +1,89 @@
+.repo-health-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+/* Matches repo-health.css's header/alert-banner look so this reads as the
+   same page family, not a visually distinct bolt-on. */
+.header-section {
+    margin-bottom: 32px;
+}
+
+.header-section h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.header-section p {
+    font-size: 16px;
+    color: #64748b;
+}
+
+.alert-banner {
+    display: flex;
+    align-items: center;
+    background-color: #fef2f2;
+    border: 1px solid #f87171;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    color: #991b1b;
+}
+
+.alert-banner.error {
+    background-color: #fff7ed;
+    border-color: #fdba74;
+    color: #9a3412;
+}
+
+.synced-scans__loading,
+.synced-scans__empty {
+    padding: 24px;
+    color: var(--text-secondary, #64748b);
+    font-size: 0.95rem;
+}
+
+.synced-scans__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.synced-scans__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 18px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 10px;
+    background: var(--bg-surface, #fff);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    flex-wrap: wrap;
+}
+
+.synced-scans__row:hover {
+    background-color: #f8fafc;
+}
+
+.synced-scans__name {
+    font-weight: 600;
+    color: var(--text-primary, #0f172a);
+}
+
+.health-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.health-badge.excellent { background: #dcfce7; color: #166534; }
+.health-badge.good { background: #dbeafe; color: #1e40af; }
+.health-badge.moderate { background: #fef9c3; color: #854d0e; }
+.health-badge.poor { background: #fee2e2; color: #991b1b; }

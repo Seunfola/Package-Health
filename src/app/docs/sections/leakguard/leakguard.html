@@ -1,0 +1,27 @@
+<h2>LeakGuard — Secret Detection &amp; Remediation</h2>
+<p>LeakGuard scans your working tree, staged changes, or a diff for hardcoded credentials — API keys, tokens, private keys, database connection strings — before they leave your machine. It runs on the same embedded engine as the Trust Score scanner: no separate binary to install, no subprocess, and nothing phones home unless you explicitly opt in.</p>
+<pre class="docs-terminal"><span class="terminal-prompt">$</span> depvault leakguard scan                 <span class="terminal-dim"># scan the working tree</span>
+<span class="terminal-prompt">$</span> depvault leakguard scan --staged        <span class="terminal-dim"># fast pass over what's about to be committed</span>
+<span class="terminal-prompt">$</span> depvault leakguard scan --fail-on high  <span class="terminal-dim"># CI-style exit-code gate</span></pre>
+<h3>Reading a result</h3>
+<p>Every finding reports a <strong>severity</strong> (CRITICAL/HIGH/MEDIUM/LOW), a <strong>liveness</strong> status, and a <strong>status</strong>. Liveness is <code>not checked</code> by default; <code>--verify-live</code> makes one real auth-probe request to the credential's own provider to confirm it still works — off by default, and the CLI asks for confirmation in an interactive terminal before sending anything. Status distinguishes an <code>active</code> finding from one matched by a <code>depvault.json</code> allowlist or that looks like a placeholder value (<code>sk_test_...</code>, <code>AKIA...XXXX</code>).</p>
+<div class="docs-note"><strong>Nothing raw ever leaves the redaction boundary.</strong> A finding's <code>match</code> is always a redacted preview (first/last 4 characters) — the real value never appears in CLI output, CI logs, SARIF, or a dashboard sync.</div>
+<h3>Responding to a finding</h3>
+<pre class="docs-terminal"><span class="terminal-prompt">$</span> depvault leakguard scan --playbook ./incident   <span class="terminal-dim"># incident-playbook.md + per-finding rotation scripts</span>
+<span class="terminal-prompt">$</span> depvault leakguard scan --interactive             <span class="terminal-dim"># walk through findings one at a time</span></pre>
+<h3>Pre-commit and pre-push hooks</h3>
+<p><code>depvault hooks install --git</code> installs two git hooks, scoped differently on purpose. <strong>Pre-commit</strong> runs a fast, staged-diff-only LeakGuard pass alongside the Trust Score gate on every commit. <strong>Pre-push</strong> runs a full working-tree LeakGuard scan once per push — the last local checkpoint before code actually leaves your machine, catching a secret that was already sitting in the tree (e.g. from before LeakGuard was installed, or committed with <code>--no-verify</code>) that a staged-diff-only check would never re-examine. Neither hook makes a network call — no liveness/blast-radius verification locally; that stays CI's job. Bypass either once with <code>--no-verify</code> (<code>git commit --no-verify</code> / <code>git push --no-verify</code>).</p>
+<h3>CI and the dashboard</h3>
+<p>The GitHub Action and both git hooks run the identical CLI under the hood, so a finding never disagrees between your terminal, CI, and your editor. In CI, results post as SARIF (visible in the repo's Security tab) and as part of the same PR comment as the Trust Score results — one combined report, not two competing bot comments.</p>
+<p>Run <code>depvault leakguard scan --upload</code> (after <code>depvault login</code>) to sync a local scan to your dashboard — see <a routerLink="/repository-details">a repository's detail page</a> for the LeakGuard card once you have.</p>
+<h3>Configuration</h3>
+<pre class="docs-code">&#123;
+  "leakGuard": &#123;
+    "failOn": "HIGH",
+    "allowPaths": ["**&#47;*.test.ts", "fixtures&#47;**"],
+    "allowValues": ["sk_test_FAKEFAKEFAKEFAKE"],
+    "verifyLive": false,
+    "blastRadius": false
+  &#125;
+&#125;</pre>
+<p><code>allowPaths</code> excludes fixtures/examples from scanning; <code>allowValues</code> allowlists one exact known-fake value. <code>verifyLive</code> and <code>blastRadius</code> can only be turned on explicitly here or via their matching CLI flag — never implicitly.</p>

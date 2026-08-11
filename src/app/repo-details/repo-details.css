@@ -204,3 +204,122 @@ app-repo-details-dash {
 .no-data-section button:hover {
     background: var(--accent-teal-hover);
 }
+
+.ephemeral-result {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.ephemeral-result__note {
+    margin: 0 0 24px;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.ephemeral-result__card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--bg-surface, #fff);
+}
+
+.ephemeral-result__score {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.ephemeral-result__score.excellent { background: #dcfce7; color: #166534; }
+.ephemeral-result__score.good { background: #dbeafe; color: #1e40af; }
+.ephemeral-result__score.moderate { background: #fef9c3; color: #854d0e; }
+.ephemeral-result__score.poor { background: #fee2e2; color: #991b1b; }
+
+.ephemeral-result__name {
+    margin: 0 0 2px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.ephemeral-result__label {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.ephemeral-result__degraded {
+    margin: 6px 0 0;
+    color: #92400E;
+    font-size: 0.82rem;
+}
+
+.ephemeral-result__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.ephemeral-result__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.ephemeral-result__stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.ephemeral-result__stat-value.has-alerts {
+    color: #991b1b;
+}
+
+.ephemeral-result__stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.ephemeral-result__risky {
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.ephemeral-result__risky h3 {
+    margin: 0 0 10px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.ephemeral-result__risky ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+    .ephemeral-result__stats {
+        grid-template-columns: 1fr;
+    }
+}

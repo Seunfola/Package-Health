@@ -1,0 +1,200 @@
+/* Shared across every doc page — layout shell, overview, and all topic
+   pages import this alongside their own (mostly empty) stylesheet, the
+   same pattern used for the Dashboard and Settings subroute splits. */
+
+/* Content sections (reuses .glass-panel from styles.css) */
+.docs-section {
+  scroll-margin-top: 90px;
+}
+
+.docs-section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.docs-section h3 {
+  margin: 1.55rem 0 .65rem;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.docs-section p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.docs-section p:last-child {
+  margin-bottom: 0;
+}
+
+.docs-section code {
+  background: var(--bg-slate);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: var(--accent-teal-hover);
+}
+
+.docs-caveat {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #92400E;
+  font-size: 0.9rem;
+}
+
+.docs-note {
+  margin-top: 1.25rem;
+  padding: .85rem 1rem;
+  border-left: 3px solid var(--accent-teal);
+  border-radius: 0 8px 8px 0;
+  background: rgba(37, 99, 235, .05);
+  color: var(--text-secondary);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+.docs-formula {
+  margin: 1rem 0 1.25rem;
+  padding: 1rem 1.15rem;
+  overflow-wrap: anywhere;
+  border: 1px solid #203053;
+  border-radius: 9px;
+  background: var(--bg-terminal);
+  color: #bae6fd;
+  font: 600 .9rem/1.6 'Fira Code', 'Monaco', monospace;
+}
+
+.docs-list {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+.docs-list strong {
+  color: var(--text-primary);
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  table-layout: fixed;
+}
+
+.docs-table th,
+.docs-table td {
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.docs-table th {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.docs-table td {
+  color: var(--text-primary);
+}
+
+.docs-code {
+  background: var(--bg-navbar);
+  color: #E2E8F0;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-bottom: 1rem;
+}
+
+.docs-terminal {
+  margin: 1rem 0;
+  padding: 1.1rem 1.25rem;
+  overflow-x: hidden;
+  border: 1px solid #203053;
+  border-radius: 10px;
+  background: var(--bg-terminal);
+  color: #e2e8f0;
+  font: .84rem/1.65 'Fira Code', 'Monaco', 'Courier New', monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.terminal-prompt { color: #38bdf8; }
+.terminal-dim { color: #94a3b8; }
+
+.docs-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.docs-footer a {
+  color: var(--text-muted);
+}
+
+.docs-footer a:hover {
+  color: var(--text-primary);
+}
+
+@media (max-width: 420px) {
+  .docs-section.glass-panel { padding: 1.5rem 1rem; }
+  .docs-table th, .docs-table td { padding: .55rem .6rem; font-size: .82rem; }
+  .docs-code, .docs-terminal { padding: .9rem; font-size: .75rem; }
+}
+
+/* ── Internal-package badge ────────────────────────────────────────────────
+   An internal package is scored by a different model than a registry one
+   (git bus factor rather than downloads, its own dependency surface rather
+   than its own advisories). A reviewer comparing two rows in the same table
+   needs to see that before they compare the numbers, so the marker has to
+   survive a skim — colour, weight and a filled background rather than a
+   colour-only cue, which would vanish for a colour-blind reader or in a
+   printed/greyscale review.
+
+   Amber rather than the teal accent: teal reads as "healthy" everywhere else
+   in this design system, and this is a neutral provenance flag, not a verdict. */
+.docs-badge-internal {
+  display: inline-block;
+  padding: .12em .5em;
+  border: 1px solid rgba(217, 119, 6, .45);
+  border-radius: 4px;
+  background: rgba(217, 119, 6, .16);
+  color: #f0b429;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .74em;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* The table cell variant sits tight against the package name it qualifies. */
+.docs-table td .docs-badge-internal {
+  margin-right: .4rem;
+}
