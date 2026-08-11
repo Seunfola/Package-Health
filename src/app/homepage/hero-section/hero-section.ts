@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AnalysisService } from '@/app/services/analysis.service';
 import { AuthService } from '@/app/services/auth.service';
-import { RepoHealthAnalysisService } from '@/app/services/repo-health-analysis.service';
+import { RepoHealthAnalysisService, RepositoryAnalysisResult } from '@/app/services/repo-health-analysis.service';
 
 type RepoVisibility = 'public' | 'private' | 'unknown';
 
@@ -115,7 +115,7 @@ export class HeroSection {
     this.repoHealthAnalysisService
       .analyzeDependenciesFromJson(parsed)
       .subscribe({
-        next: (res: any) => this.handleAnalysisResult(res),
+        next: (res) => this.handleAnalysisResult(res),
         error: (err) => this.handleError(err),
         complete: () => {
           this.isAnalyzing = false;
@@ -157,9 +157,9 @@ export class HeroSection {
     }
   }
 
-  private handleAnalysisResult(response: any) {
+  private handleAnalysisResult(response: RepositoryAnalysisResult) {
     this.analysisService.setAnalysis(response);
-    void this.router.navigate(['/repo-details']);
+    void this.router.navigate(['/repository-details']);
   }
 
   private handleError(error: any) {

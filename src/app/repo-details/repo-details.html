@@ -48,7 +48,53 @@
   </app-chart-card>
 </div>
 
-<div *ngIf="!analysisData" class="no-data-section">
+<div *ngIf="!analysisData && ephemeralResult" class="ephemeral-result">
+  <div class="page-title-row">
+    <h2 class="page-title">Analysis result</h2>
+  </div>
+  <p class="ephemeral-result__note">
+    This is a one-off scan — it wasn't run against a connected repository, so there's no history or dependency graph to show. Connect this repository from the Dashboard to track it over time.
+  </p>
+
+  <div class="ephemeral-result__card">
+    <div class="ephemeral-result__score" [ngClass]="getHealthLevel(ephemeralResult.overall_health.score)">
+      {{ ephemeralResult.overall_health.score }}
+    </div>
+    <div class="ephemeral-result__details">
+      <p class="ephemeral-result__name">{{ ephemeralResult.owner ? (ephemeralResult.owner + '/' + (ephemeralResult.name || ephemeralResult.repo)) : (ephemeralResult.name || 'Uploaded package.json') }}</p>
+      <p class="ephemeral-result__label">Trust Score — {{ ephemeralResult.overall_health.label }}</p>
+      <p *ngIf="ephemeralResult.degraded" class="ephemeral-result__degraded">
+        &#9888; Computed from partial data<ng-container *ngIf="ephemeralResult.degradedReason"> &mdash; {{ ephemeralResult.degradedReason }}</ng-container>.
+      </p>
+    </div>
+  </div>
+
+  <div class="ephemeral-result__stats">
+    <div class="ephemeral-result__stat">
+      <span class="ephemeral-result__stat-value" [class.has-alerts]="ephemeralResult.security_alerts > 0">{{ ephemeralResult.security_alerts }}</span>
+      <span class="ephemeral-result__stat-label">Security alert{{ ephemeralResult.security_alerts === 1 ? '' : 's' }}</span>
+    </div>
+    <div class="ephemeral-result__stat">
+      <span class="ephemeral-result__stat-value">{{ ephemeralResult.dependency_health }}</span>
+      <span class="ephemeral-result__stat-label">Dependency health</span>
+    </div>
+    <div class="ephemeral-result__stat">
+      <span class="ephemeral-result__stat-value" [class.has-alerts]="ephemeralResult.risky_dependencies.length > 0">{{ ephemeralResult.risky_dependencies.length }}</span>
+      <span class="ephemeral-result__stat-label">Risky dependenc{{ ephemeralResult.risky_dependencies.length === 1 ? 'y' : 'ies' }}</span>
+    </div>
+  </div>
+
+  <div *ngIf="ephemeralResult.risky_dependencies.length > 0" class="ephemeral-result__risky">
+    <h3>Risky dependencies</h3>
+    <ul>
+      <li *ngFor="let dep of ephemeralResult.risky_dependencies">{{ dep }}</li>
+    </ul>
+  </div>
+
+  <button class="generate-notifications-btn" (click)="returnToDashboard()">Back to dashboard</button>
+</div>
+
+<div *ngIf="!analysisData && !ephemeralResult" class="no-data-section">
   <app-empty-state-card
     [title]="loadError ? 'Repository analysis is unavailable' : 'Choose a repository to inspect'"
     [message]="loadError || 'Open a repository from the Dashboard to see its health metrics, dependency graph, and remediation guidance.'"

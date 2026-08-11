@@ -13,6 +13,8 @@ import { LeakFindings } from './leak-findings/leak-findings';
 import { AnalysisData, RepoService } from '../services/RepoService';
 import { LeakGuardScanResult, LeakGuardService } from '../services/leak-guard.service';
 import { NotificationService } from '../services/notification.service';
+import { AnalysisService } from '../services/analysis.service';
+import { RepositoryAnalysisResult } from '../services/repo-health-analysis.service';
 import { ContributionGraph } from './git-graph/contribution-graph/contribution-graph';
 import { DependencyGraph } from './dependency-graph/dependency-graph';
 import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
@@ -39,6 +41,17 @@ export class RepoDetails implements OnInit {
   analysisData: AnalysisData | null = null;
   /** Set on a failed fetch (as opposed to "no repo selected") so the empty state can say what actually happened. */
   loadError: string | null = null;
+
+  /**
+   * A one-off result from the homepage's quick-analyze widget (paste JSON,
+   * upload a file, or a GitHub URL scan) — set only when there's no
+   * owner/name route param to fetch a stored record by. This is a
+   * different, flatter shape than `analysisData` (no commit history —
+   * there's no git log for a pasted package.json), so it renders through
+   * its own template block rather than being force-fit into the full
+   * dashboard below.
+   */
+  ephemeralResult: RepositoryAnalysisResult | null = null;
 
   /** Null while loading AND when no LeakGuard scan has ever been uploaded for this repo — the 404 case is expected, not an error, since syncing is opt-in. */
   leakScan: LeakGuardScanResult | null = null;
@@ -93,45 +106,62 @@ export class RepoDetails implements OnInit {
     private readonly repoService: RepoService,
     private readonly leakGuardService: LeakGuardService,
     private readonly notificationService: NotificationService,
+    private readonly analysisService: AnalysisService,
   ) {}
 
   ngOnInit() {
     const owner = this.route.snapshot.paramMap.get('owner');
     const name = this.route.snapshot.paramMap.get('name');
 
-    if (owner && name) {
-      this.ownerParam = owner;
-      this.repoParam = name;
-      this.repoService.getAnalysisData(owner, name).subscribe({
-        next: (data) => {
-          this.analysisData = data;
-          this.initializeChartData();
-        },
-        error: (err) => {
-          console.error('Error fetching repo:', err);
-          this.analysisData = null;
-          this.loadError = 'Failed to load repository analysis. Please try again.';
-        },
-      });
-
-      this.leakGuardService
-        .getLeakScan(owner, name)
-        .pipe(
-          catchError((err: HttpErrorResponse) => {
-            if (err.status !== 404) {
-              console.error('Error fetching LeakGuard scan:', err);
-              this.leakScanError = 'Failed to load LeakGuard scan results.';
-            }
-            return of(null);
-          }),
-        )
-        .subscribe((scan) => {
-          this.leakScan = scan;
-          this.leakScanLoading = false;
-        });
+    if (!owner || !name) {
+      // No route params — check for an ephemeral result handed off by the
+      // homepage's quick-analyze widget. Shown once, then cleared, so a
+      // later direct visit to this bare URL doesn't show stale data.
+      const ephemeral = this.analysisService.getAnalysis();
+      if (ephemeral) {
+        this.ephemeralResult = ephemeral;
+        this.analysisService.clear();
+      }
+      return;
     }
-    // No owner/name in the route: analysisData stays null and the template's
-    // "No repository data available" empty state renders — no fake data.
+
+    this.ownerParam = owner;
+    this.repoParam = name;
+    this.repoService.getAnalysisData(owner, name).subscribe({
+      next: (data) => {
+        this.analysisData = data;
+        this.initializeChartData();
+      },
+      error: (err) => {
+        console.error('Error fetching repo:', err);
+        this.analysisData = null;
+        this.loadError = 'Failed to load repository analysis. Please try again.';
+      },
+    });
+
+    this.leakGuardService
+      .getLeakScan(owner, name)
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          if (err.status !== 404) {
+            console.error('Error fetching LeakGuard scan:', err);
+            this.leakScanError = 'Failed to load LeakGuard scan results.';
+          }
+          return of(null);
+        }),
+      )
+      .subscribe((scan) => {
+        this.leakScan = scan;
+        this.leakScanLoading = false;
+      });
+  }
+
+  getHealthLevel(score: number | undefined): 'excellent' | 'good' | 'moderate' | 'poor' {
+    const s = score ?? 0;
+    if (s >= 80) return 'excellent';
+    if (s >= 60) return 'good';
+    if (s >= 40) return 'moderate';
+    return 'poor';
   }
 
   returnToDashboard(): void {
