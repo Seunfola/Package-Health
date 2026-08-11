@@ -263,26 +263,6 @@
     }
   </app-settings-card>
 
-  <app-settings-card title="Synced Scans"
-    subtitle="Repositories analyzed locally and uploaded via 'depvault upload'.">
-    @if (isLoadingUploadedRepos) {
-      <p style="font-size: 14px; color: var(--text-secondary);">Loading...</p>
-    } @else if (myUploadedRepos.length === 0) {
-      <p style="font-size: 14px; color: var(--text-secondary);">No synced scans yet. Run <code>depvault upload</code> from a local checkout to see it here.</p>
-    } @else {
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        @for (repo of myUploadedRepos; track repo.repo_id) {
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(15,23,42,0.03); border-radius: 6px; flex-wrap: wrap; gap: 8px;">
-            <span style="font-size: 14px; color: var(--text-primary);">{{ repo.name || repo.repo }}</span>
-            <span style="font-size: 13px; color: var(--text-secondary);">
-              Health: {{ repo.overall_health?.score ?? 'N/A' }}/100
-            </span>
-          </div>
-        }
-      </div>
-    }
-  </app-settings-card>
-
   <app-settings-card title="Organization Members" subtitle="Manage access control and roles for your organization members.">
     <div class="members-management-container">
       <div class="add-member-section" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; flex-wrap: wrap;">

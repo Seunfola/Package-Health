@@ -11,7 +11,6 @@ import { AuthService } from '@/app/services/auth.service';
 import { GatekeeperService, GatekeeperPolicyConfig } from '@/app/services/gatekeeper.service';
 import { OrganizationService, OrganizationMember, Organization, OrgInvitation, OrgAuditLogEntry, OrgUsage } from '@/app/services/organization.service';
 import { NotificationWebhookService, NotificationWebhook, NotificationWebhookType } from '@/app/services/notification-webhook.service';
-import { RepoService, RepoListItem } from '@/app/services/RepoService';
 import { PersonalAccessTokenService, PersonalAccessTokenSummary } from '@/app/services/personal-access-token.service';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 
@@ -134,16 +133,12 @@ export class Settings implements OnInit {
   webhookError = '';
   webhookTypes: NotificationWebhookType[] = ['slack', 'discord', 'xmatters', 'custom'];
 
-  myUploadedRepos: RepoListItem[] = [];
-  isLoadingUploadedRepos = false;
-
   constructor(
     private readonly preferencesService: PreferencesService,
     private readonly authService: AuthService,
     private readonly gatekeeperService: GatekeeperService,
     private readonly organizationService: OrganizationService,
     private readonly notificationWebhookService: NotificationWebhookService,
-    private readonly repoService: RepoService,
     private readonly personalAccessTokenService: PersonalAccessTokenService,
   ) {}
 
@@ -151,25 +146,9 @@ export class Settings implements OnInit {
     return this.authService.authState$;
   }
 
-  /** Scans uploaded via `depvault upload` — the only visibility into CLI cloud sync this dashboard has, beyond the CLI's own output. */
-  loadMyUploadedRepos(): void {
-    this.isLoadingUploadedRepos = true;
-    this.repoService.getMyUploadedRepos().subscribe({
-      next: (repos) => {
-        this.myUploadedRepos = repos;
-        this.isLoadingUploadedRepos = false;
-      },
-      error: (err) => {
-        console.error('Failed to load uploaded scans', err);
-        this.isLoadingUploadedRepos = false;
-      },
-    });
-  }
-
   ngOnInit(): void {
     this.loadPreferences();
     this.loadMyOrganizations();
-    this.loadMyUploadedRepos();
     this.loadPersonalAccessTokens();
   }
 

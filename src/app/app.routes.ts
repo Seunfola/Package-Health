@@ -3,6 +3,7 @@ import { DashboardLayout } from './layout/dashboard-layout';
 import { PublicLayout } from './layout/public-layout';
 import { Homepage } from './homepage/homepage';
 import { RepoHealth } from './repo-health/repo-health';
+import { SyncedScans } from './repo-health/synced-scans/synced-scans';
 import { RepoDetails } from './repo-details/repo-details';
 import { DashboardSettings } from './dashboard-settings/dashboard-settings';
 import { Notification } from './notification/notification';
@@ -74,6 +75,10 @@ export const routes: Routes = [
       { path: 'dashboard/repositories', component: DashboardRepositories },
       { path: 'dashboard/leak-scans', component: DashboardLeakScans },
       { path: 'dashboard', component: DashboardComponent },
+      // 'synced-scans' must precede the plain 'repo-health' route — see the
+      // dashboard/repositories comment above for why route order matters
+      // for a shorter sibling with no children of its own.
+      { path: 'repo-health/synced-scans', component: SyncedScans },
       { path: 'repo-health', component: RepoHealth },
       { path: 'repository-details/:owner/:name', component: RepoDetails },
       { path: 'repository-details', component: RepoDetails, data: { deadEnd: true } },

@@ -48,13 +48,21 @@ export class Sidebar {
         { label: 'LeakGuard Scans', path: '/dashboard/leak-scans' },
       ],
     },
-    // Package Health and Dashboard Settings are still single pages — they
-    // gain `children` here in a follow-up pass once they're actually split
-    // into subroutes (Settings alone is ~750 lines covering ~8 concerns
-    // with shared org-switcher state, not a same-sitting refactor). Listing
-    // children before those routes exist would ship dead sidebar links.
-    { icon: 'chart', label: 'Package Health', path: '/repo-health', separator: true },
+    {
+      icon: 'chart',
+      label: 'Package Health',
+      path: '/repo-health',
+      separator: true,
+      children: [
+        { label: 'Analyze', path: '/repo-health' },
+        { label: 'Synced Scans', path: '/repo-health/synced-scans' },
+      ],
+    },
     { icon: 'user', label: 'User Profile', path: '/user-profile', separator: false },
+    // Dashboard Settings is still a single page — it gains `children` once
+    // its own subroutes exist (it's ~750 lines covering ~8 concerns with
+    // shared org-switcher state, not a same-sitting split). Listing
+    // children before those routes exist would ship dead sidebar links.
     { icon: 'settings', label: 'Dashboard Settings', path: '/dashboard-settings', separator: true },
     { icon: 'notification', label: 'Notifications', path: '/notifications', separator: false },
   ];

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
 import { RepoHealth } from './repo-health';
 import { environment } from '@/environments/environment';
@@ -12,6 +13,7 @@ describe('RepoHealth', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RepoHealth, HttpClientTestingModule],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RepoHealth);

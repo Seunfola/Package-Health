@@ -1,0 +1,30 @@
+<div class="repo-health-container">
+  <div class="header-section">
+    <h1>Synced Scans</h1>
+    <p>
+      Repositories analyzed locally and uploaded via <code>depvault upload</code>.
+      <a routerLink="/repo-health">&larr; Back to Analyze</a>
+    </p>
+  </div>
+
+  <div *ngIf="isLoading" class="synced-scans__loading">Loading&hellip;</div>
+
+  <p *ngIf="error" class="alert-banner error"><span class="alert-content">{{ error }}</span></p>
+
+  <div *ngIf="!isLoading && !error && repos.length === 0" class="synced-scans__empty">
+    No synced scans yet. Run <code>depvault upload</code> from a local checkout (after <code>depvault login</code>) to see it here.
+  </div>
+
+  <div *ngIf="!isLoading && repos.length > 0" class="synced-scans__list">
+    <div
+      *ngFor="let repo of repos"
+      class="synced-scans__row"
+      (click)="viewRepo(repo)"
+    >
+      <span class="synced-scans__name">{{ repo.name || repo.repo }}</span>
+      <span class="health-badge" [ngClass]="getHealthLevel(repo.overall_health?.score)">
+        {{ repo.overall_health?.score ?? 'N/A' }}
+      </span>
+    </div>
+  </div>
+</div>
