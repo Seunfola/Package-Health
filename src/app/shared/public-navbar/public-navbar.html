@@ -1,6 +1,6 @@
 <header class="public-navbar">
   <a routerLink="/home" class="public-navbar__logo" (click)="closeMobileMenu()">
-    <img ngSrc="assets/icons/logo.svg" alt="DepVault logo" width="40" height="31" priority />
+    <img ngSrc="assets/icons/depvault-logo.png" alt="DepVault logo" width="40" height="30" priority />
     <span class="logo-text">DepVault</span>
   </a>
 
@@ -11,7 +11,7 @@
   </nav>
 
   <div class="public-navbar__actions">
-    <button type="button" class="btn-outline-dark" (click)="openLoginModal()">Sign In</button>
+    <button type="button" class="btn-outline-navbar" (click)="openLoginModal()">Sign In</button>
     <a routerLink="/get-started" class="btn-primary">Get Started</a>
   </div>
 
@@ -43,7 +43,7 @@
   <a routerLink="/pricing" class="mobile-menu__link" (click)="closeMobileMenu()">Pricing</a>
   <a routerLink="/docs" class="mobile-menu__link" (click)="closeMobileMenu()">Docs</a>
   <div class="mobile-menu__actions">
-    <button type="button" class="btn-outline-dark" (click)="openLoginModal()">Sign In</button>
+    <button type="button" class="btn-outline-navbar" (click)="openLoginModal()">Sign In</button>
     <a routerLink="/get-started" class="btn-primary" (click)="closeMobileMenu()">Get Started</a>
   </div>
 </nav>
