@@ -1,9 +1,9 @@
 .footer-root {
   width: 100%;
-  background-color: var(--bg-obsidian);
+  background-color: var(--bg-slate);
   color: var(--text-primary);
   border-top: 1px solid var(--glass-border);
-  padding: 3rem 2rem 1.75rem;
+  padding: 3.5rem 2rem 1.75rem;
 }
 
 .footer-inner {
@@ -11,14 +11,11 @@
   margin: 0 auto;
 }
 
-/* Brand takes a fixed share, the nav block gets the rest — a real grid
-   instead of flex-wrap-with-a-basis, which left a dead gap on wide screens
-   because nothing was told to fill the remaining width. */
 .footer-top {
   display: grid;
-  grid-template-columns: minmax(220px, 1.3fr) 1fr;
+  grid-template-columns: minmax(200px, 1.1fr) minmax(280px, 1.4fr) minmax(240px, 1fr);
   gap: 2.5rem;
-  padding-bottom: 2.25rem;
+  padding-bottom: 2.5rem;
 }
 
 .footer-brand__head {
@@ -36,7 +33,7 @@
 
 .footer-tagline {
   margin-top: 0.75rem;
-  max-width: 320px;
+  max-width: 300px;
   color: var(--text-secondary);
   font-size: 0.9rem;
   line-height: 1.55;
@@ -74,16 +71,99 @@
   color: var(--accent-teal);
 }
 
+/* Newsletter subscribe panel — a real, working form (NewsletterService),
+   not decorative like most footer subscribe boxes end up being. */
+.footer-subscribe__copy {
+  margin: 0 0 0.9rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.footer-subscribe__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footer-subscribe__input {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.footer-subscribe__input:focus {
+  outline: none;
+  border-color: var(--accent-teal);
+  box-shadow: var(--glow-teal);
+}
+
+.footer-subscribe__input:disabled {
+  opacity: 0.6;
+}
+
+.footer-subscribe__button {
+  padding: 0.65rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-teal);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.footer-subscribe__button:hover:not(:disabled) {
+  background: var(--accent-teal-hover);
+}
+
+.footer-subscribe__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.footer-subscribe__success {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 8px;
+  background: rgba(34, 197, 94, 0.08);
+  color: #166534;
+  font-size: 0.85rem;
+}
+
+.footer-subscribe__error {
+  margin: 0.5rem 0 0;
+  color: var(--color-danger);
+  font-size: 0.8rem;
+}
+
+.footer-subscribe__link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--accent-teal);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-subscribe__link:hover {
+  text-decoration: underline;
+}
+
 .footer-divider {
   height: 1px;
   background: var(--glass-border);
   width: 100%;
 }
 
-/* One group on the left (copyright), one group on the right (legal links +
+/* One group on the left (copyright), one on the right (legal links +
    GitHub) — space-between sits between those two groups, not among three
-   independent items, so the icon reads as part of the row instead of
-   stranded in its own corner. */
+   independent items, so nothing reads as stranded in its own corner. */
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
@@ -141,18 +221,34 @@
   stroke: currentColor;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 2rem;
+  }
+
+  .footer-brand,
+  .footer-subscribe {
+    grid-column: 1 / -1;
+  }
+
+  .footer-tagline,
+  .footer-subscribe__form {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 640px) {
   .footer-root {
     padding: 2.5rem 1.25rem 1.5rem;
   }
 
   .footer-top {
-    grid-template-columns: 1fr 1fr;
-    row-gap: 1.75rem;
+    grid-template-columns: 1fr;
   }
 
-  .footer-brand {
-    grid-column: 1 / -1;
+  .footer-nav {
+    grid-column: auto;
   }
 
   .footer-tagline {
@@ -171,8 +267,9 @@
 }
 
 @media (max-width: 460px) {
-  .footer-top {
+  .footer-nav {
     grid-template-columns: 1fr;
+    gap: 1.75rem;
   }
 
   .footer-legal {
