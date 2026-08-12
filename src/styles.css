@@ -1,5 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Inter is loaded via <link> in index.html, not @import here — @import is
+   render-blocking and adds an extra network round trip (fetch the CSS,
+   parse it, discover the font URLs, then fetch those) before anything
+   on the page can paint. A slow/blocked fonts.googleapis.com request
+   stalls the whole stylesheet and can produce a stale/partial repaint
+   once the fallback font finally swaps in. */
 
 :root {
   /* Core Colors — kept the historical variable names (referenced by ~100
