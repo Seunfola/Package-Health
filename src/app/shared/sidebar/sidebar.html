@@ -5,15 +5,17 @@
     @for (item of menuItems; track item.path) {
     <li class="list-item" [class.list-item--parent]="!!item.children">
       @if (item.children) {
-        <a
-          class="list-item__row"
-          [routerLink]="item.path"
-          [routerLinkActive]="['active']"
-          [routerLinkActiveOptions]="{ exact: true }"
-          (click)="closeMobileSidebar()"
-        >
-          <img [src]="'assets/icons/' + item.icon + '.svg'" [attr.alt]="item.label" [attr.title]="item.label" width="24" height="24" />
-          <span>{{ item.label }}</span>
+        <div class="list-item__row">
+          <a
+            class="list-item__link"
+            [routerLink]="item.path"
+            [routerLinkActive]="['active']"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeMobileSidebar()"
+          >
+            <img [src]="'assets/icons/' + item.icon + '.svg'" [attr.alt]="item.label" [attr.title]="item.label" width="24" height="24" />
+            <span>{{ item.label }}</span>
+          </a>
           <button
             type="button"
             class="list-item__toggle"
@@ -22,10 +24,12 @@
             [attr.aria-expanded]="isExpanded(item)"
             [attr.aria-label]="(isExpanded(item) ? 'Collapse ' : 'Expand ') + item.label + ' section'"
           >
-            <span aria-hidden="true">&#9656;</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 6 15 12 9 18"></polyline>
+            </svg>
           </button>
-        </a>
-        @if (isExpanded(item)) {
+        </div>
+        <div class="sublist-wrapper" [class.open]="isExpanded(item)" [attr.inert]="isExpanded(item) ? null : ''">
           <ul class="sublist">
             @for (child of item.children; track child.path) {
               <li class="sublist-item">
@@ -40,10 +44,10 @@
               </li>
             }
           </ul>
-        }
+        </div>
       } @else {
         <a
-          class="list-item__row"
+          class="list-item__row list-item__link"
           [routerLink]="item.path"
           [routerLinkActive]="['active']"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -62,13 +66,13 @@
   <ul class="list">
     @for (link of guestLinks; track link.label) {
     <li class="list-item">
-      <a class="list-item__row" [routerLink]="link.path" (click)="isOpen = false">
+      <a class="list-item__row list-item__link" [routerLink]="link.path" (click)="isOpen = false">
         <span>{{ link.label }}</span>
       </a>
     </li>
     }
     <li class="list-item list-item--logout">
-      <a class="list-item__row" role="button" (click)="logout()">
+      <a class="list-item__row list-item__link" role="button" (click)="logout()">
         <span>Log out</span>
       </a>
     </li>

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 
 import { Footer } from './footer';
@@ -10,7 +11,7 @@ describe('Footer', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Footer],
-      providers: [provideRouter([])],
+      providers: [provideHttpClient(), provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Footer);
@@ -24,7 +25,7 @@ describe('Footer', () => {
 
   it('renders a real link for every entry across all footer columns — no dead titles-only columns', () => {
     const totalLinks = component.footerLinks.reduce((sum, col) => sum + col.links.length, 0);
-    const anchors = fixture.nativeElement.querySelectorAll('.footer-columns a');
+    const anchors = fixture.nativeElement.querySelectorAll('.footer-nav a');
     expect(anchors.length).toBe(totalLinks);
   });
 

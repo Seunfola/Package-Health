@@ -48,6 +48,36 @@
     </div>
   }
 
+  @if (isLoading && !scanResult) {
+    <div class="skeleton" aria-hidden="true">
+      <div class="skeleton__digest">
+        <div class="skeleton__row">
+          <span class="skeleton__block skeleton__block--dot"></span>
+          <div class="skeleton__lines">
+            <span class="skeleton__block skeleton__block--line" style="width: 45%"></span>
+            <span class="skeleton__block skeleton__block--line" style="width: 75%"></span>
+          </div>
+        </div>
+        <span class="skeleton__block skeleton__block--score"></span>
+      </div>
+
+      <div class="skeleton__pills">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <span class="skeleton__block skeleton__block--pill"></span>
+        }
+      </div>
+
+      <div class="skeleton__hero">
+        <span class="skeleton__block skeleton__block--gauge"></span>
+        <div class="skeleton__grid">
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <span class="skeleton__block skeleton__block--card"></span>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
   @if (scanResult) {
     <!-- Critical Alert Banner -->
     @if (scanResult.hasCriticalVulnerabilities) {

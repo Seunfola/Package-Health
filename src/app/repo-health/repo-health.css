@@ -454,3 +454,86 @@ app-status-card {
     .section-title-row { flex-direction: column; }.finding-row { grid-template-columns: 68px minmax(0, 1fr); gap: 12px; }.finding-row code { grid-column: 2; justify-self: start; }
     .clean-table th, .clean-table td { padding: 11px 8px; font-size: 12px; word-break: break-word; }
 }
+
+/* Loading skeleton — mirrors the shape of the result it's about to become
+   (digest card, severity pills, gauge + metrics grid) instead of leaving a
+   blank page under a spinning button while the scan runs. */
+.skeleton__block {
+    display: block;
+    border-radius: 8px;
+    background: linear-gradient(100deg, #eef1f5 30%, #f8fafc 50%, #eef1f5 70%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+    from { background-position: 150% 0; }
+    to { background-position: -50% 0; }
+}
+
+.skeleton__digest {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 0 0 18px;
+    padding: 24px 26px;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    background: var(--bg-surface);
+}
+
+.skeleton__row { display: flex; align-items: flex-start; gap: 13px; flex: 1; min-width: 0; }
+.skeleton__block--dot { width: 10px; height: 10px; margin-top: 7px; border-radius: 50%; flex: 0 0 10px; }
+.skeleton__lines { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.skeleton__block--line { height: 12px; }
+.skeleton__block--score { width: 74px; height: 34px; flex-shrink: 0; }
+
+.skeleton__pills {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 32px;
+}
+
+.skeleton__block--pill { height: 44px; border-radius: 8px; }
+
+.skeleton__hero {
+    display: flex;
+    gap: 24px;
+}
+
+.skeleton__block--gauge {
+    flex: 1;
+    min-width: 0;
+    height: 236px;
+    border-radius: 16px;
+}
+
+.skeleton__grid {
+    flex: 2;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.skeleton__block--card { height: 96px; border-radius: 12px; }
+
+@media (max-width: 900px) {
+    .skeleton__hero { flex-direction: column; }
+    .skeleton__grid { grid-template-columns: 1fr; }
+    .skeleton__pills { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 560px) {
+    .skeleton__digest { flex-direction: column; align-items: stretch; padding: 18px; }
+    .skeleton__block--score { align-self: flex-start; }
+    .skeleton__pills { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton__block {
+        animation: none;
+        background: #eef1f5;
+    }
+}

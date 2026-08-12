@@ -20,7 +20,6 @@ import { DocsCommandPalette } from '../command-palette/docs-command-palette';
   styleUrls: ['./docs-layout.css', '../docs-shared.css'],
 })
 export class DocsLayout implements OnInit {
-  readonly currentYear = new Date().getFullYear();
   readonly groups = docSectionsByCategory();
 
   paletteOpen = false;

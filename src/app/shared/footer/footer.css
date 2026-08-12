@@ -1,40 +1,48 @@
 .footer-root {
   width: 100%;
-  background-color: var(--bg-obsidian);
+  background-color: var(--bg-slate);
   color: var(--text-primary);
   border-top: 1px solid var(--glass-border);
-  padding: 3rem 2rem 1.75rem;
+  padding: 3.5rem 2rem 1.75rem;
 }
 
 .footer-inner {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.footer-top {
   display: grid;
-  grid-template-columns: minmax(280px, 1.25fr) minmax(360px, 1fr);
-  column-gap: 5rem;
-  row-gap: 2.75rem;
+  grid-template-columns: minmax(200px, 1.1fr) minmax(280px, 1.4fr) minmax(240px, 1fr);
+  gap: 2.5rem;
+  padding-bottom: 2.5rem;
 }
 
-.footer-brand {
+.footer-brand__head {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding-top: 0.1rem;
+  align-items: center;
+  gap: 0.55rem;
 }
 
-.footer-brand img { flex: 0 0 auto; margin-top: 0.15rem; }
+.footer-brand__name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
 
 .footer-tagline {
+  margin-top: 0.75rem;
+  max-width: 300px;
   color: var(--text-secondary);
-  font-size: 0.95rem;
-  max-width: 350px;
+  font-size: 0.9rem;
   line-height: 1.55;
 }
 
-.footer-columns {
+.footer-nav {
   display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 1fr));
-  gap: 2rem 3.5rem;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 2.5rem;
 }
 
 .footer-nav-column {
@@ -42,14 +50,14 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  min-width: 160px;
 }
 
 .nav-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
 
@@ -61,29 +69,120 @@
 
 .footer-link:hover {
   color: var(--accent-teal);
-  text-shadow: none;
+}
+
+/* Newsletter subscribe panel — a real, working form (NewsletterService),
+   not decorative like most footer subscribe boxes end up being. */
+.footer-subscribe__copy {
+  margin: 0 0 0.9rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.footer-subscribe__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footer-subscribe__input {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.footer-subscribe__input:focus {
+  outline: none;
+  border-color: var(--accent-teal);
+  box-shadow: var(--glow-teal);
+}
+
+.footer-subscribe__input:disabled {
+  opacity: 0.6;
+}
+
+.footer-subscribe__button {
+  padding: 0.65rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-teal);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.footer-subscribe__button:hover:not(:disabled) {
+  background: var(--accent-teal-hover);
+}
+
+.footer-subscribe__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.footer-subscribe__success {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 8px;
+  background: rgba(34, 197, 94, 0.08);
+  color: #166534;
+  font-size: 0.85rem;
+}
+
+.footer-subscribe__error {
+  margin: 0.5rem 0 0;
+  color: var(--color-danger);
+  font-size: 0.8rem;
+}
+
+.footer-subscribe__link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--accent-teal);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-subscribe__link:hover {
+  text-decoration: underline;
 }
 
 .footer-divider {
   height: 1px;
   background: var(--glass-border);
   width: 100%;
-  grid-column: 1 / -1;
 }
 
+/* One group on the left (copyright), one on the right (legal links +
+   GitHub) — space-between sits between those two groups, not among three
+   independent items, so nothing reads as stranded in its own corner. */
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  grid-column: 1 / -1;
+  gap: 1.25rem;
+  padding-top: 1.5rem;
 }
 
 .footer-copyright {
   color: var(--text-muted);
   font-size: 0.85rem;
   margin: 0;
+}
+
+.footer-bottom__right {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
 }
 
 .footer-legal {
@@ -95,7 +194,7 @@
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.9rem;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .legal-link:hover {
@@ -103,48 +202,78 @@
   text-decoration: underline;
 }
 
-.social-icons {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-}
-
 .social-link {
-  color: var(--text-secondary);
   display: inline-flex;
-  transition: color 0.3s ease, transform 0.3s ease;
+  align-items: center;
+  padding-left: 1.75rem;
+  border-left: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
 }
 
 .social-link:hover {
   color: var(--accent-teal);
-  transform: scale(1.1);
 }
 
 .social-link svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 2rem;
+  }
+
+  .footer-brand,
+  .footer-subscribe {
+    grid-column: 1 / -1;
+  }
+
+  .footer-tagline,
+  .footer-subscribe__form {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 640px) {
   .footer-root {
     padding: 2.5rem 1.25rem 1.5rem;
   }
 
-  .footer-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
-  .footer-nav-column { min-width: 0; }
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
 
-  .footer-inner { grid-template-columns: 1fr; row-gap: 2rem; }
+  .footer-nav {
+    grid-column: auto;
+  }
 
-  .footer-divider, .footer-bottom { grid-column: auto; }
+  .footer-tagline {
+    max-width: none;
+  }
 
   .footer-bottom {
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .footer-bottom__right {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 @media (max-width: 460px) {
-  .footer-columns { grid-template-columns: 1fr; }
-  .footer-legal { flex-direction: column; gap: .65rem; }
+  .footer-nav {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .footer-legal {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
 }

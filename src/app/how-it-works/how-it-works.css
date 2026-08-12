@@ -1,7 +1,7 @@
 .how-page {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 76px 24px 90px;
+  padding: 40px 24px 90px;
 }
 
 /* Same eyebrow/CTA look as /features — that stylesheet's rules are scoped

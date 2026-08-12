@@ -141,26 +141,6 @@
 .terminal-prompt { color: #38bdf8; }
 .terminal-dim { color: #94a3b8; }
 
-.docs-footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
-.docs-footer a {
-  color: var(--text-muted);
-}
-
-.docs-footer a:hover {
-  color: var(--text-primary);
-}
-
 @media (max-width: 420px) {
   .docs-section.glass-panel { padding: 1.5rem 1rem; }
   .docs-table th, .docs-table td { padding: .55rem .6rem; font-size: .82rem; }
