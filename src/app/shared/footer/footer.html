@@ -1,36 +1,41 @@
 <footer class="footer-root">
   <div class="footer-inner">
-    <div class="footer-brand">
-      <img src="assets/icons/depvault-logo.png" alt="DepVault logo" width="32" height="24" />
-      <p class="footer-tagline">Predictive dependency risk intelligence for npm, PyPI, Cargo, and Go.</p>
-    </div>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-brand__head">
+          <img src="assets/icons/depvault-logo.png" alt="" width="28" height="21" />
+          <span class="footer-brand__name">DepVault</span>
+        </div>
+        <p class="footer-tagline">Predictive dependency risk intelligence for npm, PyPI, Cargo, and Go.</p>
+      </div>
 
-    <div class="footer-columns">
-      @for (col of footerLinks; track col.title) {
-      <div class="footer-nav-column">
-        <h4 class="nav-title">{{ col.title }}</h4>
-        @for (link of col.links; track link.label) {
-          @if (link.external) {
-            <a [href]="link.href" target="_blank" rel="noopener" class="footer-link">{{ link.label }}</a>
-          } @else {
-            <a [routerLink]="link.routerLink" [fragment]="link.fragment" class="footer-link">{{ link.label }}</a>
-          }
+      <div class="footer-nav">
+        @for (col of footerLinks; track col.title) {
+          <div class="footer-nav-column">
+            <h4 class="nav-title">{{ col.title }}</h4>
+            @for (link of col.links; track link.label) {
+              @if (link.external) {
+                <a [href]="link.href" target="_blank" rel="noopener" class="footer-link">{{ link.label }}</a>
+              } @else {
+                <a [routerLink]="link.routerLink" [fragment]="link.fragment" class="footer-link">{{ link.label }}</a>
+              }
+            }
+          </div>
         }
       </div>
-      }
     </div>
 
     <div class="footer-divider"></div>
 
     <div class="footer-bottom">
-      <p class="footer-copyright">© {{ currentYear }} DepVault. All rights reserved.</p>
+      <p class="footer-copyright">&copy; {{ currentYear }} DepVault. All rights reserved.</p>
 
-      <div class="footer-legal">
-        <a routerLink="/privacy" class="legal-link">Privacy &amp; Data Policy</a>
-        <a routerLink="/terms" class="legal-link">Terms of Service</a>
-      </div>
+      <div class="footer-bottom__right">
+        <div class="footer-legal">
+          <a routerLink="/privacy" class="legal-link">Privacy &amp; Data Policy</a>
+          <a routerLink="/terms" class="legal-link">Terms of Service</a>
+        </div>
 
-      <div class="social-icons">
         <a href="https://github.com/Seunfola/Package-Health" target="_blank" rel="noopener" class="social-link" aria-label="GitHub">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

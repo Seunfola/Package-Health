@@ -41,36 +41,28 @@
     flex-direction: column;
     list-style: none;
     padding: 0;
-    margin: 10;
-    gap: 10px;
+    margin: 0;
+    gap: 4px;
 }
 
 .list-item {
     border-radius: 8px;
     font-weight: 500;
-    border-right: 4px solid transparent;
-    transition: var(--transition-smooth);
+    border-left: 4px solid transparent;
     color: var(--text-secondary);
-}
-
-.list-item__row {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    padding: 14px 18px;
-    gap: 10px;
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
+    /* Only color/background animate — height changes (expand/collapse) are
+       owned entirely by .sublist-wrapper's own transition below, so the two
+       never fight over timing. */
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .list-item:hover {
     background-color: rgba(37, 99, 235, 0.06);
-    border-left: 4px solid var(--accent-teal);
+    border-left-color: var(--accent-teal);
 }
 
-.list-item:hover .list-item__row {
+.list-item:hover .list-item__link,
+.list-item:hover .list-item__toggle {
     color: var(--accent-teal);
 }
 
@@ -81,56 +73,130 @@
 
 .list-item:active {
     background-color: rgba(37, 99, 235, 0.1);
-    color: var(--text-primary);
-    border-left: 4px solid var(--accent-teal-hover);
+    border-left-color: var(--accent-teal-hover);
 }
 
-.list-item:active .list-item__row {
-    color: var(--text-primary);
+.list-item:has(a.active) {
+    background-color: rgba(37, 99, 235, 0.1);
+    border-left-color: var(--accent-teal);
 }
 
-.list-item__row.active {
+/* The clickable row — a plain flex container for a parent item (holds the
+   link and the toggle as two independent controls, never one nested inside
+   the other: a <button> inside an <a> is invalid HTML and behaves
+   inconsistently across browsers), or the anchor itself for a leaf item. */
+.list-item__row {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.list-item__link {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    padding: 14px 8px 14px 18px;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+a.list-item__link {
+    /* Leaf items apply .list-item__row and .list-item__link to the same
+       anchor — restore the full-width padding .list-item__row would
+       otherwise own alone for a parent item's split layout. */
+    padding: 14px 18px;
+}
+
+.list-item__link span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.list-item__link.active {
     font-weight: 700;
     color: var(--accent-teal);
-}
-
-.list-item:has(.list-item__row.active) {
-    background-color: rgba(37, 99, 235, 0.1);
-    border-left: 4px solid var(--accent-teal);
 }
 
 .list-item__toggle {
     display: grid;
     place-items: center;
-    margin-left: auto;
-    padding: 4px;
-    border: none;
-    background: none;
-    color: inherit;
-    cursor: pointer;
-    transition: transform 0.2s ease;
     flex-shrink: 0;
+    width: 40px;
+    margin-right: 6px;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.list-item__toggle:hover {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--accent-teal);
 }
 
 .list-item__toggle.expanded {
     transform: rotate(90deg);
 }
 
+/* Grid-rows animation: 0fr -> 1fr smoothly reveals the sublist's real
+   height without ever measuring it in JS, and the inner overflow:hidden
+   keeps content from flashing full-height for a frame while collapsed. */
+.sublist-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.22s ease;
+}
+
+.sublist-wrapper.open {
+    grid-template-rows: 1fr;
+}
+
 .sublist {
     display: flex;
     flex-direction: column;
     list-style: none;
-    padding: 2px 0 6px;
+    padding: 0;
     margin: 0;
-    gap: 2px;
+    gap: 1px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.sublist-item {
+    position: relative;
+    /* The guide line marks these as children of the row above without
+       repeating its icon or indenting so far the label loses room. */
+    margin-left: 34px;
+    padding-left: 12px;
+    border-left: 1px solid var(--glass-border);
+}
+
+.sublist-item:last-child {
+    border-color: transparent;
+}
+
+.sublist-item:last-child::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    height: 18px;
+    border-left: 1px solid var(--glass-border);
 }
 
 .sublist-item a {
     display: block;
-    padding: 10px 18px 10px 52px;
+    padding: 9px 14px;
+    margin: 3px 0;
     color: var(--text-secondary);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     border-radius: 6px;
     transition: var(--transition-smooth);
 }
@@ -146,7 +212,7 @@
     background-color: rgba(37, 99, 235, 0.08);
 }
 
-.list-item--logout a {
+.list-item--logout .list-item__link {
     color: var(--color-danger);
     cursor: pointer;
 }
@@ -166,5 +232,13 @@
 
     .overlay {
         display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sublist-wrapper,
+    .list-item__toggle,
+    .list-item {
+        transition: none;
     }
 }

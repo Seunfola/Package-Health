@@ -9,32 +9,43 @@
 .footer-inner {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Brand takes a fixed share, the nav block gets the rest — a real grid
+   instead of flex-wrap-with-a-basis, which left a dead gap on wide screens
+   because nothing was told to fill the remaining width. */
+.footer-top {
   display: grid;
-  grid-template-columns: minmax(280px, 1.25fr) minmax(360px, 1fr);
-  column-gap: 5rem;
-  row-gap: 2.75rem;
+  grid-template-columns: minmax(220px, 1.3fr) 1fr;
+  gap: 2.5rem;
+  padding-bottom: 2.25rem;
 }
 
-.footer-brand {
+.footer-brand__head {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding-top: 0.1rem;
+  align-items: center;
+  gap: 0.55rem;
 }
 
-.footer-brand img { flex: 0 0 auto; margin-top: 0.15rem; }
+.footer-brand__name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
 
 .footer-tagline {
+  margin-top: 0.75rem;
+  max-width: 320px;
   color: var(--text-secondary);
-  font-size: 0.95rem;
-  max-width: 350px;
+  font-size: 0.9rem;
   line-height: 1.55;
 }
 
-.footer-columns {
+.footer-nav {
   display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 1fr));
-  gap: 2rem 3.5rem;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 2.5rem;
 }
 
 .footer-nav-column {
@@ -42,14 +53,14 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  min-width: 160px;
 }
 
 .nav-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
 
@@ -61,29 +72,37 @@
 
 .footer-link:hover {
   color: var(--accent-teal);
-  text-shadow: none;
 }
 
 .footer-divider {
   height: 1px;
   background: var(--glass-border);
   width: 100%;
-  grid-column: 1 / -1;
 }
 
+/* One group on the left (copyright), one group on the right (legal links +
+   GitHub) — space-between sits between those two groups, not among three
+   independent items, so the icon reads as part of the row instead of
+   stranded in its own corner. */
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  grid-column: 1 / -1;
+  gap: 1.25rem;
+  padding-top: 1.5rem;
 }
 
 .footer-copyright {
   color: var(--text-muted);
   font-size: 0.85rem;
   margin: 0;
+}
+
+.footer-bottom__right {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
 }
 
 .footer-legal {
@@ -95,7 +114,7 @@
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.9rem;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .legal-link:hover {
@@ -103,26 +122,22 @@
   text-decoration: underline;
 }
 
-.social-icons {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-}
-
 .social-link {
-  color: var(--text-secondary);
   display: inline-flex;
-  transition: color 0.3s ease, transform 0.3s ease;
+  align-items: center;
+  padding-left: 1.75rem;
+  border-left: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
 }
 
 .social-link:hover {
   color: var(--accent-teal);
-  transform: scale(1.1);
 }
 
 .social-link svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
 }
 
@@ -131,20 +146,37 @@
     padding: 2.5rem 1.25rem 1.5rem;
   }
 
-  .footer-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
-  .footer-nav-column { min-width: 0; }
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 1.75rem;
+  }
 
-  .footer-inner { grid-template-columns: 1fr; row-gap: 2rem; }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
 
-  .footer-divider, .footer-bottom { grid-column: auto; }
+  .footer-tagline {
+    max-width: none;
+  }
 
   .footer-bottom {
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .footer-bottom__right {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 @media (max-width: 460px) {
-  .footer-columns { grid-template-columns: 1fr; }
-  .footer-legal { flex-direction: column; gap: .65rem; }
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-legal {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
 }
