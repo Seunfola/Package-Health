@@ -107,6 +107,30 @@ export class AuthInterceptor implements HttpInterceptor {
       });
     }
 
+    // Mongo-backed rate limiter (see rate-limit/) rejecting this request —
+    // distinct from 401/403 in that the token/permissions are fine, the
+    // caller just needs to slow down.
+    if (error.status === 429) {
+      return new HttpErrorResponse({
+        error: 'Too many requests. Please wait a moment and try again.',
+        status: error.status,
+        statusText: 'Too Many Requests',
+        url: error.url || undefined,
+      });
+    }
+
+    // Idempotency-key conflict (see idempotency-cache.schema.ts) — the same
+    // request key was already used with a different payload/is still in
+    // flight, not an auth problem.
+    if (error.status === 409) {
+      return new HttpErrorResponse({
+        error: 'This request conflicts with one already in progress or previously submitted. Please retry.',
+        status: error.status,
+        statusText: 'Conflict',
+        url: error.url || undefined,
+      });
+    }
+
     return safeError;
   }
 }

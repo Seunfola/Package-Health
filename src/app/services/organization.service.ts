@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@/environments/environment';
+import { generateIdempotencyKey } from '@/app/shared/utils';
 
 export interface TransferOwnershipRequest {
   newOwnerEmail: string;
@@ -103,11 +104,19 @@ export class OrganizationService {
   setLogo(orgId: string, file: File): Observable<{ message: string; logoUrl: string }> {
     const formData = new FormData();
     formData.append('logo', file);
-    return this.http.post<{ message: string; logoUrl: string }>(`${this.baseUrl}/${orgId}/logo`, formData);
+    return this.http.post<{ message: string; logoUrl: string }>(
+      `${this.baseUrl}/${orgId}/logo`,
+      formData,
+      { headers: { 'x-idempotency-key': generateIdempotencyKey() } },
+    );
   }
 
   createOrganization(payload: CreateOrganizationRequest): Observable<Organization> {
-    return this.http.post<Organization>(this.baseUrl, payload);
+    return this.http.post<Organization>(
+      this.baseUrl,
+      payload,
+      { headers: { 'x-idempotency-key': generateIdempotencyKey() } },
+    );
   }
 
   initiateTransfer(orgId: string, payload: TransferOwnershipRequest): Observable<TransferResponse> {
@@ -150,7 +159,17 @@ export class OrganizationService {
     return this.http.post<{ message: string; orgId: string; orgName: string }>(`${this.baseUrl}/invitations/accept`, { token });
   }
 
-  getAuditLog(orgId: string): Observable<OrgAuditLogEntry[]> {
-    return this.http.get<OrgAuditLogEntry[]>(`${this.baseUrl}/${orgId}/audit-log`);
+  /**
+   * No options returns the 100 most recent entries (unchanged default).
+   * `before` (an ISO timestamp) pages backward through older entries — pass
+   * the `createdAt` of the oldest entry currently loaded to fetch the next
+   * page, since the backend sorts newest-first and treats `before` as
+   * exclusive.
+   */
+  getAuditLog(orgId: string, options?: { limit?: number; before?: string }): Observable<OrgAuditLogEntry[]> {
+    const params: Record<string, string> = {};
+    if (options?.limit !== undefined) params['limit'] = String(options.limit);
+    if (options?.before) params['before'] = options.before;
+    return this.http.get<OrgAuditLogEntry[]>(`${this.baseUrl}/${orgId}/audit-log`, { params });
   }
 }

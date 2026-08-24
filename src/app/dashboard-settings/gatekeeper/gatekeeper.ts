@@ -42,6 +42,14 @@ export class GatekeeperSettings implements OnInit {
   isSaving = false;
   message = '';
 
+  // Optimistic until proven otherwise: GET /gatekeeper/policies/:orgId is
+  // readable by any org member, so unlike members.ts's audit log (which is
+  // ADMIN-gated on the read itself) there's no load-time signal here — only
+  // the PUT is @RequireOrgRole('ADMIN'). A 403 on save is therefore the
+  // first point we learn the caller isn't an admin; once we do, disable
+  // further edits rather than let them keep hitting the same 403.
+  isAdmin = true;
+
   constructor(
     readonly org: OrgContextService,
     private readonly gatekeeperService: GatekeeperService,
@@ -118,7 +126,16 @@ export class GatekeeperSettings implements OnInit {
       error: (err) => {
         console.error('Failed to save gatekeeper policies', err);
         this.isSaving = false;
-        this.message = 'Failed to save Gatekeeper settings. Check thresholds.';
+        if (err.status === 403) {
+          // Same class of ADMIN-only rejection members.ts's audit log
+          // silently absorbs on load — here we surface it once, clearly,
+          // and lock the form so the member isn't invited to keep retrying
+          // a save that will never succeed for their role.
+          this.isAdmin = false;
+          this.message = 'You need admin access to change Gatekeeper settings for this organization.';
+        } else {
+          this.message = 'Failed to save Gatekeeper settings. Check thresholds.';
+        }
       },
     });
   }

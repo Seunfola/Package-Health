@@ -33,10 +33,15 @@ export class MembersSettings implements OnInit {
   inviteMessage = '';
   inviteError = '';
 
-  // Audit log state
+  // Audit log state — paginated: the backend caps a single response at 200
+  // entries, so a "Load more" fetch page continues backward in time from the
+  // oldest entry currently loaded.
+  private static readonly AUDIT_LOG_PAGE_SIZE = 100;
   auditLog: OrgAuditLogEntry[] = [];
   isLoadingAuditLog = false;
+  isLoadingMoreAuditLog = false;
   auditLogError = '';
+  auditLogHasMore = false;
 
   constructor(
     readonly org: OrgContextService,
@@ -190,18 +195,46 @@ export class MembersSettings implements OnInit {
   loadAuditLog(): void {
     this.isLoadingAuditLog = true;
     this.auditLogError = '';
-    this.organizationService.getAuditLog(this.org.activeOrgId).subscribe({
-      next: (entries) => {
-        this.auditLog = entries;
-        this.isLoadingAuditLog = false;
-      },
-      error: (err) => {
-        // Non-admins get a 403 here (audit log is ADMIN+ only) — that's
-        // expected, not an error worth surfacing loudly to a plain member.
-        console.error('Failed to load audit log', err);
-        this.isLoadingAuditLog = false;
-      },
-    });
+    this.organizationService
+      .getAuditLog(this.org.activeOrgId, { limit: MembersSettings.AUDIT_LOG_PAGE_SIZE })
+      .subscribe({
+        next: (entries) => {
+          this.auditLog = entries;
+          this.auditLogHasMore = entries.length === MembersSettings.AUDIT_LOG_PAGE_SIZE;
+          this.isLoadingAuditLog = false;
+        },
+        error: (err) => {
+          // Non-admins get a 403 here (audit log is ADMIN+ only) — that's
+          // expected, not an error worth surfacing loudly to a plain member.
+          console.error('Failed to load audit log', err);
+          this.isLoadingAuditLog = false;
+        },
+      });
+  }
+
+  /** Fetches the next page of older entries, appending to what's already loaded. */
+  loadMoreAuditLog(): void {
+    if (this.isLoadingMoreAuditLog || !this.auditLog.length) return;
+
+    this.isLoadingMoreAuditLog = true;
+    const oldestLoaded = this.auditLog[this.auditLog.length - 1];
+
+    this.organizationService
+      .getAuditLog(this.org.activeOrgId, {
+        limit: MembersSettings.AUDIT_LOG_PAGE_SIZE,
+        before: oldestLoaded.createdAt,
+      })
+      .subscribe({
+        next: (entries) => {
+          this.auditLog = [...this.auditLog, ...entries];
+          this.auditLogHasMore = entries.length === MembersSettings.AUDIT_LOG_PAGE_SIZE;
+          this.isLoadingMoreAuditLog = false;
+        },
+        error: (err) => {
+          console.error('Failed to load more audit log entries', err);
+          this.isLoadingMoreAuditLog = false;
+        },
+      });
   }
 
   /** "member.role_changed" -> "Role Changed" for a readable table without a giant switch/lookup map. */

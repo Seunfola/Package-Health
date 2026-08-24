@@ -68,4 +68,30 @@ describe('AuthInterceptor', () => {
     expect(req.request.headers.get('Authorization')).toBeNull();
     req.flush({});
   });
+
+  it('rewrites a 429 into a clear rate-limit message (rate-limit/ Mongo-backed limiter)', (done) => {
+    httpClient.get(`${environment.apiBaseUrl}/repos`).subscribe({
+      error: (err) => {
+        expect(err.status).toBe(429);
+        expect(err.error).toBe('Too many requests. Please wait a moment and try again.');
+        done();
+      },
+    });
+
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/repos`);
+    req.flush({ message: 'raw backend rate-limit body' }, { status: 429, statusText: 'Too Many Requests' });
+  });
+
+  it('rewrites a 409 into a clear idempotency-conflict message (idempotency-cache.schema.ts)', (done) => {
+    httpClient.post(`${environment.apiBaseUrl}/org`, {}).subscribe({
+      error: (err) => {
+        expect(err.status).toBe(409);
+        expect(err.error).toBe('This request conflicts with one already in progress or previously submitted. Please retry.');
+        done();
+      },
+    });
+
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/org`);
+    req.flush({ message: 'raw backend conflict body' }, { status: 409, statusText: 'Conflict' });
+  });
 });
