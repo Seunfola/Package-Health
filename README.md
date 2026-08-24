@@ -5,7 +5,7 @@ DepVault is a web app and CLI ecosystem that analyzes repository and package hea
 ## Demo
 
 - Live app: `https://package-health-rho.vercel.app`
-- API: `https://package-health-backup.onrender.com/api`
+- API: `https://package-health-backup-1.onrender.com/api`
 
 ## Why DepVault?
 
@@ -23,7 +23,7 @@ Because we built our logic around the centralized registry and layer it with adv
 ## Features
 
 - **DepVault HealthScan**: Vulnerability insight cards powered by our advanced scoring algorithm.
-- **DepVault Shield**: A zero-trust package installation interceptor that uses Poisson distribution models to block toxic dependencies.
+- **DepVault Shield**: A zero-trust package installation interceptor that uses Poisson distribution models to block toxic dependencies before they are installed.
 - **Dynamic Risk Policies**: Enforce strict, balanced, or lenient package security rules.
 - **Analysis Engine**:
   - Analyze public GitHub repositories without login
@@ -52,6 +52,51 @@ Frontend runs at `http://localhost:4200`.
 pnpm run build
 pnpm run test
 ```
+
+## DepVault Shield for Developers
+
+DepVault Shield is the install-time guardrail for the CLI. It evaluates a dependency before installation, shows the package's trust score, explains the reason for a block, and stops the install if the package fails policy.
+
+### Configure the shield
+
+Create a `depvault.json` file in the project you want to protect:
+
+```json
+{
+  "riskLevel": "high"
+}
+```
+
+Supported values are `low`, `medium`, and `high`.
+
+### Use it manually
+
+```bash
+depvault shield express@4.18.2
+depvault shield audit
+depvault shield status
+```
+
+### Gate every install automatically
+
+To protect every install in a shell, install the hooks:
+
+```bash
+depvault hooks install
+depvault hooks install --git
+```
+
+Then reload your shell and plain install commands will run through the shield first.
+
+### Override intentionally
+
+If you have a valid reason to install a package anyway, use:
+
+```bash
+depvault shield express@4.18.2 --force
+```
+
+That proceeds with the install but clearly marks it as an intentional override.
 
 ## Contributing
 

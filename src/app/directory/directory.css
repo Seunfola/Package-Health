@@ -1,0 +1,97 @@
+/* Matches synced-scans.css's header/list/alert-banner look so this reads as
+   the same page family as the other list-style dashboard pages. */
+.directory-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.header-section {
+    margin-bottom: 32px;
+}
+
+.header-section h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    color: var(--text-primary, #0f172a);
+}
+
+.header-section p {
+    font-size: 16px;
+    color: var(--text-secondary, #64748b);
+}
+
+.alert-banner {
+    display: flex;
+    align-items: center;
+    background-color: #fff7ed;
+    border: 1px solid #fdba74;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    color: #9a3412;
+}
+
+.directory__loading,
+.directory__empty {
+    padding: 24px;
+    color: var(--text-secondary, #64748b);
+    font-size: 0.95rem;
+}
+
+.directory__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.directory__row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 10px;
+    background: var(--bg-surface, #fff);
+}
+
+.directory__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--border-color, #e2e8f0);
+}
+
+.directory__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.directory__name {
+    font-weight: 600;
+    color: var(--text-primary, #0f172a);
+}
+
+.directory__username {
+    font-size: 13px;
+    color: var(--text-secondary, #64748b);
+}
+
+.directory__bio {
+    font-size: 13px;
+    color: var(--text-secondary, #64748b);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.directory__load-more {
+    padding: 16px;
+    text-align: center;
+}

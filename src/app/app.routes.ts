@@ -13,6 +13,7 @@ import { GatekeeperSettings } from './dashboard-settings/gatekeeper/gatekeeper';
 import { WebhooksSettings } from './dashboard-settings/webhooks/webhooks';
 import { Notification } from './notification/notification';
 import { UserProfile } from './user-profile/user-profile';
+import { Directory } from './directory/directory';
 import { PrivacyPolicy } from './legal/privacy/privacy';
 import { TermsOfService } from './legal/terms/terms';
 import { AuthCallbackComponent } from './auth-callback/auth-callback.component';
@@ -136,6 +137,7 @@ export const routes: Routes = [
       { path: 'dashboard-settings', component: DashboardSettings },
       { path: 'notifications', component: Notification },
       { path: 'user-profile', component: UserProfile },
+      { path: 'directory', component: Directory },
       { path: 'telemetry', component: TelemetryDashboard },
     ],
   },

@@ -31,6 +31,16 @@ export type UpdateUserProfileRequest = Partial<
   Pick<UserProfileResponse, 'name' | 'email' | 'bio' | 'location' | 'skills' | 'linkedin_url' | 'github_url' | 'twitter_url'>
 >;
 
+/**
+ * The `GET /profile` directory listing never includes `email` — the backend
+ * projects it out at the query level (see user-profile.service.ts's
+ * findAll()) to satisfy the privacy policy's "your email is never included
+ * in the 'all profiles' listing" promise. Modeled as `Omit`, not a
+ * hand-duplicated field list, so it can't silently drift from
+ * UserProfileResponse.
+ */
+export type ProfileListItem = Omit<UserProfileResponse, 'email'>;
+
 @Injectable({ providedIn: 'root' })
 export class UserProfileService {
   private readonly API_URL = `${environment.apiBaseUrl}/profile`;
@@ -39,6 +49,19 @@ export class UserProfileService {
 
   getProfile(username: string): Observable<UserProfileResponse> {
     return this.http.get<UserProfileResponse>(`${this.API_URL}/${username}`);
+  }
+
+  /**
+   * `GET /profile` — the paginated profile directory. Cursor-based: pass the
+   * `username` of the last profile in the previous page as `after` to fetch
+   * the next one, mirroring `OrganizationService.getAuditLog()`'s pagination
+   * shape (limit + cursor, server-capped).
+   */
+  listProfiles(options?: { limit?: number; after?: string }): Observable<ProfileListItem[]> {
+    const params: Record<string, string> = {};
+    if (options?.limit !== undefined) params['limit'] = String(options.limit);
+    if (options?.after) params['after'] = options.after;
+    return this.http.get<ProfileListItem[]>(this.API_URL, { params });
   }
 
   /** `POST /profile` — create-or-update the caller's own profile. */
