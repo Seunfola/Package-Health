@@ -230,7 +230,16 @@ a.list-item__link {
         left: 0;
     }
 
-    .overlay {
+    /* .overlay.show's unconditional `display: block` (below) outranks a bare
+       .overlay rule here on specificity alone, regardless of source order —
+       that let a stale/default `isOpen = true` from the mobile drawer paint
+       a full-viewport rgba(0,0,0,0.4) scrim over every desktop page (sidebar
+       included, despite its own higher z-index) with no visible cause, since
+       the desktop sidebar is never actually an overlay to begin with. Match
+       .show explicitly so this can't regress even if that default changes
+       again. */
+    .overlay,
+    .overlay.show {
         display: none;
     }
 }
