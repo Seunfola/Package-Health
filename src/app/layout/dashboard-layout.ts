@@ -13,7 +13,7 @@ import { Footer } from '../shared/footer/footer';
   styleUrl: './dashboard-layout.css',
 })
 export class DashboardLayout {
-  public sidebarOpen: boolean = true;
+  public sidebarOpen: boolean = false;
 
   public toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;

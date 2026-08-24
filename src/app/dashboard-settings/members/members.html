@@ -164,6 +164,13 @@
           }
         </tbody>
       </table>
+      @if (auditLogHasMore) {
+        <div style="padding: 16px; text-align: center;">
+          <button (click)="loadMoreAuditLog()" [disabled]="isLoadingMoreAuditLog" class="save-button">
+            {{ isLoadingMoreAuditLog ? 'Loading...' : 'Load more' }}
+          </button>
+        </div>
+      }
     } @else {
       <p class="settings-subtitle" style="padding: 16px;">No audit entries yet — actions like adding members, changing policies, or updating webhooks will show up here. If you're not an owner/admin of this organization, this list will stay empty.</p>
     }

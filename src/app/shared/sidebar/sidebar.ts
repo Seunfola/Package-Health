@@ -59,6 +59,7 @@ export class Sidebar {
       ],
     },
     { icon: 'user', label: 'User Profile', path: '/user-profile', separator: false },
+    { icon: 'users', label: 'Directory', path: '/directory', separator: false },
     {
       icon: 'settings',
       label: 'Dashboard Settings',
