@@ -4,9 +4,22 @@
     <p>Browse other DepVault users on this instance. Email addresses are never shown here.</p>
   </div>
 
-  <div *ngIf="isLoading" class="directory__loading">Loading&hellip;</div>
+  <div *ngIf="isLoading" class="directory__list" aria-hidden="true">
+    <div class="directory__row" *ngFor="let i of [1, 2, 3, 4, 5]">
+      <app-skeleton width="44px" height="44px" [circle]="true"></app-skeleton>
+      <div class="directory__info" style="flex: 1;">
+        <app-skeleton width="140px" height="14px"></app-skeleton>
+        <app-skeleton width="90px" height="12px"></app-skeleton>
+      </div>
+    </div>
+  </div>
 
-  <p *ngIf="error" class="alert-banner error"><span class="alert-content">{{ error }}</span></p>
+  <app-error-state-card
+    *ngIf="!isLoading && error"
+    title="Directory unavailable"
+    [message]="error"
+    (retry)="load()">
+  </app-error-state-card>
 
   <div *ngIf="!isLoading && !error && profiles.length === 0" class="directory__empty">
     No profiles yet.

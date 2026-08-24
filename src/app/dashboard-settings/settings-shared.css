@@ -53,7 +53,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #CBD5E1;
+  background-color: var(--border-color);
   transition: 0.4s;
   border-radius: 24px;
 }
@@ -65,7 +65,7 @@
   width: 18px;
   left: 3px;
   bottom: 3px;
-  background-color: #fff;
+  background-color: var(--bg-surface);
   transition: 0.4s;
   border-radius: 50%;
 }
@@ -243,7 +243,7 @@ input:checked+.slider:before {
 
 .members-table td {
   padding: 14px 16px;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid var(--glass-border);
   vertical-align: middle;
   overflow-wrap: anywhere;
 }
@@ -450,6 +450,38 @@ input:checked+.slider:before {
 .save-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Inline "Retry" affordance for a failed load inside a one-line error
+   message (tokens/webhooks/gatekeeper) — a text-link treatment since a full
+   ErrorStateCard would be oversized for a single settings-card subsection. */
+.inline-retry {
+  margin-left: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent-teal);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Small table-row skeleton for the Members/Tokens/Webhooks/Audit Log
+   tables — replaces the plain "Loading…" text each used to show while its
+   own table body was empty. */
+.mini-table-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+}
+
+.mini-table-skeleton__row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 11px 12px;
 }
 
 .sr-only {

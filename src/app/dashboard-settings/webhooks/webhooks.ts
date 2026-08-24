@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { SettingsCard } from '../settings/settings-card/settings-card';
 import { OrgContextService } from '../org-context.service';
 import { NotificationWebhookService, NotificationWebhook, NotificationWebhookType } from '@/app/services/notification-webhook.service';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 @Component({
   selector: 'app-webhooks-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, SettingsCard],
+  imports: [CommonModule, FormsModule, SettingsCard, Skeleton],
   templateUrl: './webhooks.html',
   styleUrls: ['./webhooks.css', '../settings-shared.css'],
 })
@@ -29,6 +30,7 @@ export class WebhooksSettings implements OnInit {
   constructor(
     readonly org: OrgContextService,
     private readonly notificationWebhookService: NotificationWebhookService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -42,11 +44,13 @@ export class WebhooksSettings implements OnInit {
       next: (webhooks) => {
         this.webhooks = webhooks;
         this.isLoadingWebhooks = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load notification webhooks', err);
         this.webhookError = 'Failed to load notification webhooks.';
         this.isLoadingWebhooks = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -73,13 +77,21 @@ export class WebhooksSettings implements OnInit {
           this.newWebhookUrl = '';
           this.newWebhookLabel = '';
           this.loadWebhooks();
-          setTimeout(() => (this.webhookMessage = ''), 3000);
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.webhookMessage = '';
+            this.cdr.markForCheck();
+          }, 3000);
         },
         error: (err) => {
           console.error('Failed to add webhook', err);
           this.isAddingWebhook = false;
           this.webhookError = err.error?.message || 'Failed to add webhook.';
-          setTimeout(() => (this.webhookError = ''), 3000);
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.webhookError = '';
+            this.cdr.markForCheck();
+          }, 3000);
         },
       });
   }
@@ -89,11 +101,16 @@ export class WebhooksSettings implements OnInit {
     this.notificationWebhookService.update(webhook._id, { enabled }, this.org.activeOrgId).subscribe({
       next: () => {
         webhook.enabled = enabled;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to update webhook', err);
         this.webhookError = err.error?.message || 'Failed to update webhook.';
-        setTimeout(() => (this.webhookError = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.webhookError = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
     });
   }
@@ -108,12 +125,20 @@ export class WebhooksSettings implements OnInit {
       next: () => {
         this.webhookMessage = 'Webhook removed successfully.';
         this.loadWebhooks();
-        setTimeout(() => (this.webhookMessage = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.webhookMessage = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         console.error('Failed to remove webhook', err);
         this.webhookError = err.error?.message || 'Failed to remove webhook.';
-        setTimeout(() => (this.webhookError = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.webhookError = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
     });
   }

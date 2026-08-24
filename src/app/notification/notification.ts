@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NotificationItem as NotificationItemComponent } from './notification-item/notification-item';
 import { NotificationService, NotificationResponse } from '@/app/services/notification.service';
@@ -6,6 +6,8 @@ import { AuthService } from '@/app/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
 import { EmptyStateCard } from '@/app/reusable/empty-state-card/empty-state-card';
+import { ErrorStateCard } from '@/app/reusable/error-state-card/error-state-card';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 import { RouterLink } from '@angular/router';
 
 interface NotificationViewModel {
@@ -22,7 +24,7 @@ interface NotificationViewModel {
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [CommonModule, FormsModule, NotificationItemComponent, UnauthorizedWarning, EmptyStateCard, RouterLink],
+  imports: [CommonModule, FormsModule, NotificationItemComponent, UnauthorizedWarning, EmptyStateCard, ErrorStateCard, Skeleton, RouterLink],
   templateUrl: './notification.html',
   styleUrl: './notification.css',
 })
@@ -43,7 +45,8 @@ export class Notification implements OnInit {
 
   constructor(
     private readonly notificationService: NotificationService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   get authState$() {
@@ -84,22 +87,28 @@ export class Notification implements OnInit {
 
   fetchNotifications(): void {
     this.isLoading = true;
+    this.error = '';
     this.notificationService.getNotifications({ limit: 50 }).subscribe({
       next: (data) => {
         this.notifications = data.map((n) => this.toViewModel(n));
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error fetching notifications:', err);
         this.error = 'Failed to load notifications.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }
 
   refreshUnreadCount(): void {
     this.notificationService.getUnreadCount().subscribe({
-      next: (res) => (this.unreadCount = res.count),
+      next: (res) => {
+        this.unreadCount = res.count;
+        this.cdr.markForCheck();
+      },
       error: (err) => console.error('Failed to fetch unread count', err),
     });
   }
@@ -112,15 +121,18 @@ export class Notification implements OnInit {
     }
     this.isSearching = true;
     this.isLoading = true;
+    this.error = '';
     this.notificationService.search(term, { limit: 50 }).subscribe({
       next: (data) => {
         this.notifications = data.map((n) => this.toViewModel(n));
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Search failed:', err);
         this.error = 'Search failed.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -146,6 +158,7 @@ export class Notification implements OnInit {
         const notif = this.notifications.find((n) => n.id === id);
         if (notif) notif.isRead = true;
         this.refreshUnreadCount();
+        this.cdr.markForCheck();
       },
       error: (err) => console.error('Error marking as read:', err),
     });
@@ -156,6 +169,7 @@ export class Notification implements OnInit {
       next: () => {
         this.notifications.forEach((n) => (n.isRead = true));
         this.unreadCount = 0;
+        this.cdr.markForCheck();
       },
       error: (err) => console.error('Error marking all as read:', err),
     });
@@ -167,6 +181,7 @@ export class Notification implements OnInit {
         this.notifications = this.notifications.filter((n) => n.id !== id);
         this.selectedIds.delete(id);
         this.refreshUnreadCount();
+        this.cdr.markForCheck();
       },
       error: (err) => console.error('Failed to dismiss notification:', err),
     });
@@ -198,10 +213,12 @@ export class Notification implements OnInit {
         this.clearSelection();
         this.refreshUnreadCount();
         this.isBusy = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to mark selected as read:', err);
         this.isBusy = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -218,10 +235,12 @@ export class Notification implements OnInit {
         this.clearSelection();
         this.refreshUnreadCount();
         this.isBusy = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to delete selected notifications:', err);
         this.isBusy = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -237,10 +256,12 @@ export class Notification implements OnInit {
         this.selectedIds.clear();
         this.unreadCount = 0;
         this.isBusy = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to clear notifications:', err);
         this.isBusy = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -254,11 +275,13 @@ export class Notification implements OnInit {
         this.isBusy = false;
         this.fetchNotifications();
         this.refreshUnreadCount();
+        this.cdr.markForCheck();
         alert(`Deleted ${res.deletedCount} old notification${res.deletedCount === 1 ? '' : 's'}.`);
       },
       error: (err) => {
         console.error('Cleanup failed:', err);
         this.isBusy = false;
+        this.cdr.markForCheck();
       },
     });
   }

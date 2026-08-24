@@ -6,6 +6,21 @@
     </div>
   </header>
 
+  <section class="repos-section" *ngIf="isLoading" aria-hidden="true">
+    <div class="repos-header">
+      <app-skeleton width="160px" height="22px"></app-skeleton>
+    </div>
+    <div class="table-card table-card--skeleton">
+      <div class="table-row-skeleton" *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8]">
+        <app-skeleton width="70%" height="14px"></app-skeleton>
+        <app-skeleton width="40px" height="20px" radius="20px"></app-skeleton>
+        <app-skeleton width="30px" height="14px"></app-skeleton>
+        <app-skeleton width="30px" height="14px"></app-skeleton>
+        <app-skeleton width="80px" height="14px"></app-skeleton>
+      </div>
+    </div>
+  </section>
+
   <section class="repos-section" *ngIf="!isLoading && repos.length > 0">
     <div class="repos-header">
       <h2>{{ total }} repositor{{ total === 1 ? 'y' : 'ies' }}</h2>
@@ -55,7 +70,12 @@
     </div>
   </section>
 
-  <p class="repos-error" *ngIf="error">{{ error }}</p>
+  <app-error-state-card
+    *ngIf="!isLoading && error"
+    title="Repositories unavailable"
+    [message]="error"
+    (retry)="load(page)">
+  </app-error-state-card>
 
   <app-empty-state-card
     *ngIf="!isLoading && repos.length === 0 && !error"

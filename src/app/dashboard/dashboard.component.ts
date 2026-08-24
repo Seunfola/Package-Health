@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, AuthState } from '../services/auth.service';
@@ -8,6 +8,8 @@ import { StatusCard } from '../reusable/status-card/status-card';
 import { Observable } from 'rxjs';
 import { UnauthorizedWarning } from '../shared/unauthorized-warning/unauthorized-warning';
 import { EmptyStateCard } from '../reusable/empty-state-card/empty-state-card';
+import { ErrorStateCard } from '../reusable/error-state-card/error-state-card';
+import { Skeleton } from '../reusable/skeleton/skeleton';
 
 interface StatTile {
   title: string;
@@ -32,7 +34,7 @@ const PREVIEW_LIMIT = 5;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, StatusCard, UnauthorizedWarning, EmptyStateCard],
+  imports: [CommonModule, StatusCard, UnauthorizedWarning, EmptyStateCard, ErrorStateCard, Skeleton],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css', './dashboard-shared.css'],
 })
@@ -45,6 +47,7 @@ export class DashboardComponent implements OnInit {
   isLoadingRepos = true;
   reposError = '';
   isLoadingStats = true;
+  statsError = '';
   totalRepoCount = 0;
 
   recentLeakScans: LeakGuardScanResult[] = [];
@@ -56,6 +59,7 @@ export class DashboardComponent implements OnInit {
     private readonly repoService: RepoService,
     private readonly leakGuardService: LeakGuardService,
     private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef,
   ) {
     this.authState$ = this.authService.authState$;
   }
@@ -74,11 +78,13 @@ export class DashboardComponent implements OnInit {
       next: (scans) => {
         this.recentLeakScans = scans.slice(0, PREVIEW_LIMIT);
         this.isLoadingLeakScans = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load LeakGuard scans', err);
         this.leakScansError = 'Failed to load your LeakGuard scans.';
         this.isLoadingLeakScans = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -112,6 +118,7 @@ export class DashboardComponent implements OnInit {
 
   loadStats(): void {
     this.isLoadingStats = true;
+    this.statsError = '';
 
     this.repoService.getRepoStats().subscribe({
       next: (stats) => {
@@ -120,6 +127,7 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load repository stats', err);
+        this.statsError = 'Failed to load your overview metrics.';
         this.isLoadingStats = false;
       },
     });

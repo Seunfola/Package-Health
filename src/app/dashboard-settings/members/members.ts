@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { SettingsCard } from '../settings/settings-card/settings-card';
 import { OrgContextService } from '../org-context.service';
 import { OrganizationService, OrganizationMember, OrgInvitation, OrgAuditLogEntry } from '@/app/services/organization.service';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 @Component({
   selector: 'app-members-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, SettingsCard],
+  imports: [CommonModule, FormsModule, SettingsCard, Skeleton],
   templateUrl: './members.html',
   styleUrls: ['./members.css', '../settings-shared.css'],
 })
@@ -46,6 +47,7 @@ export class MembersSettings implements OnInit {
   constructor(
     readonly org: OrgContextService,
     private readonly organizationService: OrganizationService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -65,11 +67,13 @@ export class MembersSettings implements OnInit {
       next: (members) => {
         this.members = members;
         this.isLoadingMembers = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load members', err);
         this.memberError = 'Failed to load organization members.';
         this.isLoadingMembers = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -86,13 +90,21 @@ export class MembersSettings implements OnInit {
         this.memberMessage = 'Member added successfully.';
         this.newMemberEmail = '';
         this.loadMembers();
-        setTimeout(() => (this.memberMessage = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.memberMessage = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         console.error('Failed to add member', err);
         this.isAddingMember = false;
         this.memberError = err.error?.message || 'Failed to add member.';
-        setTimeout(() => (this.memberError = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.memberError = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
     });
   }
@@ -107,12 +119,20 @@ export class MembersSettings implements OnInit {
       next: () => {
         this.memberMessage = 'Member removed successfully.';
         this.loadMembers();
-        setTimeout(() => (this.memberMessage = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.memberMessage = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         console.error('Failed to remove member', err);
         this.memberError = err.error?.message || 'Failed to remove member.';
-        setTimeout(() => (this.memberError = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.memberError = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
     });
   }
@@ -125,13 +145,21 @@ export class MembersSettings implements OnInit {
       next: () => {
         this.memberMessage = 'Role updated successfully.';
         this.loadMembers();
-        setTimeout(() => (this.memberMessage = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.memberMessage = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         console.error('Failed to update role', err);
         this.memberError = err.error?.message || 'Failed to update role.';
         this.loadMembers(); // reload to revert select box
-        setTimeout(() => (this.memberError = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.memberError = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
     });
   }
@@ -142,10 +170,12 @@ export class MembersSettings implements OnInit {
       next: (invitations) => {
         this.invitations = invitations;
         this.isLoadingInvitations = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load invitations', err);
         this.isLoadingInvitations = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -164,13 +194,21 @@ export class MembersSettings implements OnInit {
           this.inviteMessage = `Invitation sent to ${this.newInviteEmail}.`;
           this.newInviteEmail = '';
           this.loadInvitations();
-          setTimeout(() => (this.inviteMessage = ''), 3000);
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.inviteMessage = '';
+            this.cdr.markForCheck();
+          }, 3000);
         },
         error: (err) => {
           console.error('Failed to send invitation', err);
           this.isInviting = false;
           this.inviteError = err.error?.message || 'Failed to send invitation.';
-          setTimeout(() => (this.inviteError = ''), 3000);
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.inviteError = '';
+            this.cdr.markForCheck();
+          }, 3000);
         },
       });
   }
@@ -182,12 +220,20 @@ export class MembersSettings implements OnInit {
       next: () => {
         this.inviteMessage = 'Invitation revoked.';
         this.loadInvitations();
-        setTimeout(() => (this.inviteMessage = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.inviteMessage = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         console.error('Failed to revoke invitation', err);
         this.inviteError = err.error?.message || 'Failed to revoke invitation.';
-        setTimeout(() => (this.inviteError = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.inviteError = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
     });
   }
@@ -202,12 +248,14 @@ export class MembersSettings implements OnInit {
           this.auditLog = entries;
           this.auditLogHasMore = entries.length === MembersSettings.AUDIT_LOG_PAGE_SIZE;
           this.isLoadingAuditLog = false;
+          this.cdr.markForCheck();
         },
         error: (err) => {
           // Non-admins get a 403 here (audit log is ADMIN+ only) — that's
           // expected, not an error worth surfacing loudly to a plain member.
           console.error('Failed to load audit log', err);
           this.isLoadingAuditLog = false;
+          this.cdr.markForCheck();
         },
       });
   }
@@ -229,10 +277,12 @@ export class MembersSettings implements OnInit {
           this.auditLog = [...this.auditLog, ...entries];
           this.auditLogHasMore = entries.length === MembersSettings.AUDIT_LOG_PAGE_SIZE;
           this.isLoadingMoreAuditLog = false;
+          this.cdr.markForCheck();
         },
         error: (err) => {
           console.error('Failed to load more audit log entries', err);
           this.isLoadingMoreAuditLog = false;
+          this.cdr.markForCheck();
         },
       });
   }

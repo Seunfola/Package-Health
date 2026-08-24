@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LeakGuardService, LeakGuardScanResult } from '@/app/services/leak-guard.service';
 import { EmptyStateCard } from '@/app/reusable/empty-state-card/empty-state-card';
+import { ErrorStateCard } from '@/app/reusable/error-state-card/error-state-card';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 /**
  * Full LeakGuard scan list — split out of DashboardComponent for the same
@@ -14,7 +16,7 @@ import { EmptyStateCard } from '@/app/reusable/empty-state-card/empty-state-card
 @Component({
   selector: 'app-dashboard-leak-scans',
   standalone: true,
-  imports: [CommonModule, EmptyStateCard],
+  imports: [CommonModule, EmptyStateCard, ErrorStateCard, Skeleton],
   templateUrl: './leak-scans.html',
   styleUrls: ['./leak-scans.css', '../dashboard-shared.css'],
 })
@@ -26,6 +28,7 @@ export class DashboardLeakScans implements OnInit {
   constructor(
     private readonly leakGuardService: LeakGuardService,
     private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -40,11 +43,13 @@ export class DashboardLeakScans implements OnInit {
       next: (scans) => {
         this.scans = scans;
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load LeakGuard scans', err);
         this.error = 'Failed to load your LeakGuard scans.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }

@@ -31,7 +31,21 @@
   }
 
   @if (isLoadingTokens) {
-    <p class="settings-subtitle">Loading…</p>
+    <div class="mini-table-skeleton" aria-hidden="true">
+      @for (i of [1, 2]; track i) {
+        <div class="mini-table-skeleton__row">
+          <app-skeleton width="30%" height="14px"></app-skeleton>
+          <app-skeleton width="20%" height="14px"></app-skeleton>
+          <app-skeleton width="20%" height="14px"></app-skeleton>
+          <app-skeleton width="70px" height="26px" radius="6px"></app-skeleton>
+        </div>
+      }
+    </div>
+  } @else if (loadError) {
+    <p class="pat-error">
+      {{ loadError }}
+      <button type="button" class="inline-retry" (click)="loadPersonalAccessTokens()">Retry</button>
+    </p>
   } @else if (personalAccessTokens.length === 0) {
     <p class="settings-subtitle">No tokens yet — generate one above to use with the CLI or IDE extension.</p>
   } @else {

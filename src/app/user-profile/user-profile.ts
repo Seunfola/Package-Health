@@ -1,15 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserProfileService } from '@/app/services/user-profile.service';
 import { AuthService } from '@/app/services/auth.service';
 import { Subscription } from 'rxjs';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
+import { ErrorStateCard } from '@/app/reusable/error-state-card/error-state-card';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, UnauthorizedWarning],
+  imports: [CommonModule, FormsModule, UnauthorizedWarning, ErrorStateCard, Skeleton],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
@@ -39,11 +41,14 @@ export class UserProfile implements OnInit, OnDestroy {
 
   isLoading = true;
   isSaving = false;
+  /** Only set for a genuine load failure — never had profile data yet. */
+  loadError = '';
   private authSub?: Subscription;
 
   constructor(
     private readonly userProfileService: UserProfileService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   get authState$() {
@@ -59,6 +64,7 @@ export class UserProfile implements OnInit, OnDestroy {
       } else {
         this.isLoading = false;
       }
+      this.cdr.markForCheck();
     });
   }
 
@@ -68,6 +74,7 @@ export class UserProfile implements OnInit, OnDestroy {
 
   loadProfile(username: string): void {
     this.isLoading = true;
+    this.loadError = '';
     this.userProfileService.getProfile(username).subscribe({
       next: (profile) => {
         this.userName = profile.username || 'User';
@@ -80,12 +87,19 @@ export class UserProfile implements OnInit, OnDestroy {
         this.skills = profile.skills || [];
         this.skillsInput = this.skills.join(', ');
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error fetching profile:', err);
+        this.loadError = 'Failed to load your profile.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
+  }
+
+  retryLoadProfile(): void {
+    if (this.internalUsername) this.loadProfile(this.internalUsername);
   }
 
   /** Saves bio/location/skills — the fields with no dedicated "Link X" flow of their own. */
@@ -218,5 +232,10 @@ export class UserProfile implements OnInit, OnDestroy {
   private setStatus(message: string, type: 'success' | 'error'): void {
     this.statusMessage = message;
     this.statusType = type;
+    // Centralizing the zoneless re-render trigger here (rather than at each
+    // of the 8 call sites) covers every async subscribe callback that routes
+    // through this helper — saveProfile, onFileSelected, and all three
+    // linkX() methods.
+    this.cdr.markForCheck();
   }
 }

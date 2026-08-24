@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SettingsCard } from '../settings/settings-card/settings-card';
 import { PersonalAccessTokenService, PersonalAccessTokenSummary } from '@/app/services/personal-access-token.service';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 @Component({
   selector: 'app-tokens-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, SettingsCard],
+  imports: [CommonModule, FormsModule, SettingsCard, Skeleton],
   templateUrl: './tokens.html',
   styleUrls: ['./tokens.css', '../settings-shared.css'],
 })
@@ -23,8 +24,12 @@ export class TokensSettings implements OnInit {
   justCreatedToken: string | null = null;
   revokingTokenId: string | null = null;
   patCopied = false;
+  loadError = '';
 
-  constructor(private readonly personalAccessTokenService: PersonalAccessTokenService) {}
+  constructor(
+    private readonly personalAccessTokenService: PersonalAccessTokenService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.loadPersonalAccessTokens();
@@ -32,14 +37,18 @@ export class TokensSettings implements OnInit {
 
   loadPersonalAccessTokens(): void {
     this.isLoadingTokens = true;
+    this.loadError = '';
     this.personalAccessTokenService.list().subscribe({
       next: (tokens) => {
         this.personalAccessTokens = tokens;
         this.isLoadingTokens = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load personal access tokens', err);
+        this.loadError = 'Failed to load your personal access tokens.';
         this.isLoadingTokens = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -56,10 +65,12 @@ export class TokensSettings implements OnInit {
         this.personalAccessTokens = [summary, ...this.personalAccessTokens];
         this.newTokenName = '';
         this.isCreatingToken = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.createTokenError = err?.error?.message || 'Failed to create token.';
         this.isCreatingToken = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -72,7 +83,11 @@ export class TokensSettings implements OnInit {
   copyPatToken(token: string): void {
     navigator.clipboard.writeText(token).then(() => {
       this.patCopied = true;
-      setTimeout(() => (this.patCopied = false), 3000);
+      this.cdr.markForCheck();
+      setTimeout(() => {
+        this.patCopied = false;
+        this.cdr.markForCheck();
+      }, 3000);
     });
   }
 
@@ -82,10 +97,12 @@ export class TokensSettings implements OnInit {
       next: () => {
         this.personalAccessTokens = this.personalAccessTokens.filter((t) => t.id !== id);
         this.revokingTokenId = null;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to revoke token', err);
         this.revokingTokenId = null;
+        this.cdr.markForCheck();
       },
     });
   }

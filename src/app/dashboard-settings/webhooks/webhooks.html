@@ -29,7 +29,17 @@
 
     <div class="members-table-container">
       @if (isLoadingWebhooks) {
-        <p class="settings-subtitle" style="padding: 16px;">Loading webhooks...</p>
+        <div class="mini-table-skeleton" aria-hidden="true">
+          @for (i of [1, 2]; track i) {
+            <div class="mini-table-skeleton__row">
+              <app-skeleton width="15%" height="14px"></app-skeleton>
+              <app-skeleton width="20%" height="14px"></app-skeleton>
+              <app-skeleton width="35%" height="14px"></app-skeleton>
+              <app-skeleton width="36px" height="20px" radius="12px"></app-skeleton>
+              <app-skeleton width="18px" height="18px"></app-skeleton>
+            </div>
+          }
+        </div>
       } @else {
         <table class="members-table">
           <thead>

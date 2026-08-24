@@ -11,9 +11,10 @@
             [routerLink]="item.path"
             [routerLinkActive]="['active']"
             [routerLinkActiveOptions]="{ exact: true }"
+            [attr.title]="item.label"
             (click)="closeMobileSidebar()"
           >
-            <img [src]="'assets/icons/' + item.icon + '.svg'" [attr.alt]="item.label" [attr.title]="item.label" width="24" height="24" />
+            <img [src]="'assets/icons/' + item.icon + '.svg'" alt="" width="24" height="24" />
             <span>{{ item.label }}</span>
           </a>
           <button
@@ -37,6 +38,7 @@
                   [routerLink]="child.path"
                   [routerLinkActive]="['active']"
                   [routerLinkActiveOptions]="{ exact: true }"
+                  [attr.title]="child.label"
                   (click)="closeMobileSidebar()"
                 >
                   <span>{{ child.label }}</span>
@@ -51,9 +53,10 @@
           [routerLink]="item.path"
           [routerLinkActive]="['active']"
           [routerLinkActiveOptions]="{ exact: true }"
+          [attr.title]="item.label"
           (click)="closeMobileSidebar()"
         >
-          <img [src]="'assets/icons/' + item.icon + '.svg'" [attr.alt]="item.label" [attr.title]="item.label" width="24" height="24" />
+          <img [src]="'assets/icons/' + item.icon + '.svg'" alt="" width="24" height="24" />
           <span>{{ item.label }}</span>
         </a>
       }
@@ -63,14 +66,25 @@
 
   <div class="sidebar__divider"></div>
 
+  <!-- Marketing/guest pages, deliberately given lower visual weight than the
+       real product nav above — see the sidebar.ts comment on guestLinks.
+       On mobile this is still the only way to reach them without logging
+       out first, so it stays reachable, just clearly secondary: smaller
+       type, muted color, no active-route accent. -->
+  <div class="sidebar__resources">
+    <p class="sidebar__section-label">Resources</p>
+    <ul class="list list--muted">
+      @for (link of guestLinks; track link.label) {
+      <li class="list-item">
+        <a class="list-item__row list-item__link" [routerLink]="link.path" [attr.title]="link.label" (click)="isOpen = false">
+          <span>{{ link.label }}</span>
+        </a>
+      </li>
+      }
+    </ul>
+  </div>
+
   <ul class="list">
-    @for (link of guestLinks; track link.label) {
-    <li class="list-item">
-      <a class="list-item__row list-item__link" [routerLink]="link.path" (click)="isOpen = false">
-        <span>{{ link.label }}</span>
-      </a>
-    </li>
-    }
     <li class="list-item list-item--logout">
       <a class="list-item__row list-item__link" role="button" (click)="logout()">
         <span>Log out</span>

@@ -15,29 +15,17 @@
     font-weight: 800;
     margin-bottom: 8px;
     letter-spacing: -0.02em;
-    color: var(--text-primary, #0f172a);
+    color: var(--text-primary);
 }
 
 .header-section p {
     font-size: 16px;
-    color: var(--text-secondary, #64748b);
+    color: var(--text-secondary);
 }
 
-.alert-banner {
-    display: flex;
-    align-items: center;
-    background-color: #fff7ed;
-    border: 1px solid #fdba74;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 24px;
-    color: #9a3412;
-}
-
-.directory__loading,
 .directory__empty {
     padding: 24px;
-    color: var(--text-secondary, #64748b);
+    color: var(--text-secondary);
     font-size: 0.95rem;
 }
 
@@ -52,9 +40,9 @@
     align-items: center;
     gap: 14px;
     padding: 14px 18px;
-    border: 1px solid var(--border-color, #e2e8f0);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    background: var(--bg-surface, #fff);
+    background: var(--bg-surface);
 }
 
 .directory__avatar {
@@ -63,7 +51,7 @@
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
-    background: var(--border-color, #e2e8f0);
+    background: var(--border-color);
 }
 
 .directory__info {
@@ -75,17 +63,17 @@
 
 .directory__name {
     font-weight: 600;
-    color: var(--text-primary, #0f172a);
+    color: var(--text-primary);
 }
 
 .directory__username {
     font-size: 13px;
-    color: var(--text-secondary, #64748b);
+    color: var(--text-secondary);
 }
 
 .directory__bio {
     font-size: 13px;
-    color: var(--text-secondary, #64748b);
+    color: var(--text-secondary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

@@ -96,7 +96,7 @@
     align-items: center;
     flex: 1;
     min-width: 0;
-    padding: 14px 8px 14px 18px;
+    padding: 14px 4px 14px 18px;
     gap: 10px;
     text-decoration: none;
     color: inherit;
@@ -125,8 +125,8 @@ a.list-item__link {
     display: grid;
     place-items: center;
     flex-shrink: 0;
-    width: 40px;
-    margin-right: 6px;
+    width: 34px;
+    margin-right: 4px;
     border: none;
     border-radius: 6px;
     background: none;
@@ -222,9 +222,55 @@ a.list-item__link {
     border-top: 1px solid var(--glass-border);
 }
 
+/* Resources group (guest/marketing links) — deliberately quieter than the
+   real product nav above: an eyebrow label, smaller/muted link text, no
+   left-border active-route accent on hover. Reads as a footer-style
+   secondary section rather than a sibling of Dashboard/Package Health/
+   Settings, without hiding it entirely (still the only mobile nav path to
+   these pages — see sidebar.html's comment). */
+.sidebar__resources {
+    margin-top: 4px;
+}
+
+.sidebar__section-label {
+    margin: 4px 18px 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.list--muted .list-item {
+    border-left-color: transparent;
+}
+
+.list--muted .list-item__link {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.list--muted .list-item:hover {
+    background-color: var(--bg-slate);
+    border-left-color: transparent;
+}
+
+.list--muted .list-item:hover .list-item__link {
+    color: var(--text-secondary);
+}
+
+.list--muted .list-item:active,
+.list--muted .list-item:has(a.active) {
+    background-color: var(--bg-slate);
+    border-left-color: transparent;
+}
+
 @media (min-width: 768px) {
     .sidebar {
-        width: 300px;
+        width: 320px;
         position: relative;
         top: 0;
         left: 0;

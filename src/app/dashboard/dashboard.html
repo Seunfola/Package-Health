@@ -9,6 +9,13 @@
     </header>
 
   <!-- Stat Tiles -->
+  <div class="dashboard-metrics-grid" *ngIf="isLoadingStats" aria-hidden="true">
+    <div class="stat-tile-skeleton" *ngFor="let i of [1, 2, 3, 4]">
+      <app-skeleton width="55%" height="14px"></app-skeleton>
+      <app-skeleton width="40%" height="32px" radius="6px"></app-skeleton>
+    </div>
+  </div>
+
   <div class="dashboard-metrics-grid" *ngIf="!isLoadingStats && statTiles.length > 0">
     <app-status-card
       *ngFor="let tile of statTiles"
@@ -21,7 +28,29 @@
     </app-status-card>
   </div>
 
+  <app-error-state-card
+    *ngIf="!isLoadingStats && statsError"
+    title="Overview metrics unavailable"
+    [message]="statsError"
+    (retry)="loadStats()">
+  </app-error-state-card>
+
   <!-- Recent Repos -->
+  <section class="repos-section" *ngIf="isLoadingRepos" aria-hidden="true">
+    <div class="repos-header">
+      <app-skeleton width="180px" height="22px"></app-skeleton>
+    </div>
+    <div class="table-card table-card--skeleton">
+      <div class="table-row-skeleton" *ngFor="let i of [1, 2, 3, 4, 5]">
+        <app-skeleton width="70%" height="14px"></app-skeleton>
+        <app-skeleton width="40px" height="20px" radius="20px"></app-skeleton>
+        <app-skeleton width="30px" height="14px"></app-skeleton>
+        <app-skeleton width="30px" height="14px"></app-skeleton>
+        <app-skeleton width="80px" height="14px"></app-skeleton>
+      </div>
+    </div>
+  </section>
+
   <section class="repos-section" *ngIf="!isLoadingRepos && recentRepos.length > 0">
     <div class="repos-header">
       <h2>Recent Repositories</h2>
@@ -69,7 +98,12 @@
     </div>
   </section>
 
-  <p class="repos-error" *ngIf="reposError">{{ reposError }}</p>
+  <app-error-state-card
+    *ngIf="!isLoadingRepos && reposError"
+    title="Repositories unavailable"
+    [message]="reposError"
+    (retry)="loadRecentRepos()">
+  </app-error-state-card>
 
   <!-- Empty State -->
   <app-empty-state-card
@@ -81,6 +115,20 @@
   </app-empty-state-card>
 
   <!-- Recent LeakGuard Scans -->
+  <section class="repos-section leak-scans-section" *ngIf="isLoadingLeakScans" aria-hidden="true">
+    <div class="repos-header">
+      <app-skeleton width="220px" height="22px"></app-skeleton>
+    </div>
+    <div class="table-card table-card--skeleton">
+      <div class="table-row-skeleton table-row-skeleton--narrow" *ngFor="let i of [1, 2, 3]">
+        <app-skeleton width="60%" height="14px"></app-skeleton>
+        <app-skeleton width="80px" height="20px" radius="20px"></app-skeleton>
+        <app-skeleton width="30px" height="14px"></app-skeleton>
+        <app-skeleton width="80px" height="14px"></app-skeleton>
+      </div>
+    </div>
+  </section>
+
   <section class="repos-section leak-scans-section" *ngIf="!isLoadingLeakScans && recentLeakScans.length > 0">
     <div class="repos-header">
       <h2>Recent LeakGuard Scans</h2>
@@ -122,7 +170,12 @@
     </div>
   </section>
 
-  <p class="repos-error" *ngIf="leakScansError">{{ leakScansError }}</p>
+  <app-error-state-card
+    *ngIf="!isLoadingLeakScans && leakScansError"
+    title="LeakGuard scans unavailable"
+    [message]="leakScansError"
+    (retry)="loadRecentLeakScans()">
+  </app-error-state-card>
 
   <app-empty-state-card
     *ngIf="!isLoadingLeakScans && recentLeakScans.length === 0 && !leakScansError"

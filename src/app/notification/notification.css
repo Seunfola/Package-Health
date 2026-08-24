@@ -54,7 +54,7 @@
 .filter-button.active {
   background-color: var(--accent-teal);
   border-color: var(--accent-teal);
-  color: #fff;
+  color: var(--text-on-dark);
 }
 
 .filter-button:hover {
@@ -162,12 +162,12 @@
 }
 
 .toolbar-button.danger {
-  border-color: #fca5a5;
-  color: #991b1b;
+  border-color: var(--color-danger-border);
+  color: var(--color-danger-text);
 }
 
 .toolbar-button.danger:hover:not(:disabled) {
-  background-color: #fef2f2;
+  background-color: var(--color-danger-bg);
 }
 
 .notification-row {
@@ -203,5 +203,8 @@
   }
 }
 
-.notification-skeleton { height:78px; border-radius:12px; margin-bottom:12px; border:1px solid var(--glass-border); background:linear-gradient(90deg, var(--bg-slate), #fff, var(--bg-slate)); background-size:200% 100%; animation:notification-loading 1.4s infinite; }
-@keyframes notification-loading { to { background-position:-200% 0; } }
+/* Shimmer itself comes from the shared app-skeleton primitive; this page
+   just needs vertical gap between the placeholder rows. */
+.notifications-list--skeleton {
+  gap: 12px;
+}
