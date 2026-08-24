@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { SettingsItem } from './settings-item/settings-item';
 import { FormsModule } from '@angular/forms';
 import { SettingsCard } from './settings-card/settings-card';
@@ -9,6 +9,8 @@ import { PrivateRepoAnalysisComponent } from '@/app/services/private-repo-analys
 import { PreferencesService, UpdatePreferencesDto } from '@/app/services/preferences.service';
 import { AuthService } from '@/app/services/auth.service';
 import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthorized-warning';
+import { ErrorStateCard } from '@/app/reusable/error-state-card/error-state-card';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 /**
  * Personal preferences only — Organization, Members, Tokens, Gatekeeper
@@ -28,6 +30,8 @@ import { UnauthorizedWarning } from '@/app/shared/unauthorized-warning/unauthori
     AuthLogin,
     PrivateRepoAnalysisComponent,
     UnauthorizedWarning,
+    ErrorStateCard,
+    Skeleton,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
@@ -48,10 +52,15 @@ export class Settings implements OnInit {
   isLoading = true;
   isSaving = false;
   message = '';
+  /** Only set for a genuine load failure — a first-time user with no saved
+   *  preferences yet gets a 404-shaped "use defaults" response from the
+   *  backend, which is not an error worth blocking the page over. */
+  loadError = '';
 
   constructor(
     private readonly preferencesService: PreferencesService,
     private readonly authService: AuthService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   get authState$() {
@@ -64,6 +73,7 @@ export class Settings implements OnInit {
 
   loadPreferences(): void {
     this.isLoading = true;
+    this.loadError = '';
     this.preferencesService.getPreferences().subscribe({
       next: (prefs) => {
         const db = prefs.dashboardMetrics;
@@ -80,11 +90,20 @@ export class Settings implements OnInit {
         this.dependencyUpdateFrequency = np.dependencyUpdateFrequency.charAt(0).toUpperCase() + np.dependencyUpdateFrequency.slice(1);
 
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load preferences', err);
-        // Fallback to defaults or keep UI defaults if backend has no preferences yet
+        if (err?.status === 404) {
+          // No saved preferences yet — the UI defaults above are the real
+          // defaults, not a failure to surface.
+          this.isLoading = false;
+          this.cdr.markForCheck();
+          return;
+        }
+        this.loadError = 'Failed to load your preferences.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -97,11 +116,13 @@ export class Settings implements OnInit {
         this.isSaving = false;
         this.message = 'Preferences reset to defaults.';
         this.loadPreferences();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to reset preferences', err);
         this.isSaving = false;
         this.message = 'Failed to reset preferences.';
+        this.cdr.markForCheck();
       },
     });
   }
@@ -129,12 +150,17 @@ export class Settings implements OnInit {
       next: () => {
         this.isSaving = false;
         this.message = 'Preferences saved successfully!';
-        setTimeout(() => (this.message = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.message = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         console.error('Failed to save preferences', err);
         this.isSaving = false;
         this.message = 'Failed to save preferences.';
+        this.cdr.markForCheck();
       },
     });
   }

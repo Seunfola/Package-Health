@@ -60,6 +60,39 @@
 
   /* Transitions */
   --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  /* Spacing scale — design.md Part II.3. Was documented but never actually
+     defined; components hand-rolled their own rem/px values instead
+     (source of the "spacing that doesn't match the scale" drift). New
+     work should reach for these rather than an arbitrary rem value. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 120px;
+
+  /* Semantic tint triads — the light-bg/border/text combinations that
+     repo-health.css, notification.css, and the dashboard tables already
+     used repeatedly as one-off hex (e.g. #fef2f2/#f87171/#991b1b for a
+     danger banner). Naming them stops the same tint from being re-invented
+     slightly differently in each file; they're derived from the existing
+     --color-success/warning/danger/info tokens above, not new colors. */
+  --color-danger-bg: #FEF2F2;
+  --color-danger-border: #FCA5A5;
+  --color-danger-text: #991B1B;
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FDBA74;
+  --color-warning-text: #9A3412;
+  --color-success-bg: #F0FDF4;
+  --color-success-border: #86EFAC;
+  --color-success-text: #166534;
+  --color-info-bg: #EFF6FF;
+  --color-info-border: #93C5FD;
+  --color-info-text: #1E40AF;
 }
 
 body {
@@ -267,4 +300,33 @@ a:hover {
   border-color: var(--accent-teal);
   color: var(--accent-teal);
   background: rgba(37, 99, 235, 0.05);
+}
+
+/* ==========================================================================
+   Skeleton loading system — ONE shimmer recipe for the whole authenticated
+   app, canonicalized from repo-health's original hand-rolled skeleton (the
+   one page that already got this right). `<app-skeleton>` (reusable/skeleton)
+   composes this class with inline width/height/radius; anything that can't
+   use the component can still apply `.skeleton-block` directly. Every page
+   with data that loads over the network should render shapes built from
+   this instead of leaving a blank page or a spinner under "Loading…" text.
+   ========================================================================== */
+.skeleton-block {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(100deg, #EEF1F5 30%, #F8FAFC 50%, #EEF1F5 70%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block {
+    animation: none;
+    background: #EEF1F5;
+  }
 }

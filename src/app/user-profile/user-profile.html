@@ -6,6 +6,40 @@
         <p class="card-description">{{ statusMessage }}</p>
       }
 
+      @if (isLoading) {
+        <div class="profile-content" aria-hidden="true">
+          <div class="profile-sidebar">
+            <div class="profile-card user-info profile-card-skeleton">
+              <app-skeleton width="72px" height="72px" [circle]="true"></app-skeleton>
+              <app-skeleton width="60%" height="18px"></app-skeleton>
+              <app-skeleton width="80%" height="14px"></app-skeleton>
+            </div>
+            <div class="profile-card profile-card-skeleton">
+              <app-skeleton width="70%" height="16px"></app-skeleton>
+              <app-skeleton width="100%" height="14px"></app-skeleton>
+              <app-skeleton width="100%" height="14px"></app-skeleton>
+            </div>
+          </div>
+          <div class="profile-main">
+            <div class="profile-card profile-card-skeleton">
+              <app-skeleton width="50%" height="16px"></app-skeleton>
+              <app-skeleton width="100%" height="60px" radius="8px"></app-skeleton>
+            </div>
+            <div class="profile-card profile-card-skeleton">
+              <app-skeleton width="50%" height="16px"></app-skeleton>
+              <app-skeleton width="100%" height="14px"></app-skeleton>
+              <app-skeleton width="100%" height="14px"></app-skeleton>
+            </div>
+          </div>
+        </div>
+      } @else if (loadError) {
+        <app-error-state-card
+          title="Profile unavailable"
+          [message]="loadError"
+          (retry)="retryLoadProfile()">
+        </app-error-state-card>
+      } @else {
+
       <div class="profile-content">
 
         <div class="profile-sidebar">
@@ -127,6 +161,8 @@
           </div>
         </div>
       </div>
+
+      }
     </div>
   </div>
 

@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RepoService, RepoListItem } from '@/app/services/RepoService';
 import { EmptyStateCard } from '@/app/reusable/empty-state-card/empty-state-card';
+import { ErrorStateCard } from '@/app/reusable/error-state-card/error-state-card';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 /**
  * Full, paginated repository list — split out of DashboardComponent so the
@@ -14,7 +16,7 @@ import { EmptyStateCard } from '@/app/reusable/empty-state-card/empty-state-card
 @Component({
   selector: 'app-dashboard-repositories',
   standalone: true,
-  imports: [CommonModule, EmptyStateCard],
+  imports: [CommonModule, EmptyStateCard, ErrorStateCard, Skeleton],
   templateUrl: './repositories.html',
   styleUrls: ['./repositories.css', '../dashboard-shared.css'],
 })
@@ -31,6 +33,7 @@ export class DashboardRepositories implements OnInit {
   constructor(
     private readonly repoService: RepoService,
     private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -48,11 +51,13 @@ export class DashboardRepositories implements OnInit {
         this.total = result.total;
         this.totalPages = result.totalPages;
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load repositories', err);
         this.error = 'Failed to load your analyzed repositories.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }

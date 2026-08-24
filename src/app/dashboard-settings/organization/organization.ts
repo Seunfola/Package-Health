@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SettingsCard } from '../settings/settings-card/settings-card';
 import { OrgContextService } from '../org-context.service';
@@ -30,6 +30,7 @@ export class OrganizationSettings {
   constructor(
     readonly org: OrgContextService,
     private readonly organizationService: OrganizationService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   switchOrg(orgId: string): void {
@@ -48,13 +49,21 @@ export class OrganizationSettings {
         this.newOrgName = '';
         this.orgSwitcherMessage = `Organization "${newOrg.name}" created.`;
         this.org.addOrgAndSwitch(newOrg);
-        setTimeout(() => (this.orgSwitcherMessage = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.orgSwitcherMessage = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         console.error('Failed to create organization', err);
         this.isCreatingOrg = false;
         this.orgSwitcherError = err.error?.message || 'Failed to create organization.';
-        setTimeout(() => (this.orgSwitcherError = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.orgSwitcherError = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
     });
   }
@@ -76,11 +85,16 @@ export class OrganizationSettings {
         this.logoMessage = 'Logo updated.';
         this.logoFile = null;
         this.org.refreshOrgs();
-        setTimeout(() => (this.logoMessage = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.logoMessage = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         this.isUploadingLogo = false;
         this.logoError = err.error?.message || 'Failed to upload logo.';
+        this.cdr.markForCheck();
       },
     });
   }
@@ -97,11 +111,13 @@ export class OrganizationSettings {
         // nothing left for this screen to show beyond its own success message.
         this.transferMessage = res.message;
         this.newOwnerEmail = '';
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to transfer ownership', err);
         this.isTransferring = false;
         this.transferMessage = err.error?.message || 'Failed to initiate transfer. Does the user exist?';
+        this.cdr.markForCheck();
       },
     });
   }

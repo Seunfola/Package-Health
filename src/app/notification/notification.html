@@ -48,9 +48,13 @@
     </div>
 
     @if (isLoading) {
-      <div class="notifications-list"><div class="notification-skeleton"></div><div class="notification-skeleton"></div></div>
+      <div class="notifications-list notifications-list--skeleton" aria-hidden="true">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <app-skeleton height="78px" radius="12px"></app-skeleton>
+        }
+      </div>
     } @else if (error) {
-      <app-empty-state-card title="Notifications are unavailable" [message]="error" actionLabel="Try again" (action)="fetchNotifications()"></app-empty-state-card>
+      <app-error-state-card title="Notifications are unavailable" [message]="error" (retry)="fetchNotifications()"></app-error-state-card>
     } @else if (filteredNotifications.length === 0) {
       <app-empty-state-card title="You're all caught up!" [message]="activeFilter === 'all' ? 'No new alerts across your monitored repositories.' : 'No notifications match this filter.'" [actionLabel]="activeFilter === 'all' ? undefined : 'Show all'" (action)="setFilter('all')"></app-empty-state-card>
     } @else {

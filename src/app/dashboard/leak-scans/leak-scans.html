@@ -6,6 +6,20 @@
     </div>
   </header>
 
+  <section class="repos-section" *ngIf="isLoading" aria-hidden="true">
+    <div class="repos-header">
+      <app-skeleton width="220px" height="22px"></app-skeleton>
+    </div>
+    <div class="table-card table-card--skeleton">
+      <div class="table-row-skeleton table-row-skeleton--narrow" *ngFor="let i of [1, 2, 3, 4, 5]">
+        <app-skeleton width="60%" height="14px"></app-skeleton>
+        <app-skeleton width="80px" height="20px" radius="20px"></app-skeleton>
+        <app-skeleton width="30px" height="14px"></app-skeleton>
+        <app-skeleton width="80px" height="14px"></app-skeleton>
+      </div>
+    </div>
+  </section>
+
   <section class="repos-section" *ngIf="!isLoading && scans.length > 0">
     <div class="repos-header">
       <h2>{{ scans.length }} scanned repositor{{ scans.length === 1 ? 'y' : 'ies' }}</h2>
@@ -49,7 +63,12 @@
     </div>
   </section>
 
-  <p class="repos-error" *ngIf="error">{{ error }}</p>
+  <app-error-state-card
+    *ngIf="!isLoading && error"
+    title="LeakGuard scans unavailable"
+    [message]="error"
+    (retry)="load()">
+  </app-error-state-card>
 
   <app-empty-state-card
     *ngIf="!isLoading && scans.length === 0 && !error"

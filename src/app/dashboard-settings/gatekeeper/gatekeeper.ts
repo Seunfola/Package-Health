@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { SettingsCard } from '../settings/settings-card/settings-card';
@@ -41,6 +41,7 @@ export class GatekeeperSettings implements OnInit {
 
   isSaving = false;
   message = '';
+  loadError = '';
 
   // Optimistic until proven otherwise: GET /gatekeeper/policies/:orgId is
   // readable by any org member, so unlike members.ts's audit log (which is
@@ -53,6 +54,7 @@ export class GatekeeperSettings implements OnInit {
   constructor(
     readonly org: OrgContextService,
     private readonly gatekeeperService: GatekeeperService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +63,7 @@ export class GatekeeperSettings implements OnInit {
   }
 
   loadGatekeeperPolicies(): void {
+    this.loadError = '';
     this.gatekeeperService.getPolicies(this.org.activeOrgId).subscribe({
       next: (config) => {
         this.blockCriticalCves = config.block_critical_cves.enabled;
@@ -76,8 +79,13 @@ export class GatekeeperSettings implements OnInit {
           this.weightMaintenance = Math.round(config.scoringWeights.maintenance * 100);
           this.weightPopularity = Math.round(config.scoringWeights.popularity * 100);
         }
+        this.cdr.markForCheck();
       },
-      error: (err) => console.error('Failed to load gatekeeper policies', err),
+      error: (err) => {
+        console.error('Failed to load gatekeeper policies', err);
+        this.loadError = 'Failed to load your current Gatekeeper policy — showing defaults below, which may not match what is actually saved.';
+        this.cdr.markForCheck();
+      },
     });
   }
 
@@ -121,7 +129,11 @@ export class GatekeeperSettings implements OnInit {
       next: () => {
         this.isSaving = false;
         this.message = 'Gatekeeper policy saved successfully!';
-        setTimeout(() => (this.message = ''), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.message = '';
+          this.cdr.markForCheck();
+        }, 3000);
       },
       error: (err) => {
         console.error('Failed to save gatekeeper policies', err);
@@ -136,6 +148,7 @@ export class GatekeeperSettings implements OnInit {
         } else {
           this.message = 'Failed to save Gatekeeper settings. Check thresholds.';
         }
+        this.cdr.markForCheck();
       },
     });
   }

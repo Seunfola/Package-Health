@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UserProfileService, ProfileListItem } from '@/app/services/user-profile.service';
+import { ErrorStateCard } from '@/app/reusable/error-state-card/error-state-card';
+import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 /**
  * The "all profiles" listing privacy.html has always described but that
@@ -14,7 +16,7 @@ import { UserProfileService, ProfileListItem } from '@/app/services/user-profile
 @Component({
   selector: 'app-directory',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ErrorStateCard, Skeleton],
   templateUrl: './directory.html',
   styleUrl: './directory.css',
 })
@@ -27,7 +29,10 @@ export class Directory implements OnInit {
   error = '';
   hasMore = false;
 
-  constructor(private readonly userProfileService: UserProfileService) {}
+  constructor(
+    private readonly userProfileService: UserProfileService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.load();
@@ -41,11 +46,13 @@ export class Directory implements OnInit {
         this.profiles = profiles;
         this.hasMore = profiles.length === Directory.PAGE_SIZE;
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load profile directory', err);
         this.error = 'Failed to load the profile directory.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -64,10 +71,12 @@ export class Directory implements OnInit {
           this.profiles = [...this.profiles, ...profiles];
           this.hasMore = profiles.length === Directory.PAGE_SIZE;
           this.isLoadingMore = false;
+          this.cdr.markForCheck();
         },
         error: (err) => {
           console.error('Failed to load more profiles', err);
           this.isLoadingMore = false;
+          this.cdr.markForCheck();
         },
       });
   }

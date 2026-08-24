@@ -48,7 +48,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #CBD5E1;
+  background-color: var(--border-color);
   transition: 0.4s;
   border-radius: 24px;
 }
@@ -60,7 +60,7 @@
   width: 18px;
   left: 3px;
   bottom: 3px;
-  background-color: #fff;
+  background-color: var(--bg-surface);
   transition: 0.4s;
   border-radius: 50%;
 }
@@ -238,7 +238,7 @@ input:checked+.slider:before {
 
 .members-table td {
   padding: 14px 16px;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid var(--glass-border);
   vertical-align: middle;
   overflow-wrap: anywhere;
 }
@@ -420,4 +420,35 @@ input:checked+.slider:before {
 .pat-revoke:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+/* Preferences loading skeleton — shaped like one settings card (a title
+   plus a few toggle rows) since that's what the real content becomes. */
+.settings-card-skeleton {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.settings-card-skeleton__rows {
+  margin-top: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.settings-card-skeleton__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+.settings-card-skeleton__row:first-child {
+  border-top: none;
+  padding-top: 0;
 }

@@ -1,11 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { timeout, TimeoutError } from 'rxjs';
 import { StatusCard } from '../reusable/status-card/status-card';
 import { TrendChart } from '../reusable/charts/trend-chart/trend-chart';
+import { Skeleton } from '../reusable/skeleton/skeleton';
 import { ScannerService, ScanResult, FixSuggestion } from '../services/scanner.service';
+
+/** A hung scan request (backend accepted the connection but never responded)
+ *  can't be told apart from "still working" by isLoading alone — the
+ *  "Scanning…" button would spin forever. Bounded so a slow-but-real scan
+ *  still has room (Monte Carlo + multiple registry calls), not so long the
+ *  user has no signal something's wrong. */
+const SCAN_TIMEOUT_MS = 20_000;
 
 interface MetricCard {
   title: string;
@@ -37,7 +46,7 @@ type Ecosystem = (typeof ECOSYSTEMS)[number];
 @Component({
   selector: 'app-repo-health',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, StatusCard, TrendChart],
+  imports: [CommonModule, FormsModule, RouterLink, StatusCard, TrendChart, Skeleton],
   templateUrl: './repo-health.html',
   styleUrl: './repo-health.css',
 })
@@ -71,6 +80,7 @@ export class RepoHealth implements OnInit {
   constructor(
     private readonly scannerService: ScannerService,
     private readonly sanitizer: DomSanitizer,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -94,26 +104,45 @@ export class RepoHealth implements OnInit {
     this.scanHistory = [];
     this.resetActionState();
 
-    this.scannerService.scanPackage(ecosystem, packageName, version || undefined).subscribe({
-      next: (result) => {
-        this.scanResult = result;
-        this.statusCards = this.buildStatusCards(result);
-        this.isLoading = false;
+    this.scannerService
+      .scanPackage(ecosystem, packageName, version || undefined)
+      .pipe(timeout(SCAN_TIMEOUT_MS))
+      .subscribe({
+        next: (result) => {
+          this.scanResult = result;
+          this.statusCards = this.buildStatusCards(result);
+          this.isLoading = false;
+          this.cdr.markForCheck();
 
-        this.scannerService.getScanHistory(ecosystem, result.package).subscribe({
-          next: (history) => (this.scanHistory = history),
-          error: () => (this.scanHistory = []),
-        });
-      },
-      error: (err) => {
-        console.error('Failed to scan package', err);
-        this.errorMessage = this.extractErrorMessage(
-          err,
-          'Failed to scan package. Check the ecosystem and package name and try again.',
-        );
-        this.isLoading = false;
-      },
-    });
+          this.scannerService.getScanHistory(ecosystem, result.package).subscribe({
+            next: (history) => {
+              this.scanHistory = history;
+              this.cdr.markForCheck();
+            },
+            error: () => {
+              this.scanHistory = [];
+              this.cdr.markForCheck();
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Failed to scan package', err);
+          this.errorMessage =
+            err instanceof TimeoutError
+              ? 'Scan timed out. The server took too long to respond — try again in a moment.'
+              : this.extractErrorMessage(
+                  err,
+                  'Failed to scan package. Check the ecosystem and package name and try again.',
+                );
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  /** Re-runs the last scan — the error banner's Retry action. */
+  retryScan(): void {
+    this.scan();
   }
 
   getFixSuggestions(): void {
@@ -126,10 +155,12 @@ export class RepoHealth implements OnInit {
       next: (suggestions) => {
         this.fixSuggestions = suggestions;
         this.isFetchingFixes = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.fixError = this.extractErrorMessage(err, 'Failed to fetch fix suggestions.');
         this.isFetchingFixes = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -144,10 +175,12 @@ export class RepoHealth implements OnInit {
       next: (res) => {
         this.triggerDownload(`${packageName}-trust-report.txt`, res.report, 'text/plain');
         this.isDownloadingReport = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.reportError = this.extractErrorMessage(err, 'Failed to generate report.');
         this.isDownloadingReport = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -162,10 +195,12 @@ export class RepoHealth implements OnInit {
       next: (sbom) => {
         this.triggerDownload(`${packageName}-sbom.json`, JSON.stringify(sbom, null, 2), 'application/json');
         this.isGeneratingSbom = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.sbomError = this.extractErrorMessage(err, 'Failed to generate SBOM.');
         this.isGeneratingSbom = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -181,10 +216,12 @@ export class RepoHealth implements OnInit {
       next: (svg) => {
         this.badgeSvg = this.sanitizer.bypassSecurityTrustHtml(svg);
         this.isFetchingBadge = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.badgeError = this.extractErrorMessage(err, 'Failed to fetch badge.');
         this.isFetchingBadge = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -337,6 +374,13 @@ export class RepoHealth implements OnInit {
   }
 
   private extractErrorMessage(err: any, fallback: string): string {
+    // AuthInterceptor's sanitizeError() rewrites 401/403/429/409/network
+    // (status 0) failures into a plain string on `err.error` (not a
+    // `{ message }` object) — check that form too, or those already-clear
+    // messages get discarded in favor of this generic fallback.
+    if (typeof err?.error === 'string' && err.error) {
+      return err.error;
+    }
     const backendMessage = err?.error?.message;
     if (backendMessage) {
       return Array.isArray(backendMessage) ? backendMessage.join(', ') : String(backendMessage);

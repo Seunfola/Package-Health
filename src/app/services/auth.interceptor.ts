@@ -82,11 +82,40 @@ export class AuthInterceptor implements HttpInterceptor {
    * SANITIZE ERROR: Remove sensitive info from error messages
    */
   private sanitizeError(error: HttpErrorResponse): HttpErrorResponse {
-    // Create safe error response without exposing internal details
+    // Create safe error response without exposing internal details.
+    // error.error is `null` for a network-level failure (no response body
+    // at all) — `typeof null === 'object'` is true, so a naive `typeof
+    // error.error === 'object'` check used to wrap that null body into a
+    // fabricated `{ message: error.message }`, surfacing Angular's own
+    // low-level "Http failure response for <url>: 0 undefined" text as if
+    // it were a genuine backend error. Every consumer's `err.error?.message
+    // || 'fallback'` pattern (repo-health.ts, gatekeeper.ts, members.ts,
+    // etc.) would then show that raw string instead of its own friendly
+    // fallback. Guard against null so those checks correctly see nothing
+    // and fall through; when there IS a real object body, prefer its own
+    // `.message` over the transport-level one.
+    const hasBody = error.error !== null && error.error !== undefined;
     const safeError = {
       ...error,
-      error: typeof error.error === 'object' ? { message: error.message } : error.error,
+      error:
+        hasBody && typeof error.error === 'object'
+          ? { message: (error.error as { message?: unknown })?.message ?? error.message }
+          : error.error,
     };
+
+    // status 0 means the request never reached a server at all (connection
+    // refused/reset, DNS failure, CORS block, offline) — there is no
+    // backend body to relay, so give one clear, actionable message here
+    // rather than leaving every consumer to invent its own "network is
+    // down" copy.
+    if (error.status === 0) {
+      return new HttpErrorResponse({
+        error: 'Could not reach the server. Check your connection and try again.',
+        status: error.status,
+        statusText: 'Network Error',
+        url: error.url || undefined,
+      });
+    }
 
     // Don't expose full error details in production
     if (error.status === 401) {

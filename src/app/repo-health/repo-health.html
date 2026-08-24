@@ -45,6 +45,7 @@
   @if (errorMessage) {
     <div class="alert-banner error">
       <div class="alert-content">{{ errorMessage }}</div>
+      <button type="button" class="btn-outline alert-retry" (click)="retryScan()">Retry</button>
     </div>
   }
 
@@ -52,26 +53,26 @@
     <div class="skeleton" aria-hidden="true">
       <div class="skeleton__digest">
         <div class="skeleton__row">
-          <span class="skeleton__block skeleton__block--dot"></span>
+          <app-skeleton width="10px" height="10px" [circle]="true"></app-skeleton>
           <div class="skeleton__lines">
-            <span class="skeleton__block skeleton__block--line" style="width: 45%"></span>
-            <span class="skeleton__block skeleton__block--line" style="width: 75%"></span>
+            <app-skeleton width="45%" height="12px"></app-skeleton>
+            <app-skeleton width="75%" height="12px"></app-skeleton>
           </div>
         </div>
-        <span class="skeleton__block skeleton__block--score"></span>
+        <app-skeleton width="74px" height="34px"></app-skeleton>
       </div>
 
       <div class="skeleton__pills">
         @for (i of [1, 2, 3, 4, 5]; track i) {
-          <span class="skeleton__block skeleton__block--pill"></span>
+          <app-skeleton height="44px"></app-skeleton>
         }
       </div>
 
       <div class="skeleton__hero">
-        <span class="skeleton__block skeleton__block--gauge"></span>
+        <app-skeleton height="236px" radius="16px"></app-skeleton>
         <div class="skeleton__grid">
           @for (i of [1, 2, 3, 4, 5]; track i) {
-            <span class="skeleton__block skeleton__block--card"></span>
+            <app-skeleton height="96px" radius="12px"></app-skeleton>
           }
         </div>
       </div>

@@ -27,7 +27,15 @@
 
     <div class="members-table-container">
       @if (isLoadingMembers) {
-        <p class="settings-subtitle" style="padding: 16px;">Loading members...</p>
+        <div class="mini-table-skeleton" aria-hidden="true">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="mini-table-skeleton__row">
+              <app-skeleton width="45%" height="14px"></app-skeleton>
+              <app-skeleton width="90px" height="28px" radius="6px"></app-skeleton>
+              <app-skeleton width="18px" height="18px"></app-skeleton>
+            </div>
+          }
+        </div>
       } @else {
         <table class="members-table">
           <thead>
@@ -107,7 +115,15 @@
 
     <div class="members-table-container">
       @if (isLoadingInvitations) {
-        <p class="settings-subtitle" style="padding: 16px;">Loading invitations...</p>
+        <div class="mini-table-skeleton" aria-hidden="true">
+          @for (i of [1, 2]; track i) {
+            <div class="mini-table-skeleton__row">
+              <app-skeleton width="50%" height="14px"></app-skeleton>
+              <app-skeleton width="70px" height="14px"></app-skeleton>
+              <app-skeleton width="18px" height="18px"></app-skeleton>
+            </div>
+          }
+        </div>
       } @else if (invitations.length > 0) {
         <table class="members-table">
           <thead>
@@ -142,7 +158,16 @@
 <app-settings-card title="Audit Log" subtitle="Who changed what in this organization, and when. Admin/owner only.">
   <div class="members-table-container">
     @if (isLoadingAuditLog) {
-      <p class="settings-subtitle" style="padding: 16px;">Loading audit log...</p>
+      <div class="mini-table-skeleton" aria-hidden="true">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="mini-table-skeleton__row">
+            <app-skeleton width="20%" height="14px"></app-skeleton>
+            <app-skeleton width="30%" height="14px"></app-skeleton>
+            <app-skeleton width="20%" height="14px"></app-skeleton>
+            <app-skeleton width="20%" height="14px"></app-skeleton>
+          </div>
+        }
+      </div>
     } @else if (auditLog.length > 0) {
       <table class="members-table">
         <thead>

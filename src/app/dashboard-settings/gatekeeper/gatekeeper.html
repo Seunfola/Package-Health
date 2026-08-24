@@ -1,4 +1,10 @@
 <app-settings-card title="Organization Gatekeeper Policies" subtitle="Customize the strictness of the predictive risk engine for your entire organization.">
+  @if (loadError) {
+    <p class="error-message" style="background: var(--color-danger-bg); border: 1px solid var(--color-danger-border); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+      {{ loadError }}
+      <button type="button" class="inline-retry" (click)="loadGatekeeperPolicies()">Retry</button>
+    </p>
+  }
   @if (!org.isPaidOrg) {
     <p class="guidance-text" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
       Customizing these policies (and custom scoring weights below) is a paid feature. Your organization currently uses the same sensible defaults every FREE org starts with — read-only until you upgrade.
