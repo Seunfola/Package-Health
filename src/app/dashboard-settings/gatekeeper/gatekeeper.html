@@ -5,19 +5,23 @@
       <button type="button" class="inline-retry" (click)="loadGatekeeperPolicies()">Retry</button>
     </p>
   }
-  @if (!org.isPaidOrg) {
-    <p class="guidance-text gk-banner gk-banner--info">
-      Customizing these policies (and custom scoring weights below) is a paid feature. Your organization currently uses the same sensible defaults every FREE org starts with — read-only until you upgrade.
-    </p>
-  }
-
   @if (!isAdmin) {
     <p class="guidance-text gk-banner gk-banner--info">
       You need admin access to change Gatekeeper policies for this organization. You can still view the current settings below.
     </p>
   }
 
-  <fieldset [disabled]="!org.isPaidOrg || !isAdmin" class="gk-fieldset">
+  <!-- Basic policy toggles are a real feature on every plan (design.md Part
+       IV only marks "Custom Scoring Weights" as PAID-only) — gated on admin
+       role alone. This used to share a single fieldset with the paid-only
+       weights section below, disabled via `!org.isPaidOrg || !isAdmin`,
+       which silently made every toggle and the ghost-town threshold input
+       inert for any FREE-tier org (the common case) — clicking a toggle or
+       typing into the threshold field did nothing, with no error or
+       indication why. Splitting the fieldset so only the weights section
+       carries the paid gate fixes that without touching the legitimate
+       admin-only restriction. -->
+  <fieldset [disabled]="!isAdmin" class="gk-fieldset">
     <app-settings-item [title]="'Block Critical CVEs'"
       [subtitle]="'Automatically reject installation of packages harboring CRITICAL severity vulnerabilities.'"
       [(enabled)]="blockCriticalCves"></app-settings-item>
@@ -46,7 +50,15 @@
         </p>
       </app-settings-input>
     }
+  </fieldset>
 
+  @if (!org.isPaidOrg) {
+    <p class="guidance-text gk-banner gk-banner--info">
+      Customizing scoring weights below is a paid feature. Your organization currently uses the default 45/20/20/15 split every FREE org starts with — read-only until you upgrade.
+    </p>
+  }
+
+  <fieldset [disabled]="!org.isPaidOrg || !isAdmin" class="gk-fieldset">
     <app-settings-item [title]="'Custom Trust Score Weights'"
       [subtitle]="'Override the default 45/20/20/15 (security/license/maintenance/popularity) split to match what your organization actually cares about.'"
       [(enabled)]="useCustomWeights"></app-settings-item>

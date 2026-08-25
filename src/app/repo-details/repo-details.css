@@ -169,6 +169,13 @@ app-repo-details-dash {
     }
 }
 
+/* Positions <app-empty-state-card> within the page — vertical rhythm,
+   horizontal centering, and an outer width cap — without adding a second
+   visual card frame around it. EmptyStateCard's own .glass-card already
+   supplies the surface/border/radius (and its own 480px cap), so this
+   wrapper deliberately carries no background/border/border-radius of its
+   own; those were removed here because they produced a redundant outer
+   card around the card. */
 .no-data-section {
     display: flex;
     flex-direction: column;
@@ -177,9 +184,6 @@ app-repo-details-dash {
     padding: 64px 24px;
     text-align: center;
     color: var(--text-secondary);
-    background: var(--bg-slate);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
     margin: 40px auto;
     max-width: 600px;
 }

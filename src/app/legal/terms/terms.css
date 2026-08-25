@@ -21,6 +21,14 @@
   margin-bottom: 3rem;
 }
 
+/* Closing "effective date" note after the last section — smaller than the
+   intro subtitle and pulled away from the preceding card. Was a one-off
+   inline `style=` override on top of .subtitle; moved here unchanged. */
+.legal-closing-note {
+  margin-top: 2rem;
+  font-size: 1rem;
+}
+
 section {
   margin-bottom: 2.5rem;
   background: var(--bg-card);

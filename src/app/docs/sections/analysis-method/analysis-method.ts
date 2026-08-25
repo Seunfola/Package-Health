@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
   imports: [CommonModule],
   templateUrl: './analysis-method.html',
   styleUrls: ['../../docs-shared.css'],
-  host: { class: 'docs-section glass-panel' },
+  host: { class: 'docs-section glass-panel docs-section--prose' },
 })
 export class DocAnalysisMethod {}

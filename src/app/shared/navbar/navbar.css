@@ -39,6 +39,13 @@
   object-fit: contain;
 }
 
+/* Org logo shown alongside the DepVault mark once an org context is active.
+   Was a one-off inline `style=` override; moved here unchanged. */
+.navbar__org-logo {
+  max-height: 28px;
+  margin-left: 10px;
+}
+
 .navbar__links {
   display: flex;
   align-items: center;
