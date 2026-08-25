@@ -1,7 +1,7 @@
 <app-settings-card title="Notification Webhooks" subtitle="Send security alerts to Slack, Discord, xMatters, or a custom endpoint — in addition to email.">
   <div class="members-management-container">
-    <div class="add-member-section" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; flex-wrap: wrap;">
-      <div class="select-container" style="width: 140px;">
+    <div class="settings-input-row">
+      <div class="select-container webhook-type-select">
         <select [(ngModel)]="newWebhookType" class="settings-select">
           @for (type of webhookTypes; track type) {
             <option [ngValue]="type">{{ type }}</option>
@@ -13,18 +13,18 @@
           </svg>
         </span>
       </div>
-      <input type="url" [(ngModel)]="newWebhookUrl" placeholder="Webhook URL" class="settings-input-field" style="flex: 2; min-width: 220px; background-color: var(--bg-slate); border-radius: 4px; padding: 8px 12px;" />
-      <input type="text" [(ngModel)]="newWebhookLabel" placeholder="Label (optional)" class="settings-input-field" style="flex: 1; min-width: 140px; background-color: var(--bg-slate); border-radius: 4px; padding: 8px 12px;" />
+      <input type="url" [(ngModel)]="newWebhookUrl" placeholder="Webhook URL" class="form-input webhook-url-input" />
+      <input type="text" [(ngModel)]="newWebhookLabel" placeholder="Label (optional)" class="form-input webhook-label-input" />
       <button (click)="addWebhook()" [disabled]="!newWebhookUrl || isAddingWebhook" class="save-button">
         {{ isAddingWebhook ? 'Adding...' : 'Add Webhook' }}
       </button>
     </div>
 
     @if (webhookMessage) {
-      <p class="status-message" style="margin-bottom: 16px;">{{ webhookMessage }}</p>
+      <p class="status-message settings-input-row--tight">{{ webhookMessage }}</p>
     }
     @if (webhookError) {
-      <p class="error-message" style="margin-bottom: 16px;">{{ webhookError }}</p>
+      <p class="error-message settings-input-row--tight">{{ webhookError }}</p>
     }
 
     <div class="members-table-container">
@@ -54,10 +54,10 @@
           <tbody>
             @for (webhook of webhooks; track webhook._id) {
               <tr>
-                <td style="text-transform: capitalize;">{{ webhook.type }}</td>
+                <td class="text-capitalize">{{ webhook.type }}</td>
                 <td>{{ webhook.label || '—' }}</td>
                 <td>
-                  <span [title]="webhook.url" style="display: inline-block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; font-family: monospace; font-size: 13px; color: var(--text-secondary);">
+                  <span [title]="webhook.url" class="webhook-url-cell">
                     {{ webhook.url }}
                   </span>
                 </td>
@@ -79,7 +79,7 @@
               </tr>
             } @empty {
               <tr>
-                <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 24px;">No webhooks configured.</td>
+                <td colspan="5" class="table-empty-cell">No webhooks configured.</td>
               </tr>
             }
           </tbody>

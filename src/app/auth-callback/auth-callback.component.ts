@@ -5,6 +5,7 @@ import { AuthService } from '../services/auth.service';
 import { OrganizationService } from '../services/organization.service';
 import { PENDING_INVITE_TOKEN_KEY } from '../accept-invite/accept-invite.component';
 import { PENDING_TRANSFER_KEY } from '../accept-transfer/accept-transfer.component';
+import { PENDING_RETURN_URL_KEY } from '../auth-required/auth-required';
 
 @Component({
   selector: 'app-auth-callback',
@@ -38,7 +39,13 @@ export class AuthCallbackComponent implements OnInit {
         await this.authService.setJwtToken(token);
         await this.finishPendingInviteIfAny();
         await this.finishPendingTransferIfAny();
-        const destination = this.authService.currentState.onboardingCompleted === false ? '/onboarding' : '/dashboard';
+        // A not-yet-onboarded user always goes through the wizard first —
+        // it finishes by navigating to /dashboard itself, so a return URL
+        // captured before sign-in is deliberately dropped in that case
+        // rather than threaded through onboarding as well.
+        const destination = this.authService.currentState.onboardingCompleted === false
+          ? '/onboarding'
+          : this.consumePendingReturnUrl() ?? '/dashboard';
         this.router.navigate([destination]);
       } else {
         console.error('Authentication failed: code exchange failed.');
@@ -64,6 +71,22 @@ export class AuthCallbackComponent implements OnInit {
     } catch (error) {
       console.error('Failed to accept pending invitation after sign-in', error);
     }
+  }
+
+  /**
+   * Reads and clears the URL authGuard stashed when it redirected a
+   * signed-out visitor to /auth-required, so sign-in returns them to what
+   * they were actually trying to reach instead of always /dashboard.
+   * Validated as an internal path (not an absolute/protocol-relative URL)
+   * before use — sessionStorage is same-origin so this isn't a realistic
+   * attack surface, but an open-redirect-shaped value should never be
+   * trusted just because it came from storage the app itself wrote.
+   */
+  private consumePendingReturnUrl(): string | null {
+    const url = sessionStorage.getItem(PENDING_RETURN_URL_KEY);
+    sessionStorage.removeItem(PENDING_RETURN_URL_KEY);
+    if (!url || !url.startsWith('/') || url.startsWith('//')) return null;
+    return url;
   }
 
   /**

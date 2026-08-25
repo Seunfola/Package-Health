@@ -34,7 +34,7 @@ import { Skeleton } from '@/app/reusable/skeleton/skeleton';
     Skeleton,
   ],
   templateUrl: './settings.html',
-  styleUrl: './settings.css',
+  styleUrls: ['./settings.css', '../settings-shared.css'],
 })
 export class Settings implements OnInit {
   codeQualityScore = true;

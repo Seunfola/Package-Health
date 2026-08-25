@@ -1,1 +1,11 @@
-/* Styles come from ../settings-shared.css */
+/* Most styles come from ../settings-shared.css — these are layout rules
+   specific to this page's two "role" selects and empty-audit-log note,
+   previously inline `style="..."` attributes. */
+
+.role-select-narrow {
+  width: 120px;
+}
+
+.empty-audit-note {
+  padding: 16px;
+}

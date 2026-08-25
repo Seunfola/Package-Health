@@ -1,23 +1,23 @@
 <app-settings-card title="Organization Gatekeeper Policies" subtitle="Customize the strictness of the predictive risk engine for your entire organization.">
   @if (loadError) {
-    <p class="error-message" style="background: var(--color-danger-bg); border: 1px solid var(--color-danger-border); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+    <p class="error-message gk-banner gk-banner--danger">
       {{ loadError }}
       <button type="button" class="inline-retry" (click)="loadGatekeeperPolicies()">Retry</button>
     </p>
   }
   @if (!org.isPaidOrg) {
-    <p class="guidance-text" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+    <p class="guidance-text gk-banner gk-banner--info">
       Customizing these policies (and custom scoring weights below) is a paid feature. Your organization currently uses the same sensible defaults every FREE org starts with — read-only until you upgrade.
     </p>
   }
 
   @if (!isAdmin) {
-    <p class="guidance-text" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+    <p class="guidance-text gk-banner gk-banner--info">
       You need admin access to change Gatekeeper policies for this organization. You can still view the current settings below.
     </p>
   }
 
-  <fieldset [disabled]="!org.isPaidOrg || !isAdmin" style="border: none; padding: 0; margin: 0;">
+  <fieldset [disabled]="!org.isPaidOrg || !isAdmin" class="gk-fieldset">
     <app-settings-item [title]="'Block Critical CVEs'"
       [subtitle]="'Automatically reject installation of packages harboring CRITICAL severity vulnerabilities.'"
       [(enabled)]="blockCriticalCves"></app-settings-item>
@@ -52,7 +52,7 @@
       [(enabled)]="useCustomWeights"></app-settings-item>
 
     @if (useCustomWeights) {
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0;">
+      <div class="gk-weights-grid">
         <label>Security (%)
           <input type="number" [(ngModel)]="weightSecurity" class="settings-input-field" min="0" max="100" />
         </label>
@@ -66,7 +66,7 @@
           <input type="number" [(ngModel)]="weightPopularity" class="settings-input-field" min="0" max="100" />
         </label>
       </div>
-      <p [style.color]="weightsSum === 100 ? 'var(--accent-teal)' : 'var(--color-danger)'" style="font-size: 13px;">
+      <p class="gk-weights-sum" [class.gk-weights-sum--ok]="weightsSum === 100" [class.gk-weights-sum--bad]="weightsSum !== 100">
         Sum: {{ weightsSum }} / 100 {{ weightsSum === 100 ? '' : '— must equal 100 to save' }}
       </p>
       @if (weightsError) {
@@ -76,7 +76,7 @@
   </fieldset>
 </app-settings-card>
 
-<div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 24px; gap: 16px;">
+<div class="gk-actions">
   @if (message) {
     <span class="status-message">{{ message }}</span>
   }

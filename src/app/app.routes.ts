@@ -40,6 +40,7 @@ import { DashboardRepositories } from './dashboard/repositories/repositories';
 import { DashboardLeakScans } from './dashboard/leak-scans/leak-scans';
 import { TelemetryDashboard } from './telemetry/telemetry-dashboard';
 import { NotFound } from './not-found/not-found';
+import { AuthRequiredPage } from './auth-required/auth-required';
 import { GetStartedPage } from './get-started/get-started';
 import { FeaturesPage } from './features/features';
 import { NewsletterPage } from './newsletter/newsletter';
@@ -99,6 +100,15 @@ export const routes: Routes = [
     path: 'onboarding',
     component: OnboardingWizard,
     canActivate: [authGuard],
+  },
+  {
+    // The interstitial authGuard redirects a signed-out visitor to instead
+    // of silently bouncing them to /home (see services/auth.guard.ts).
+    // Deliberately outside both PublicLayout and DashboardLayout — same
+    // reasoning as /404 (NotFound): a not-yet-authenticated visitor hasn't
+    // "picked a side" of the app, so this shouldn't assume either chrome.
+    path: 'auth-required',
+    component: AuthRequiredPage,
   },
   {
     path: '',

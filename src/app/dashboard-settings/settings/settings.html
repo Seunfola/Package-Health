@@ -87,16 +87,14 @@
 
   <app-private-repo-analysis></app-private-repo-analysis>
 
-  <div class="save-actions" style="display: flex; justify-content: flex-end; align-items: center; margin-top: 24px; gap: 16px;">
+  <div class="save-actions">
     @if (message) {
-      <span class="status-message" style="color: var(--color-success); font-size: 14px;">{{ message }}</span>
+      <span class="status-message">{{ message }}</span>
     }
-    <button class="save-button" (click)="resetPreferencesToDefaults()" [disabled]="isLoading || isSaving"
-      style="background: transparent; color: var(--text-secondary); padding: 10px 20px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 500; cursor: pointer; transition: background 0.2s;">
+    <button class="btn-secondary-action" (click)="resetPreferencesToDefaults()" [disabled]="isLoading || isSaving">
       Reset to defaults
     </button>
-    <button class="save-button" (click)="savePreferences()" [disabled]="isLoading || isSaving"
-      style="background: var(--color-success); color: white; padding: 10px 20px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer; transition: background 0.2s;">
+    <button class="btn-success-action" (click)="savePreferences()" [disabled]="isLoading || isSaving">
       {{ isSaving ? 'Saving...' : 'Save Preferences' }}
     </button>
   </div>

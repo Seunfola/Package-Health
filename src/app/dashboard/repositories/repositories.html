@@ -70,18 +70,20 @@
     </div>
   </section>
 
-  <app-error-state-card
-    *ngIf="!isLoading && error"
-    title="Repositories unavailable"
-    [message]="error"
-    (retry)="load(page)">
-  </app-error-state-card>
+  <div *ngIf="!isLoading && error" class="state-viewport">
+    <app-error-state-card
+      title="Repositories unavailable"
+      [message]="error"
+      (retry)="load(page)">
+    </app-error-state-card>
+  </div>
 
-  <app-empty-state-card
-    *ngIf="!isLoading && repos.length === 0 && !error"
-    title="No repositories connected yet"
-    message="Connect a GitHub repository to start monitoring dependency health and Gatekeeper policy results."
-    actionLabel="Connect GitHub"
-    (action)="connectRepo()">
-  </app-empty-state-card>
+  <div *ngIf="!isLoading && repos.length === 0 && !error" class="state-viewport">
+    <app-empty-state-card
+      title="No repositories connected yet"
+      message="Connect a GitHub repository to start monitoring dependency health and Gatekeeper policy results."
+      actionLabel="Connect GitHub"
+      (action)="connectRepo()">
+    </app-empty-state-card>
+  </div>
 </div>

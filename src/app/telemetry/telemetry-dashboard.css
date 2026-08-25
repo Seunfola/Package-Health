@@ -47,10 +47,43 @@
   height: 260px;
 }
 
-.state-banner {
-  color: var(--text-secondary);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+/* Loading skeleton — mirrors the real layout (2 stat tiles + 3 chart
+   cards) instead of leaving plain "Loading…" text with nothing shaped
+   like what's about to appear. */
+.stat-tile-skeleton {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 96px;
+}
+
+.chart-wrap--skeleton {
+  height: 260px;
+  margin-top: 1rem;
+}
+
+/* Forbidden state — a 403 isn't a transient failure a Retry button can
+   fix, so this deliberately isn't ErrorStateCard (which always offers
+   Retry per design.md's "no dead-end UI" rule for genuine failures); it
+   reads as informational rather than broken, using the same semantic
+   info tint every other page uses for non-actionable notices. */
+.forbidden-banner {
+  max-width: 480px;
+  text-align: center;
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
   border-radius: 12px;
-  padding: 1.25rem;
+}
+
+.forbidden-banner h2 {
+  font-size: 1.25rem;
+  color: var(--color-info-text);
+  margin-bottom: var(--space-2);
+}
+
+.forbidden-banner p {
+  color: var(--text-secondary);
+  line-height: 1.5;
 }

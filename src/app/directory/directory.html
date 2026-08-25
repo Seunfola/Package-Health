@@ -7,22 +7,26 @@
   <div *ngIf="isLoading" class="directory__list" aria-hidden="true">
     <div class="directory__row" *ngFor="let i of [1, 2, 3, 4, 5]">
       <app-skeleton width="44px" height="44px" [circle]="true"></app-skeleton>
-      <div class="directory__info" style="flex: 1;">
+      <div class="directory__info directory__info--grow">
         <app-skeleton width="140px" height="14px"></app-skeleton>
         <app-skeleton width="90px" height="12px"></app-skeleton>
       </div>
     </div>
   </div>
 
-  <app-error-state-card
-    *ngIf="!isLoading && error"
-    title="Directory unavailable"
-    [message]="error"
-    (retry)="load()">
-  </app-error-state-card>
+  <div *ngIf="!isLoading && error" class="state-viewport">
+    <app-error-state-card
+      title="Directory unavailable"
+      [message]="error"
+      (retry)="load()">
+    </app-error-state-card>
+  </div>
 
-  <div *ngIf="!isLoading && !error && profiles.length === 0" class="directory__empty">
-    No profiles yet.
+  <div *ngIf="!isLoading && !error && profiles.length === 0" class="state-viewport">
+    <app-empty-state-card
+      title="No profiles yet"
+      message="Once other users are on this DepVault instance, they'll show up here.">
+    </app-empty-state-card>
   </div>
 
   <div *ngIf="!isLoading && profiles.length > 0" class="directory__list">

@@ -1,431 +1,15 @@
-.settings-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  border-top: 1px solid var(--border-color);
-}
+/* Shared classes (.settings-item, .switch/.slider, .input-container,
+   .select-container, .guidance-text, .danger-zone-*, .status-message,
+   .error-message, .save-button, .sr-only, etc.) come from
+   ../settings-shared.css — this file previously duplicated ~425 lines of
+   that content byte-for-byte (a pre-mega-component-split copy that never
+   got deduped) while still missing rules settings.html actually
+   references (.status-message, .save-button, .sr-only weren't defined
+   here at all, so those elements rendered unstyled and leaned entirely on
+   inline `style="..."` attributes to compensate). Now this file holds only
+   what's genuinely unique to the Preferences page: its loading skeleton
+   and save-actions row layout. */
 
-.settings-item:first-of-type {
-  border-top: none;
-}
-
-.settings-text {
-  flex-grow: 1;
-  margin-right: 16px;
-}
-
-.settings-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.settings-subtitle {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 48px;
-  height: 24px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--border-color);
-  transition: 0.4s;
-  border-radius: 24px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: var(--bg-surface);
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked+.slider {
-  background-color: var(--accent-teal);
-}
-
-input:checked+.slider:before {
-  transform: translateX(24px);
-}
-
-
-.input-container {
-  display: flex;
-  align-items: center;
-  background-color: var(--bg-slate);
-  border-radius: 4px;
-  overflow: hidden;
-  height: 36px;
-  width: 100px;
-  border: 1px solid var(--border-color);
-}
-
-.input-container .prefix {
-  padding-left: 8px;
-  color: var(--text-secondary);
-}
-
-.settings-input-field {
-  background-color: transparent;
-  border: none;
-  color: var(--text-primary);
-  padding: 0 8px;
-  height: 100%;
-  flex-grow: 1;
-}
-
-.settings-input-field:focus {
-  outline: none;
-}
-
-.select-container {
-  position: relative;
-  background-color: var(--bg-slate);
-  border-radius: 4px;
-  height: 36px;
-  width: 120px;
-  border: 1px solid var(--border-color);
-}
-
-.settings-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: transparent;
-  border: none;
-  color: var(--text-primary);
-  width: 100%;
-  height: 100%;
-  padding: 0 12px;
-  cursor: pointer;
-}
-
-.dropdown-icon {
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
-  pointer-events: none;
-  width: 16px;
-  height: 16px;
-  color: var(--text-secondary);
-}
-
-.guidance-text {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 8px;
-  line-height: 1.4;
-}
-
-.danger-zone-card {
-  display: block;
-  border: 1px solid var(--color-danger);
-  border-radius: 10px;
-  margin-top: 32px;
-}
-
-.danger-zone-content {
-  padding: 16px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.danger-zone-title {
-  color: var(--color-danger);
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 8px;
-}
-
-.danger-zone-desc {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-}
-
-.danger-zone-input {
-  background-color: var(--bg-slate);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 10px 12px;
-  border-radius: 4px;
-  flex-grow: 1;
-  max-width: 300px;
-}
-
-.danger-zone-button {
-  background: transparent;
-  color: var(--color-danger);
-  border: 1px solid var(--color-danger);
-  padding: 9px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.danger-zone-button:hover:not([disabled]) {
-  background: var(--color-danger);
-  color: white;
-}
-
-.danger-zone-button[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.danger-message {
-  font-size: 13px;
-  color: var(--color-danger);
-  margin-top: 12px;
-}
-
-/* Organization Members Table — flat card, was a dark glassmorphism panel */
-.members-management-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.members-table-container {
-  width: 100%;
-  overflow-x: hidden;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-surface);
-}
-
-.members-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  table-layout: fixed;
-}
-
-.members-table th {
-  padding: 12px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border-color);
-  overflow-wrap: anywhere;
-}
-
-.members-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--glass-border);
-  vertical-align: middle;
-  overflow-wrap: anywhere;
-}
-
-.members-table tr:last-child td {
-  border-bottom: none;
-}
-
-.members-table tr {
-  transition: background 0.2s ease;
-}
-
-.members-table tr:hover {
-  background: rgba(15, 23, 42, 0.03);
-}
-
-.member-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.member-email {
-  font-size: 14px;
-  color: var(--text-primary);
-  font-weight: 500;
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 560px) {
-  .members-table th, .members-table td { padding: 10px 7px; font-size: 12px; }
-  .member-info { gap: 7px; }.role-select-container { width: 86px; }
-}
-
-.role-select-container {
-  width: 110px;
-  height: 32px;
-}
-
-.small-select {
-  font-size: 13px;
-  padding-left: 8px;
-}
-
-.remove-member-btn {
-  background: transparent;
-  border: none;
-  color: var(--color-danger);
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  opacity: 0.7;
-}
-
-.remove-member-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  opacity: 1;
-}
-
-.pat-reveal {
-  margin-bottom: 16px;
-  padding: 14px 16px;
-  border: 1px solid var(--color-warning);
-  border-radius: 8px;
-  background: rgba(245, 158, 11, 0.08);
-}
-
-.pat-reveal__warning {
-  margin: 0 0 10px;
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.pat-reveal__row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.pat-reveal__value {
-  flex: 1;
-  min-width: 240px;
-  padding: 8px 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background: var(--bg-surface);
-  font-size: 13px;
-  word-break: break-all;
-}
-
-.pat-reveal__dismiss {
-  margin-top: 10px;
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--accent-teal);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.pat-create {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-
-.pat-create__input {
-  flex: 1;
-  min-width: 220px;
-  padding: 8px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  font-size: 14px;
-}
-
-.pat-create__input:focus {
-  outline: none;
-  border-color: var(--accent-teal);
-  box-shadow: var(--glow-teal);
-}
-
-.pat-error {
-  margin: 0 0 12px;
-  color: var(--color-danger);
-  font-size: 13px;
-}
-
-.pat-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.pat-table th {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-muted);
-  font-weight: 600;
-  text-align: left;
-  text-transform: uppercase;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-}
-
-.pat-table td {
-  padding: 10px;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-primary);
-}
-
-.pat-revoke {
-  padding: 5px 10px;
-  border: 1px solid var(--color-danger);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--color-danger);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-}
-
-.pat-revoke:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.pat-revoke:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-/* Preferences loading skeleton — shaped like one settings card (a title
-   plus a few toggle rows) since that's what the real content becomes. */
 .settings-card-skeleton {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
@@ -453,4 +37,51 @@ input:checked+.slider:before {
 .settings-card-skeleton__row:first-child {
   border-top: none;
   padding-top: 0;
+}
+
+.save-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 24px;
+  gap: 16px;
+}
+
+.save-actions .status-message {
+  color: var(--color-success);
+}
+
+.save-actions .btn-secondary-action {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.save-actions .btn-secondary-action:hover:not(:disabled) {
+  background: var(--bg-slate);
+}
+
+.save-actions .btn-success-action {
+  background: var(--color-success);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.save-actions .btn-success-action:hover:not(:disabled) {
+  background: #16A34A;
+}
+
+.save-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

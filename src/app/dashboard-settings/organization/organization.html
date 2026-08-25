@@ -1,6 +1,6 @@
 <app-settings-card title="Organization" subtitle="Switch between organizations you belong to, or create a new one.">
-  <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
-    <div class="select-container" style="min-width: 220px;">
+  <div class="org-switcher-row">
+    <div class="select-container org-select-wrap">
       <select [ngModel]="org.activeOrgId" (ngModelChange)="switchOrg($event)" class="settings-select" [disabled]="org.isLoadingOrgs">
         @for (o of org.myOrgs; track o.orgId) {
           <option [ngValue]="o.orgId">{{ o.name }}</option>
@@ -16,29 +16,27 @@
     </div>
   </div>
 
-  <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-    <input type="text" [(ngModel)]="newOrgName" placeholder="New organization name" class="settings-input-field" style="flex: 1; min-width: 200px; background-color: var(--bg-slate); border-radius: 4px; padding: 8px 12px;" />
+  <div class="org-create-row">
+    <input type="text" [(ngModel)]="newOrgName" placeholder="New organization name" class="form-input org-name-input" />
     <button (click)="createOrganization()" [disabled]="!newOrgName.trim() || isCreatingOrg" class="save-button">
       {{ isCreatingOrg ? 'Creating...' : 'Create Organization' }}
     </button>
   </div>
 
   @if (orgSwitcherMessage) {
-    <p class="status-message" style="margin-top: 12px;">{{ orgSwitcherMessage }}</p>
+    <p class="status-message org-inline-message">{{ orgSwitcherMessage }}</p>
   }
   @if (orgSwitcherError) {
-    <p class="error-message" style="margin-top: 12px;">{{ orgSwitcherError }}</p>
+    <p class="error-message org-inline-message">{{ orgSwitcherError }}</p>
   }
 
   @if (org.currentOrg) {
-    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-      <span [style.background]="org.isPaidOrg ? 'var(--accent-emerald)' : 'var(--glass-bg)'"
-            [style.color]="org.isPaidOrg ? 'var(--bg-obsidian)' : 'var(--text-secondary)'"
-            style="padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid var(--glass-border);">
+    <div class="org-plan-row">
+      <span class="org-plan-badge" [class.org-plan-badge--paid]="org.isPaidOrg" [class.org-plan-badge--free]="!org.isPaidOrg">
         {{ org.isPaidOrg ? 'PAID' : 'FREE' }} PLAN
       </span>
       @if (org.orgUsage) {
-        <span style="font-size: 13px; color: var(--text-secondary);">
+        <span class="org-usage-text">
           {{ org.orgUsage.repoCount }}{{ org.orgUsage.repoLimit === org.Infinity ? '' : ' / ' + org.orgUsage.repoLimit }} repos ·
           {{ org.orgUsage.memberCount }}{{ org.orgUsage.memberLimit === org.Infinity ? '' : ' / ' + org.orgUsage.memberLimit }} members
         </span>
@@ -46,20 +44,20 @@
     </div>
 
     @if (org.currentOrg.logoUrl) {
-      <img [src]="org.currentOrg.logoUrl" alt="Organization logo" style="max-height: 40px; margin-top: 12px;" />
+      <img [src]="org.currentOrg.logoUrl" alt="Organization logo" class="org-logo-preview" />
     }
 
     @if (org.isPaidOrg) {
-      <div style="margin-top: 12px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <div class="org-logo-row">
         <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" (change)="onLogoFileSelected($event)" />
         <button (click)="uploadLogo()" [disabled]="!logoFile || isUploadingLogo" class="save-button">
           {{ isUploadingLogo ? 'Uploading...' : 'Upload Logo' }}
         </button>
       </div>
-      @if (logoMessage) { <p class="status-message" style="font-size: 13px; margin-top: 8px;">{{ logoMessage }}</p> }
-      @if (logoError) { <p class="error-message" style="font-size: 13px; margin-top: 8px;">{{ logoError }}</p> }
+      @if (logoMessage) { <p class="status-message org-inline-message--small">{{ logoMessage }}</p> }
+      @if (logoError) { <p class="error-message org-inline-message--small">{{ logoError }}</p> }
     } @else {
-      <p class="settings-subtitle" style="margin-top: 12px;">
+      <p class="settings-subtitle org-paid-note">
         Custom branding (logo on your dashboard and notification emails) is a paid feature.
       </p>
     }
@@ -73,7 +71,7 @@
       Transfer this organization to another user. They will receive an email to accept the transfer. Once accepted, you will lose owner privileges but remain an ADMIN.
     </p>
 
-    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+    <div class="org-transfer-row">
       <input type="email" [(ngModel)]="newOwnerEmail" placeholder="Enter new owner's email" class="danger-zone-input" />
       <button (click)="initiateTransfer()" [disabled]="!newOwnerEmail || isTransferring" class="danger-zone-button">
         {{ isTransferring ? 'Initiating...' : 'Transfer' }}
