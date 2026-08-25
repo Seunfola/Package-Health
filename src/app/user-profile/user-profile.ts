@@ -79,6 +79,7 @@ export class UserProfile implements OnInit, OnDestroy {
       next: (profile) => {
         this.userName = profile.username || 'User';
         this.userEmail = profile.email || '';
+        this.userAvatar = profile.profile_picture_url || 'assets/icons/user.svg';
         this.githubUrl = profile.github_url || '';
         this.linkedinUrl = profile.linkedin_url || '';
         this.twitterUrl = profile.twitter_url || '';

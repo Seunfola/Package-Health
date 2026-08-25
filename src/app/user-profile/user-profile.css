@@ -109,6 +109,14 @@
   border-radius: 8px;
 }
 
+/* flex-shrink: 0 — a linked GitHub/LinkedIn URL is long enough to fill the
+   row, and without this the icon (a flex sibling of .social-username) got
+   squeezed down with it, rendering as a squashed, distorted-aspect-ratio
+   icon instead of a clean 24x24 square. */
+.social-accounts-connected .social-icon {
+  flex-shrink: 0;
+}
+
 .social-accounts-connected .social-icon img {
   width: 24px;
   height: 24px;
@@ -118,6 +126,9 @@
 .social-accounts-connected .social-username {
   font-size: 1em;
   color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .add-social-btn {
@@ -150,6 +161,24 @@
 /* Resume Management Card */
 .upload-area {
   margin-bottom: 15px;
+}
+
+/* The real <input type="file"> is triggered via the styled .upload-button
+   label (for="resume-upload") — the native control was rendering
+   unstyled and visible right below it (browser-default "Choose file / No
+   file chosen" widget), a second, ugly file picker nobody was meant to
+   see. Visually hidden rather than display:none so it stays reachable by
+   keyboard/screen readers, same recipe as settings-shared.css's .sr-only. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .upload-button {

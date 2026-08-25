@@ -147,6 +147,35 @@
   .docs-code, .docs-terminal { padding: .9rem; font-size: .75rem; }
 }
 
+/* Modifier for doc sections that are mostly long-form running prose (many
+   paragraphs, few/no code blocks or tables) — analysis-method today. Every
+   doc section shares .glass-panel's 3rem/4rem padding, which reads fine for
+   shorter reference-style sections (cli, leakguard) that mix short
+   paragraphs with code blocks wanting the full content width, but on a
+   page that's almost entirely prose the wide 4rem side padding narrows the
+   actual reading column more than it needs to. Opt-in per section rather
+   than changing .glass-panel itself, which every other doc section also
+   uses — this only reduces horizontal padding, not the card surface or
+   vertical rhythm.
+
+   Must be written as :host(...), not a plain `.docs-section--prose`
+   selector — the class is applied via each component's `host: {class:...}`
+   binding, so it lives on the host element itself, which Angular's
+   emulated encapsulation marks with `[_nghost-xxx]`. A plain class
+   selector in a component stylesheet gets `[_ngcontent-xxx]` appended
+   instead (the attribute Angular puts on the component's *content*
+   elements, never the host), so it silently never matched and this rule
+   was dead code until it was rewritten as :host(). */
+:host(.docs-section--prose) {
+  padding: 3rem 2.25rem;
+}
+
+@media (max-width: 420px) {
+  :host(.docs-section--prose) {
+    padding: 1.5rem 1rem;
+  }
+}
+
 /* ── Internal-package badge ────────────────────────────────────────────────
    An internal package is scored by a different model than a registry one
    (git bus factor rather than downloads, its own dependency surface rather
@@ -177,4 +206,16 @@
 /* The table cell variant sits tight against the package name it qualifies. */
 .docs-table td .docs-badge-internal {
   margin-right: .4rem;
+}
+
+/* Modifier for the Downloads page's "published" status cells — a genuine
+   success verdict (this surface is live and installable), not a provenance
+   flag. Pulled out of a per-instance inline `style=` (design.md's "no
+   one-off overrides" rule) into a real class; colors kept byte-identical
+   to what was inline (border still inherits .docs-badge-internal's amber,
+   same as before) rather than remapped onto the nearest success token, so
+   this is a pure refactor with no visual change. */
+.docs-badge-success {
+  background: #dcfce7;
+  color: #166534;
 }

@@ -7,17 +7,19 @@
   font-weight: 500;
 }
 
+/* buildStatTiles() always returns exactly 4 tiles (Protected Repositories,
+   Average Health Score, Excellent Health, Needs Attention) — a hardcoded
+   3-column grid left the 4th tile alone on its own row, occupying one
+   column and leaving the other two thirds of that row empty. auto-fit +
+   minmax keeps every tile at a readable minimum width and lets the grid
+   fill the row with however many tiles actually exist (4 today, and this
+   doesn't silently break again if a 5th tile is ever added), rather than a
+   column count hardcoded to a stale tile total. */
 .dashboard-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
-}
-
-@media (min-width: 768px) {
-  .dashboard-metrics-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 .metric-card {

@@ -76,7 +76,7 @@
 
             <div class="social-link-item">
               <div class="social-icon">
-                <img src="assets/icons/circleplus.svg" alt="Twitter" class="add-icon" width="20" height="20" />
+                <img src="assets/icons/twitter.svg" alt="Twitter" class="add-icon" width="20" height="20" />
               </div>
               <span class="social-username">{{ twitterUrl || 'Not linked' }}</span>
             </div>
@@ -94,7 +94,7 @@
                 <img src="assets/icons/upload.svg" alt="upload" class="upload-icon" width="20" height="20" />
                 Upload Resume (PDF)
               </label>
-              <input id="resume-upload" type="file" accept=".pdf,.txt,.md,.json" (change)="onFileSelected($event)">
+              <input id="resume-upload" class="sr-only" type="file" accept=".pdf,.txt,.md,.json" (change)="onFileSelected($event)">
             </div>
             <p class="file-status">{{ resumeFileName ? resumeFileName : 'No resume file selected.' }}</p>
           </div>
