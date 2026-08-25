@@ -1,3 +1,12 @@
+/* Angular custom elements default to display:inline with no styling of
+   their own — without this, a border/margin a parent page applies to the
+   host (e.g. organization.html's .danger-zone-card) collapses to a thin,
+   contentless sliver instead of framing the actual card, since inline
+   boxes don't take top/bottom margin and wrap content unpredictably. */
+:host {
+  display: block;
+}
+
 .settings-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
