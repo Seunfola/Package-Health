@@ -69,6 +69,12 @@
   --accent-teal: #2563EB;
   --accent-teal-hover: #1D4ED8;
   --accent-emerald: #22D3EE;
+  /* The one "this is selected" tint — was three different inline
+     rgba(37,99,235,…) values scattered across sidebar.css alone, each a
+     one-off guess at the same color. Selection state only; hover uses a
+     neutral surface tint (--bg-slate) instead, precisely so the two never
+     read as the same state. */
+  --accent-teal-selected-bg: rgba(37, 99, 235, 0.1);
 
   /* Text */
   --text-primary: #0F172A;
