@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UserProfileService, ProfileListItem } from '@/app/services/user-profile.service';
 import { ErrorStateCard } from '@/app/reusable/error-state-card/error-state-card';
+import { EmptyStateCard } from '@/app/reusable/empty-state-card/empty-state-card';
 import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 
 /**
@@ -16,7 +17,7 @@ import { Skeleton } from '@/app/reusable/skeleton/skeleton';
 @Component({
   selector: 'app-directory',
   standalone: true,
-  imports: [CommonModule, ErrorStateCard, Skeleton],
+  imports: [CommonModule, ErrorStateCard, EmptyStateCard, Skeleton],
   templateUrl: './directory.html',
   styleUrl: './directory.css',
 })

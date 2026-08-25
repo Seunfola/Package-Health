@@ -4,12 +4,43 @@
     <p>Anonymous, aggregate invocation counts from the CLI, MCP server, and LSP server — last 90 days.</p>
   </header>
 
-  <div class="state-banner" *ngIf="isForbidden">
-    Your account doesn't have platform admin access.
-  </div>
-  <div class="state-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
-
-  <ng-container *ngIf="!isLoading && !isForbidden && !errorMessage">
+  @if (isLoading) {
+    <div class="metrics-grid" aria-hidden="true">
+      @for (i of [1, 2]; track i) {
+        <div class="chart-card stat-tile-skeleton">
+          <app-skeleton width="60%" height="14px"></app-skeleton>
+          <app-skeleton width="40%" height="32px" radius="6px"></app-skeleton>
+        </div>
+      }
+    </div>
+    <section class="chart-card" aria-hidden="true">
+      <app-skeleton width="200px" height="18px"></app-skeleton>
+      <div class="chart-wrap chart-wrap--skeleton">
+        <app-skeleton height="100%" radius="12px"></app-skeleton>
+      </div>
+    </section>
+    <div class="chart-row" aria-hidden="true">
+      @for (i of [1, 2]; track i) {
+        <section class="chart-card">
+          <app-skeleton width="120px" height="18px"></app-skeleton>
+          <div class="chart-wrap chart-wrap--skeleton">
+            <app-skeleton height="100%" radius="12px"></app-skeleton>
+          </div>
+        </section>
+      }
+    </div>
+  } @else if (isForbidden) {
+    <div class="state-viewport">
+      <div class="forbidden-banner">
+        <h2>Not available for this account</h2>
+        <p>Your account doesn't have platform admin access, so there's nothing to show here — this isn't a temporary failure, so retrying won't help.</p>
+      </div>
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-viewport">
+      <app-error-state-card title="Telemetry unavailable" [message]="errorMessage" (retry)="load()"></app-error-state-card>
+    </div>
+  } @else {
     <div class="metrics-grid">
       <app-status-card
         title="Total Invocations (90d)"
@@ -49,7 +80,5 @@
         </div>
       </section>
     </div>
-  </ng-container>
-
-  <div class="state-banner" *ngIf="isLoading">Loading...</div>
+  }
 </div>

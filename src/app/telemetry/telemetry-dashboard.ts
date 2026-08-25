@@ -1,20 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { TelemetryService, TelemetrySummary } from '../services/telemetry.service';
 import { StatusCard } from '../reusable/status-card/status-card';
 import { LineChart } from '../repo-details/line-chart/line-chart';
+import { Skeleton } from '../reusable/skeleton/skeleton';
+import { ErrorStateCard } from '../reusable/error-state-card/error-state-card';
 
 /**
  * Platform-operator-only usage dashboard (route-guarded by backend
  * PlatformAdminGuard; the sidebar link itself is hidden from non-admins,
  * see Sidebar.menuItems). Shows anonymous, aggregate CLI/MCP/LSP usage —
  * no package names, no user identity, no IPs (see PRIVACY_AND_DATA.md).
+ *
+ * This is the one page the earlier skeleton/error-boundary pass (see the
+ * sibling dashboard/repo-health components) never reached — it previously
+ * rendered plain "Loading…" text with no skeleton and no error state, and
+ * had a real functional bug on top of the missing polish: this app uses
+ * provideZonelessChangeDetection(), and load()'s subscribe callbacks
+ * mutated isLoading/errorMessage/chart data without ever calling
+ * ChangeDetectorRef.markForCheck() — so the view genuinely never
+ * re-rendered past "Loading…" even after a successful response.
  */
 @Component({
   selector: 'app-telemetry-dashboard',
   standalone: true,
-  imports: [CommonModule, StatusCard, LineChart],
+  imports: [CommonModule, StatusCard, LineChart, Skeleton, ErrorStateCard],
   templateUrl: './telemetry-dashboard.html',
   styleUrl: './telemetry-dashboard.css',
 })
@@ -42,7 +53,10 @@ export class TelemetryDashboard implements OnInit {
     indexAxis: 'y',
   };
 
-  constructor(private readonly telemetryService: TelemetryService) {}
+  constructor(
+    private readonly telemetryService: TelemetryService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.load();
@@ -57,14 +71,17 @@ export class TelemetryDashboard implements OnInit {
       next: (summary) => {
         this.applySummary(summary);
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
+        console.error('Failed to load telemetry summary', err);
         if (err.status === 403) {
           this.isForbidden = true;
         } else {
           this.errorMessage = 'Failed to load telemetry summary.';
         }
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }

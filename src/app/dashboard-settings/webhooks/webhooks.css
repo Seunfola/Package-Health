@@ -1,1 +1,29 @@
-/* Styles come from ../settings-shared.css */
+/* Most styles come from ../settings-shared.css — these are layout rules
+   specific to this page's add-webhook row and URL column, previously
+   inline `style="..."` attributes. */
+
+.webhook-type-select {
+  width: 140px;
+}
+
+.webhook-url-input {
+  flex: 2;
+  min-width: 220px;
+}
+
+.webhook-label-input {
+  flex: 1;
+  min-width: 140px;
+}
+
+.webhook-url-cell {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--text-secondary);
+}

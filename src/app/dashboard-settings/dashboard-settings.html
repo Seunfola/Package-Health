@@ -4,10 +4,10 @@
     <p>Personalize your DepVault experience by customizing metrics and notification preferences.</p>
   </div>
 
+  <!-- app-settings (../settings/settings) owns its own Reset/Save actions
+       at the bottom of its own content — this page previously duplicated
+       them here as a second "Restore defaults"/"Save changes" pair wired
+       to the exact same methods via ViewChild, so the page rendered two
+       functionally-identical button pairs stacked on top of each other. -->
   <app-settings></app-settings>
-
-  <div class="button-container">
-    <button class="cancel-button" type="button" (click)="reset()">Restore defaults</button>
-    <button class="save-button" type="button" (click)="save()">Save changes</button>
-  </div>
 </div>

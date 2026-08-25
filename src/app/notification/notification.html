@@ -54,9 +54,13 @@
         }
       </div>
     } @else if (error) {
-      <app-error-state-card title="Notifications are unavailable" [message]="error" (retry)="fetchNotifications()"></app-error-state-card>
+      <div class="state-viewport">
+        <app-error-state-card title="Notifications are unavailable" [message]="error" (retry)="fetchNotifications()"></app-error-state-card>
+      </div>
     } @else if (filteredNotifications.length === 0) {
-      <app-empty-state-card title="You're all caught up!" [message]="activeFilter === 'all' ? 'No new alerts across your monitored repositories.' : 'No notifications match this filter.'" [actionLabel]="activeFilter === 'all' ? undefined : 'Show all'" (action)="setFilter('all')"></app-empty-state-card>
+      <div class="state-viewport">
+        <app-empty-state-card title="You're all caught up!" [message]="activeFilter === 'all' ? 'No new alerts across your monitored repositories.' : 'No notifications match this filter.'" [actionLabel]="activeFilter === 'all' ? undefined : 'Show all'" (action)="setFilter('all')"></app-empty-state-card>
+      </div>
     } @else {
     <div class="notifications-list">
       @for (notification of filteredNotifications; track notification.id) {

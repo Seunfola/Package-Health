@@ -23,12 +23,6 @@
     color: var(--text-secondary);
 }
 
-.directory__empty {
-    padding: 24px;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-}
-
 .directory__list {
     display: flex;
     flex-direction: column;
@@ -59,6 +53,10 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+}
+
+.directory__info--grow {
+    flex: 1;
 }
 
 .directory__name {

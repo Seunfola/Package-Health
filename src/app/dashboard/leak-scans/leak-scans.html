@@ -63,16 +63,18 @@
     </div>
   </section>
 
-  <app-error-state-card
-    *ngIf="!isLoading && error"
-    title="LeakGuard scans unavailable"
-    [message]="error"
-    (retry)="load()">
-  </app-error-state-card>
+  <div *ngIf="!isLoading && error" class="state-viewport">
+    <app-error-state-card
+      title="LeakGuard scans unavailable"
+      [message]="error"
+      (retry)="load()">
+    </app-error-state-card>
+  </div>
 
-  <app-empty-state-card
-    *ngIf="!isLoading && scans.length === 0 && !error"
-    title="No LeakGuard scans synced yet"
-    message="Run &quot;depvault leakguard scan --upload&quot; from any repository to sync secret-detection results here."
-  ></app-empty-state-card>
+  <div *ngIf="!isLoading && scans.length === 0 && !error" class="state-viewport">
+    <app-empty-state-card
+      title="No LeakGuard scans synced yet"
+      message="Run &quot;depvault leakguard scan --upload&quot; from any repository to sync secret-detection results here."
+    ></app-empty-state-card>
+  </div>
 </div>

@@ -1,1 +1,94 @@
-/* Styles come from ../settings-shared.css */
+/* Shared styles come from ../settings-shared.css. These are the layout
+   rules specific to this page — previously all inline `style="..."`
+   attributes on organization.html (a one-off-override pattern design.md's
+   Board Charter explicitly rules out), now real classes. */
+
+.org-switcher-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.org-select-wrap {
+  min-width: 220px;
+}
+
+.org-create-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.org-name-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.org-inline-message {
+  margin-top: 12px;
+}
+
+.org-plan-row {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.org-plan-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--glass-border);
+}
+
+.org-plan-badge--paid {
+  background: var(--accent-emerald);
+  color: var(--bg-obsidian);
+}
+
+.org-plan-badge--free {
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+}
+
+.org-usage-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.org-logo-preview {
+  max-height: 40px;
+  margin-top: 12px;
+}
+
+.org-logo-row {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.org-inline-message--small {
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.org-paid-note {
+  margin-top: 12px;
+}
+
+.org-transfer-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}

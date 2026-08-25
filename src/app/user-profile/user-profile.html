@@ -33,11 +33,13 @@
           </div>
         </div>
       } @else if (loadError) {
-        <app-error-state-card
-          title="Profile unavailable"
-          [message]="loadError"
-          (retry)="retryLoadProfile()">
-        </app-error-state-card>
+        <div class="state-viewport">
+          <app-error-state-card
+            title="Profile unavailable"
+            [message]="loadError"
+            (retry)="retryLoadProfile()">
+          </app-error-state-card>
+        </div>
       } @else {
 
       <div class="profile-content">
