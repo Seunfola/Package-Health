@@ -56,29 +56,44 @@
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
+/* Hover: "you're pointing here" — a neutral surface tint only, same
+   --bg-slate every other hover in this design system uses. Deliberately
+   carries none of the selected state's blue: a hovered item that isn't
+   selected should never look like it might be, and this is the one thing
+   that actually makes that distinction legible instead of a screenshot
+   detail. */
 .list-item:hover {
-    background-color: rgba(37, 99, 235, 0.06);
-    border-left-color: var(--accent-teal);
+    background-color: var(--bg-slate);
 }
 
 .list-item:hover .list-item__link,
 .list-item:hover .list-item__toggle {
-    color: var(--accent-teal);
+    color: var(--text-primary);
 }
 
-.list-item:focus-within {
-    outline: 2px solid var(--accent-teal-hover);
-    outline-offset: 2px;
-}
-
-.list-item:active {
-    background-color: rgba(37, 99, 235, 0.1);
-    border-left-color: var(--accent-teal-hover);
-}
-
+/* Selected: the one place blue means "this is where you are," not "this
+   is what your cursor is over." Left-border + tint + blue text — matched
+   exactly by :active below so a click doesn't visibly flicker between two
+   slightly different selected treatments before the route finishes
+   navigating. */
+.list-item:active,
 .list-item:has(a.active) {
-    background-color: rgba(37, 99, 235, 0.1);
+    background-color: var(--accent-teal-selected-bg);
     border-left-color: var(--accent-teal);
+}
+
+/* :focus-visible, not :focus-within — the latter also fires on every
+   mouse click (any descendant gaining focus counts), so a mouse user
+   would see a keyboard-style ring flash on every navigation. This one
+   only fires for keyboard/AT focus, which is the only time a visible
+   indicator is actually needed. Box-shadow rather than outline so it
+   follows the item's own border-radius instead of drawing a rectangle
+   around a rounded row — outline does that in every browser this ships
+   to, box-shadow doesn't need to. Reuses --glow-teal, the same focus
+   ring token used everywhere else in this design system, rather than a
+   one-off value local to the sidebar. */
+.list-item:has(:focus-visible) {
+    box-shadow: var(--glow-teal);
 }
 
 /* The clickable row — a plain flex container for a parent item (holds the
@@ -121,6 +136,10 @@ a.list-item__link {
     color: var(--accent-teal);
 }
 
+.list-item__link:focus-visible {
+    outline: none;
+}
+
 .list-item__toggle {
     display: grid;
     place-items: center;
@@ -136,8 +155,13 @@ a.list-item__link {
 }
 
 .list-item__toggle:hover {
-    background-color: rgba(37, 99, 235, 0.1);
+    background-color: var(--accent-teal-selected-bg);
     color: var(--accent-teal);
+}
+
+.list-item__toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--glow-teal);
 }
 
 .list-item__toggle.expanded {
@@ -202,14 +226,19 @@ a.list-item__link {
 }
 
 .sublist-item a:hover {
-    color: var(--accent-teal);
-    background-color: rgba(37, 99, 235, 0.06);
+    color: var(--text-primary);
+    background-color: var(--bg-slate);
 }
 
 .sublist-item a.active {
     color: var(--accent-teal);
     font-weight: 700;
-    background-color: rgba(37, 99, 235, 0.08);
+    background-color: var(--accent-teal-selected-bg);
+}
+
+.sublist-item a:focus-visible {
+    outline: none;
+    box-shadow: var(--glow-teal);
 }
 
 .list-item--logout .list-item__link {
