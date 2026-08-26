@@ -1,0 +1,37 @@
+<div class="directory-container">
+  <div class="header-section">
+    <h1>Profile Directory</h1>
+    <p>Browse other DepVault users on this instance. Email addresses are never shown here.</p>
+  </div>
+
+  <div *ngIf="isLoading" class="directory__loading">Loading&hellip;</div>
+
+  <p *ngIf="error" class="alert-banner error"><span class="alert-content">{{ error }}</span></p>
+
+  <div *ngIf="!isLoading && !error && profiles.length === 0" class="directory__empty">
+    No profiles yet.
+  </div>
+
+  <div *ngIf="!isLoading && profiles.length > 0" class="directory__list">
+    <div *ngFor="let profile of profiles" class="directory__row">
+      <img
+        [src]="profile.profile_picture_url || 'assets/icons/user.svg'"
+        alt=""
+        class="directory__avatar"
+      />
+      <div class="directory__info">
+        <span class="directory__name">{{ profile.name || profile.username }}</span>
+        <span class="directory__username">&#64;{{ profile.username }}</span>
+        <span *ngIf="profile.bio" class="directory__bio">{{ profile.bio }}</span>
+      </div>
+    </div>
+  </div>
+
+  @if (hasMore) {
+    <div class="directory__load-more">
+      <button (click)="loadMore()" [disabled]="isLoadingMore" class="save-button">
+        {{ isLoadingMore ? 'Loading...' : 'Load more' }}
+      </button>
+    </div>
+  }
+</div>
