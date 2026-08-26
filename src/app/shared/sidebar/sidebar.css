@@ -72,12 +72,24 @@
 }
 
 /* Selected: the one place blue means "this is where you are," not "this
-   is what your cursor is over." Left-border + tint + blue text — matched
-   exactly by :active below so a click doesn't visibly flicker between two
-   slightly different selected treatments before the route finishes
-   navigating. */
+   is what your cursor is over." Left-border + tint + blue text — but only
+   on an actual leaf/destination row (`:has(> a.active)`, the child
+   combinator matching a leaf item's own link, which sits directly under
+   `.list-item`). Parent/expandable items never get this treatment, even
+   when their own header link is technically the active route — several
+   parents (Dashboard, Package Health) point to the exact same path as
+   their first child (Overview, Analyze), so "the parent's own link is
+   active" and "a child is active" are the same event there, not two
+   different ones. Painting the parent row for either case bled this
+   background across the whole expanded group — a 6-item section like
+   Dashboard Settings sat on one continuous blue field with the actually-
+   active row inside it getting a second, darker blue on top. Letting the
+   specific active leaf carry all of the signal, with every parent header
+   staying neutral regardless of why it's expanded, is what actually
+   reads as "this one row is where you are" instead of "this whole
+   section is blue." */
 .list-item:active,
-.list-item:has(a.active) {
+.list-item:has(> a.active) {
     background-color: var(--accent-teal-selected-bg);
     border-left-color: var(--accent-teal);
 }
