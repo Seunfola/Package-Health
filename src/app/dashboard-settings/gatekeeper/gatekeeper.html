@@ -45,10 +45,17 @@
           <input type="number" [(ngModel)]="ghostTownThreshold" class="settings-input-field"
             aria-label="Ghost Town Health Threshold" min="0" max="60" />
         </div>
-        <p class="guidance-text">
-          <strong>Guidance:</strong> Setting this above 50 risks blocking highly stable, older utility packages that simply haven't needed updates in years. We enforce a maximum limit of 60 to prevent catastrophic blocking of your legitimate ecosystem dependencies.
-        </p>
       </app-settings-input>
+      <!-- Full-width helper note, deliberately a sibling of app-settings-input
+           rather than projected inside it: that component's .settings-input
+           slot is a narrow flex column meant for a toggle/short field
+           alongside the title, not a long paragraph. Squeezing this
+           guidance text in there was starving .settings-text of room,
+           which is what made "Ghost Town Health Threshold" wrap onto two
+           lines above. -->
+      <p class="guidance-text gk-threshold-guidance">
+        <strong>Guidance:</strong> Setting this above 50 risks blocking highly stable, older utility packages that simply haven't needed updates in years. We enforce a maximum limit of 60 to prevent catastrophic blocking of your legitimate ecosystem dependencies.
+      </p>
     }
   </fieldset>
 
